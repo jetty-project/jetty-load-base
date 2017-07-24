@@ -5,139 +5,41 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Jetty Load Test Base</name>
   <groupId>org.eclipse.jetty</groupId>
-  <artifactId>jetty-load-base</artifactId>
+  <artifactId>jetty-load-base-parent</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <properties>
-    <jetty.version>9.4.6.v20170531</jetty.version>
-  </properties>
+  <modules>
+    <module>9.2</module>
+    <module>9.4</module>
+  </modules>
 
   <build>
+   <pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
 	<version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/jetty-load-base</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/src/main/jetty-load-base</directory>
-                  <filtering>false</filtering>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
 	<version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>jetty-home</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.eclipse.jetty</groupId>
-                  <artifactId>jetty-home</artifactId>
-                  <version>${jetty.version}</version>
-                  <type>tar.gz</type>
-                  <overWrite>true</overWrite>
-                  <includes>**</includes>
-                  <outputDirectory>${project.build.directory}</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
-            <id>load-war</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.glassfish.jersey.examples</groupId>
-                  <artifactId>bean-validation-webapp</artifactId>
-                  <version>2.25.1</version>
-                  <type>war</type>
-                  <overWrite>true</overWrite>
-                  <includes>**</includes>
-                  <outputDirectory>${project.build.directory}/jetty-load-base/webapps/bean-validation</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
 	<version>1.5.0</version>
-        <executions>
-          <execution>
-            <id>jetty-modules</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>java</executable>
-          <workingDirectory>${project.build.directory}/jetty-load-base</workingDirectory>
-          <arguments>
-            <argument>-jar</argument>
-            <argument>../jetty-home-${jetty.version}/start.jar</argument>
-            <argument>--create-startd</argument>
-            <argument>--add-to-start=http,deploy,jsp</argument>
-          </arguments>
-        </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
 	<version>3.0.0</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/assembly.xml</descriptor>
-          </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
-          <appendAssemblyId>false</appendAssemblyId>
-        </configuration>
       </plugin>
-
     </plugins>
+   </pluginManagement>
   </build>
-
-
-
 </project>
 
