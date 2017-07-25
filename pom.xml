@@ -12,6 +12,7 @@
   <modules>
     <module>9.2</module>
     <module>9.4</module>
+    <module>generator</module>
   </modules>
 
   <build>
