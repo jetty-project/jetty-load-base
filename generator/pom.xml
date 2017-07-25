@@ -45,6 +45,29 @@
       </plugin>
 
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>executable</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+	      <executable>/bin/chmod</executable>
+	      <arguments>
+	        <argument>+x</argument>
+	        <argument>${project.build.directory}/populate.sh</argument>
+	        <argument>${project.build.directory}/run.sh</argument>
+	      </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
