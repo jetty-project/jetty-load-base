@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 <Configure id="testWebapp" class="org.eclipse.jetty.webapp.WebAppContext">
-  <Set name="war"><Property name="jetty.webapps" default="."/>/bean-validation</Set>
+  <Set name="war"><Property name="jetty.webapps" default="."/>/bean-validation
+  </Set>
 </Configure>
 

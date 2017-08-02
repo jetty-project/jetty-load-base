@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.eclipse.jetty</groupId>
+    <groupId>org.eclipse.jetty.load</groupId>
     <artifactId>jetty-load-base-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
+
   <modelVersion>4.0.0</modelVersion>
-  <name>Jetty Load Test Base</name>
   <artifactId>jetty-load-base-9.4</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <name>Jetty Load Test 9.4.x</name>
   <packaging>pom</packaging>
 
   <properties>
@@ -116,4 +116,3 @@
     </plugins>
   </build>
 </project>
-

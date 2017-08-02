@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.eclipse.jetty.load</groupId>
+    <artifactId>jetty-load-base-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <name>Jetty Load Test Probe</name>
+  <artifactId>jetty-load-base-probe</artifactId>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <executable>java</executable>
+          <arguments>
+            <argument>-showversion</argument>
+            <argument>-Xmx2g</argument>
+            <argument>-Xms2g</argument>
+            <argument>-Xmn1g</argument>
+            <argument>-XX:+PrintCommandLineFlags</argument>
+            <argument>-XX:+PrintGCTimeStamps</argument>
+            <argument>-XX:+PrintGCDetails</argument>
+            <argument>-XX:+UseParallelOldGC</argument>
+            <!--<argument>-XX:+UseConcMarkSweepGC</argument>-->
+            <!--<argument>-XX:+UseG1GC</argument>-->
+            <argument>-cp</argument>
+            <classpath />
+            <argument>org.eclipse.jetty.load.probe.ProbeMain</argument>
+            <argument>--warmup-iterations</argument>
+            <argument>60</argument>
+            <argument>--iterations</argument>
+            <argument>60</argument>
+            <argument>--resource-groovy-path</argument>
+            <argument>src/main/resources/probe.groovy</argument>
+            <argument>--users</argument>
+            <argument>1</argument>
+            <argument>--channels-per-user</argument>
+            <argument>6</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty.load</groupId>
+      <artifactId>jetty-load-base-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty.loadgenerator</groupId>
+      <artifactId>jetty-load-generator-starter</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
