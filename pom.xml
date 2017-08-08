@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>test-webapp</module>
     <module>9.2</module>
     <module>9.4</module>
     <module>common</module>

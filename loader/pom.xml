@@ -24,8 +24,8 @@
           <executable>java</executable>
           <arguments>
             <argument>-showversion</argument>
-            <argument>-Xmx4g</argument>
-            <argument>-Xms4g</argument>
+            <argument>-Xmx8G</argument>
+            <argument>-Xms8G</argument>
             <argument>-Xmn2g</argument>
             <argument>-XX:+PrintCommandLineFlags</argument>
             <argument>-XX:+PrintGCTimeStamps</argument>
@@ -37,13 +37,13 @@
             <classpath />
             <argument>org.eclipse.jetty.load.loader.LoaderMain</argument>
             <argument>--running-time</argument>
-            <argument>300</argument>
+            <argument>3000</argument>
             <argument>--resource-groovy-path</argument>
             <argument>src/main/resources/loader.groovy</argument>
             <argument>--resource-rate</argument>
-            <argument>1000</argument>
+            <argument>200</argument>
             <argument>--threads</argument>
-            <argument>2</argument>
+            <argument>10</argument>
             <argument>--users</argument>
             <argument>100</argument>
             <argument>--channels-per-user</argument>

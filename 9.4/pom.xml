@@ -84,6 +84,15 @@
                   <includes>**</includes>
                   <outputDirectory>${project.build.directory}/jetty-base/webapps/bean-validation</outputDirectory>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse.jetty.load</groupId>
+                  <artifactId>test-webapp</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <includes>**</includes>
+                  <outputDirectory>${project.build.directory}/jetty-base/webapps/test</outputDirectory>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
