@@ -12,6 +12,14 @@
   <name>Jetty Load Test Loader</name>
   <artifactId>jetty-load-base-loader</artifactId>
 
+  <properties>
+    <runningTime>3000</runningTime>
+    <resourceRate>200</resourceRate>
+    <threads>10</threads>
+    <users>100</users>
+    <channelsPerUser>6</channelsPerUser>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -37,17 +45,17 @@
             <classpath />
             <argument>org.eclipse.jetty.load.loader.LoaderMain</argument>
             <argument>--running-time</argument>
-            <argument>3000</argument>
+            <argument>${runningTime}</argument>
             <argument>--resource-groovy-path</argument>
             <argument>src/main/resources/loader.groovy</argument>
             <argument>--resource-rate</argument>
-            <argument>200</argument>
+            <argument>${resourceRate}</argument>
             <argument>--threads</argument>
-            <argument>10</argument>
+            <argument>${threads}</argument>
             <argument>--users</argument>
-            <argument>100</argument>
+            <argument>${users}</argument>
             <argument>--channels-per-user</argument>
-            <argument>6</argument>
+            <argument>${channelsPerUser}</argument>
           </arguments>
         </configuration>
       </plugin>
