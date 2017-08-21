@@ -12,6 +12,13 @@
   <name>Jetty Load Test Probe</name>
   <artifactId>jetty-load-base-probe</artifactId>
 
+  <properties>
+    <warmupIterations>60</warmupIterations>
+    <iterations>60</iterations>
+    <users>1</users>
+    <channelsPerUser>6</channelsPerUser>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -37,15 +44,15 @@
             <classpath />
             <argument>org.eclipse.jetty.load.probe.ProbeMain</argument>
             <argument>--warmup-iterations</argument>
-            <argument>60</argument>
+            <argument>${warmupIterations}</argument>
             <argument>--iterations</argument>
-            <argument>60</argument>
+            <argument>${iterations}</argument>
             <argument>--resource-groovy-path</argument>
             <argument>src/main/resources/probe.groovy</argument>
             <argument>--users</argument>
-            <argument>1</argument>
+            <argument>${users}</argument>
             <argument>--channels-per-user</argument>
-            <argument>6</argument>
+            <argument>${channelsPerUser}</argument>
           </arguments>
         </configuration>
       </plugin>
