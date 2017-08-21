@@ -18,6 +18,8 @@
     <threads>10</threads>
     <users>100</users>
     <channelsPerUser>6</channelsPerUser>
+    <host>localhost</host>
+    <port>8080</port>
   </properties>
 
   <build>
@@ -56,6 +58,10 @@
             <argument>${users}</argument>
             <argument>--channels-per-user</argument>
             <argument>${channelsPerUser}</argument>
+            <argument>--host</argument>
+            <argument>${host}</argument>
+            <argument>--port</argument>
+            <argument>${port}</argument>
           </arguments>
         </configuration>
       </plugin>
