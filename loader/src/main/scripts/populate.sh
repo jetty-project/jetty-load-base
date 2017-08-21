@@ -1,4 +1,11 @@
 #!/bin/bash
+set -x
+targetHost=$1
+
+if [ $# -eq 0 ]
+  then
+    targetHost=localhost
+fi
 
 for ((i=0;i<1000;i++));
 do
@@ -8,5 +15,5 @@ do
     curl -X POST \
       -H "Content-Type: application/json" \
       -d "{\"email\":\"$u@mail.example.com\",\"fullName\":\"$U\",\"phone\":\"$N\"}" \
-      http://localhost:8080/api/contact
+      http://$targetHost:8080/api/contact
 done
