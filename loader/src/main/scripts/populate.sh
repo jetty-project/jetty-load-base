@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 targetHost=$1
 
 if [ $# -eq 0 ]
