@@ -19,6 +19,7 @@
     <channelsPerUser>6</channelsPerUser>
     <host>localhost</host>
     <port>8080</port>
+    <resourceRate>1</resourceRate>
   </properties>
 
   <build>
@@ -55,6 +56,8 @@
             <argument>${users}</argument>
             <argument>--channels-per-user</argument>
             <argument>${channelsPerUser}</argument>
+            <argument>--resource-rate</argument>
+            <argument>${resourceRate}</argument>
             <argument>--host</argument>
             <argument>${host}</argument>
             <argument>--port</argument>
