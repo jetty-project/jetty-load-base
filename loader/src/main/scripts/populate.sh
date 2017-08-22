@@ -11,8 +11,8 @@ do
     u=$(printf "user%04d.surname" $i)
     U=$(printf "User%04d Surname" $i)
     N=$(printf "10000%04d" $i)
-    curl -X POST \
+    curl -s -X POST \
       -H "Content-Type: application/json" \
       -d "{\"email\":\"$u@mail.example.com\",\"fullName\":\"$U\",\"phone\":\"$N\"}" \
-      http://$targetHost:8080/api/contact
+      http://$targetHost:8080/api/contact > /dev/null
 done
