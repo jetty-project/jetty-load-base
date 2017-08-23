@@ -55,8 +55,8 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
         System.err.printf("request queue: %d, jit=%s ms, qps=%s, cpu=%.2f%%%n",
                 requestQueue.get(),
                 stop.deltaJITTime,
-                stop.cpuPercent,
-                qps);
+                qps,
+                stop.cpuPercent);
 
         monitor = Monitor.start();
     }
