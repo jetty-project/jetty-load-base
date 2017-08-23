@@ -69,6 +69,11 @@
         <artifactId>HdrHistogram</artifactId>
         <version>2.1.9</version>
       </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.load</groupId>
+        <artifactId>jetty-load-base-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
