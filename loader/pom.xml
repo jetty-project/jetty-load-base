@@ -105,6 +105,10 @@
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty.loadgenerator</groupId>
+      <artifactId>jetty-load-generator-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty.loadgenerator</groupId>
       <artifactId>jetty-load-generator-starter</artifactId>
     </dependency>
   </dependencies>
