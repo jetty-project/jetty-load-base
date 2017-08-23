@@ -20,6 +20,7 @@
     <channelsPerUser>6</channelsPerUser>
     <host>localhost</host>
     <port>8080</port>
+    <maxMem>8G</maxMem>
   </properties>
 
   <build>
@@ -34,7 +35,7 @@
           <executable>java</executable>
           <arguments>
             <argument>-showversion</argument>
-            <argument>-Xmx8G</argument>
+            <argument>-Xmx${maxMem}</argument>
             <argument>-Xms8G</argument>
             <argument>-Xmn2g</argument>
             <argument>-XX:+PrintCommandLineFlags</argument>
