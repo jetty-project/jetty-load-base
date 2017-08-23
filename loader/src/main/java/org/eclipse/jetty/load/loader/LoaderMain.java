@@ -19,7 +19,7 @@ public class LoaderMain {
         LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
         builder = builder.requestListener(listener);
 
-        ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 1, TimeUnit.SECONDS);
+        ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 2, TimeUnit.SECONDS);
         try {
             LoadGeneratorStarter.run(builder);
         } finally {
