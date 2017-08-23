@@ -52,7 +52,7 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
         long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
         long qps = totalRequestCommitted / timeInSeconds;
 
-        System.err.printf("request queue: %d, jit=%s ms, cpu=%.2f%%%n, qps=%s ms",
+        System.err.printf("request queue: %d, jit=%s ms, qps=%s, cpu=%.2f%%%n",
                 requestQueue.get(),
                 stop.deltaJITTime,
                 stop.cpuPercent,
