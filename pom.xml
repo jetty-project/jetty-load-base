@@ -54,6 +54,16 @@
         <artifactId>jetty-load-generator-starter</artifactId>
         <version>1.0.0-BETA0</version>
       </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty.loadgenerator</groupId>
+        <artifactId>jetty-load-generator-client</artifactId>
+        <version>1.0.0-BETA0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hdrhistogram</groupId>
+        <artifactId>HdrHistogram</artifactId>
+        <version>2.1.9</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

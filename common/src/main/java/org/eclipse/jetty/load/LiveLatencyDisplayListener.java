@@ -1,15 +1,15 @@
-package org.eclipse.jetty.load.probe;
-
-import java.util.concurrent.TimeUnit;
+package org.eclipse.jetty.load;
 
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
-import org.eclipse.jetty.load.Monitor;
 import org.eclipse.jetty.toolchain.perf.HistogramSnapshot;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 
-public class LiveLatencyDisplayListener implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
+import java.util.concurrent.TimeUnit;
+
+public class LiveLatencyDisplayListener
+    implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
     private final Recorder recorder;
     private final Histogram histogram;
     private Histogram interval;
@@ -20,7 +20,7 @@ public class LiveLatencyDisplayListener implements Resource.NodeListener, LoadGe
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
     }
 
-    public LiveLatencyDisplayListener(long low, long high, int digits) {
+    public LiveLatencyDisplayListener( long low, long high, int digits) {
         histogram = new Histogram(low, high, digits);
         recorder = new Recorder(low, high, digits);
         start = Monitor.start();

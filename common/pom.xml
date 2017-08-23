@@ -12,4 +12,15 @@
   <artifactId>jetty-load-base-common</artifactId>
   <name>Jetty Load Test Common</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.hdrhistogram</groupId>
+      <artifactId>HdrHistogram</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty.loadgenerator</groupId>
+      <artifactId>jetty-load-generator-client</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
