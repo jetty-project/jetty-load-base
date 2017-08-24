@@ -37,13 +37,20 @@ public class LiveLatencyDisplayListener
         interval = recorder.getIntervalHistogram(interval);
         histogram.add(interval);
 
-        System.err.printf("response time: min/max=%d/%d \u00B5s, jit=%d ms, cpu=%.2f%%%n",
+        long totalRequestCommitted = interval.getTotalCount();
+        long start = interval.getStartTimeStamp();
+        long end = interval.getEndTimeStamp();
+        long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
+        long qps = totalRequestCommitted / timeInSeconds;
+
+        System.err.printf("response time: min/max=%d/%d \u00B5s, jit=%d ms, qps=%s, cpu=%.2f%%%n",
                 TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
                 TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue()),
                 stop.deltaJITTime,
+                qps,
                 stop.cpuPercent);
 
-        start = Monitor.start();
+        this.start = Monitor.start();
     }
 
     @Override
