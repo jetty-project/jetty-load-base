@@ -7,8 +7,11 @@ import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.load.Monitor;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 
 public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable {
+    private static final Logger LOGGER = Log.getLogger( LiveLoadDisplayListener.class);
     private final AtomicInteger requestQueue = new AtomicInteger();
     private Monitor.Start monitor = Monitor.start();
     private final Recorder recorder;
@@ -52,12 +55,12 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
         long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
         long qps = totalRequestCommitted / timeInSeconds;
 
-        System.err.printf("request queue: %d, jit=%s ms, qps=%s, committed=%s, cpu=%.2f%%%n",
+        LOGGER.info( String.format("request queue: %d, jit=%s ms, qps=%s, committed=%s, cpu=%.2f%%%n",
                 requestQueue.get(),
                 stop.deltaJITTime,
                 qps,
                 totalRequestCommitted,
-                stop.cpuPercent);
+                stop.cpuPercent));
 
         monitor = Monitor.start();
     }

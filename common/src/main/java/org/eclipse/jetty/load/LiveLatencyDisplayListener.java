@@ -3,6 +3,8 @@ package org.eclipse.jetty.load;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.toolchain.perf.HistogramSnapshot;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 
@@ -10,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LiveLatencyDisplayListener
     implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
+    private static final Logger LOGGER = Log.getLogger( LiveLatencyDisplayListener.class);
     private final Recorder recorder;
     private final Histogram histogram;
     private Histogram interval;
@@ -43,12 +46,12 @@ public class LiveLatencyDisplayListener
         long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
         long qps = totalRequestCommitted / timeInSeconds;
 
-        System.err.printf("response time: min/max=%d/%d \u00B5s, jit=%d ms, qps=%s, cpu=%.2f%%%n",
+        LOGGER.info( String.format("response time: min/max=%d/%d \u00B5s, jit=%d ms, qps=%s, cpu=%.2f%%%n",
                 TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
                 TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue()),
                 stop.deltaJITTime,
                 qps,
-                stop.cpuPercent);
+                stop.cpuPercent));
 
         this.start = Monitor.start();
     }
