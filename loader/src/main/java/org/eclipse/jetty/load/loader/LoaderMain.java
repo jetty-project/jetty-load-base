@@ -20,7 +20,7 @@ public class LoaderMain {
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
 
         LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
-        builder = builder.requestListener(listener);
+        builder = builder.requestListener(listener).listener( listener );
 
         ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 2, TimeUnit.SECONDS);
         LOGGER.info( "start load generator run" );

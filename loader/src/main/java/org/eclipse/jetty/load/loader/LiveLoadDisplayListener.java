@@ -9,8 +9,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.load.Monitor;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.mortbay.jetty.load.generator.LoadGenerator;
 
-public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable {
+public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable, LoadGenerator.EndListener {
     private static final Logger LOGGER = Log.getLogger( LiveLoadDisplayListener.class);
     private final AtomicInteger requestQueue = new AtomicInteger();
     private Monitor.Start monitor = Monitor.start();
@@ -63,5 +64,15 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
                 stop.cpuPercent));
 
         monitor = Monitor.start();
+    }
+
+    @Override
+    public void onEnd( LoadGenerator loadGenerator ) {
+        long totalRequestCommitted = histogram.getTotalCount();
+        long start = histogram.getStartTimeStamp();
+        long end = histogram.getEndTimeStamp();
+        long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
+        long qps = totalRequestCommitted / timeInSeconds;
+        LOGGER.info( "Average qps: {}", qps);
     }
 }
