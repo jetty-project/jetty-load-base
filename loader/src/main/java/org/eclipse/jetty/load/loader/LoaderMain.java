@@ -12,6 +12,7 @@ import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarter;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarterArgs;
 
 public class LoaderMain {
+    private static final Logger LOGGER = Log.getLogger( LoaderMain.class);
     public static void main(String[] args) {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -22,9 +23,14 @@ public class LoaderMain {
         builder = builder.requestListener(listener);
 
         ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 2, TimeUnit.SECONDS);
+        LOGGER.info( "start load generator run" );
+        long start = System.currentTimeMillis();
         try {
             LoadGeneratorStarter.run(builder);
         } finally {
+            long end = System.currentTimeMillis();
+            LOGGER.info( "end load generator run {} seconds", //
+                        TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS ) );
             task.cancel(false);
             scheduler.shutdown();
         }
