@@ -9,6 +9,10 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <loadGeneratorVersion>1.0.0-SNAPSHOT</loadGeneratorVersion>
+  </properties>
+
   <modules>
     <module>test-webapp</module>
     <module>9.2</module>
@@ -57,12 +61,12 @@
       <dependency>
         <groupId>org.mortbay.jetty.loadgenerator</groupId>
         <artifactId>jetty-load-generator-starter</artifactId>
-        <version>1.0.0-BETA0</version>
+        <version>${loadGeneratorVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty.loadgenerator</groupId>
         <artifactId>jetty-load-generator-client</artifactId>
-        <version>1.0.0-BETA0</version>
+        <version>${loadGeneratorVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.hdrhistogram</groupId>
