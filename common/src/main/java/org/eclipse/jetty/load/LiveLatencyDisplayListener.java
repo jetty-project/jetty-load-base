@@ -64,7 +64,11 @@ public class LiveLatencyDisplayListener
     @Override
     public void onEnd(LoadGenerator loadGenerator) {
         Monitor.Stop end = begin.stop();
-        System.err.printf("jit=%d ms, cpu=%.4f ms%n", end.deltaJITTime, end.cpuPercent);
+        long totalRequestCommitted = histogram.getTotalCount();
+        long start = histogram.getStartTimeStamp();
+        long timeInSeconds = TimeUnit.SECONDS.convert( histogram.getEndTimeStamp() - start, TimeUnit.MILLISECONDS );
+        long qps = totalRequestCommitted / timeInSeconds;
+        System.err.printf("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, qps, end.cpuPercent);
         HistogramSnapshot snapshot = new HistogramSnapshot(histogram, 20, "response time", "\u00B5s", TimeUnit.NANOSECONDS::toMicros);
         System.err.println(snapshot);
     }
