@@ -34,5 +34,6 @@ public class LoaderMain {
             task.cancel(false);
             scheduler.shutdown();
         }
+        LOGGER.info( "load generator done" );
     }
 }
