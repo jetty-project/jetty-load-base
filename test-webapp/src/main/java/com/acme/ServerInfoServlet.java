@@ -18,6 +18,7 @@
 
 package com.acme;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -40,30 +41,15 @@ public class ServerInfoServlet
 
     public static class ServerInfo
     {
-
+        @JsonProperty
         private String jettyVersion = System.getProperty( "jetty.version" );
         //System.setProperty("jetty.tag.version",tag)
 
+        @JsonProperty
         private int availableProcessors = Runtime.getRuntime().availableProcessors();
 
+        @JsonProperty
         private long totalMemory = Runtime.getRuntime().totalMemory();
 
-        public String getJettyVersion()
-        {
-            return jettyVersion;
-        }
-
-        public int getAvailableProcessors()
-        {
-            return availableProcessors;
-        }
-
-        public long getTotalMemory()
-        {
-            return totalMemory;
-        }
-
     }
-
-
 }
