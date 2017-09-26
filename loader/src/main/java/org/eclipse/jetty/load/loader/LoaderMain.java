@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.load.ServerInfo;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
@@ -13,11 +14,18 @@ import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarterArgs;
 
 public class LoaderMain {
     private static final Logger LOGGER = Log.getLogger( LoaderMain.class);
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
         LoadGeneratorStarterArgs starterArgs = LoadGeneratorStarter.parse(args);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
+
+        ServerInfo serverInfo = ServerInfo.retrieveServerInfo( starterArgs.getScheme(), //
+                                                               starterArgs.getHost(), //
+                                                               starterArgs.getPort(), //
+                                                               "/test/info/" );
+
+        LOGGER.info( "run load test on server:{}", serverInfo );
 
         LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
         builder = builder.requestListener(listener).listener( listener );

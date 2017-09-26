@@ -1,5 +1,9 @@
 package org.eclipse.jetty.load;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+
 public class ServerInfo
 {
     private String jettyVersion;
@@ -37,4 +41,31 @@ public class ServerInfo
     {
         this.totalMemory = totalMemory;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ServerInfo{" + "jettyVersion='" + jettyVersion + '\'' + ", availableProcessors=" + availableProcessors
+            + ", totalMemory=" + totalMemory + '}';
+    }
+
+    public static ServerInfo retrieveServerInfo( String scheme, String host, int port, String path )
+        throws Exception
+    {
+        HttpClient httpClient = new HttpClient();
+
+        try
+        {
+            httpClient.start();
+            ContentResponse contentResponse = httpClient.newRequest( host, port ).scheme( scheme ).path( path ).send();
+
+            return new ObjectMapper().readValue( contentResponse.getContent(), ServerInfo.class );
+        }
+        finally
+        {
+            httpClient.stop();
+        }
+
+    }
+
 }
