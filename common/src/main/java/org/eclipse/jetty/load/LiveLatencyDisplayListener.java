@@ -19,7 +19,7 @@ public class LiveLatencyDisplayListener
     private Histogram interval;
     private Monitor.Start begin;
     private Monitor.Start start;
-    public AtomicLong currentQps = new AtomicLong( 0 ), finalQps = new AtomicLong( 0 );
+    public long currentQps, finalQps;
 
     public LiveLatencyDisplayListener() {
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
@@ -46,13 +46,13 @@ public class LiveLatencyDisplayListener
         long start = interval.getStartTimeStamp();
         long end = interval.getEndTimeStamp();
         long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
-        currentQps.set( totalRequestCommitted / timeInSeconds );
+        currentQps = totalRequestCommitted / timeInSeconds;
 
         LOGGER.info( String.format("response time: min/max=%d/%d \u00B5s, jit=%d ms, qps=%s, cpu=%.2f%%%n",
                 TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
                 TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue()),
                 stop.deltaJITTime,
-                currentQps.get(),
+                currentQps,
                 stop.cpuPercent));
 
         this.start = Monitor.start();
@@ -70,8 +70,8 @@ public class LiveLatencyDisplayListener
         long start = histogram.getStartTimeStamp();
         long timeInSeconds = TimeUnit.SECONDS.convert( histogram.getEndTimeStamp() - start, //
                                                        TimeUnit.MILLISECONDS );
-        finalQps.set( totalRequestCommitted / timeInSeconds );
-        LOGGER.info( String.format("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, finalQps.get(), end.cpuPercent);
+        finalQps = totalRequestCommitted / timeInSeconds;
+        LOGGER.info( String.format("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, finalQps, end.cpuPercent);
         HistogramSnapshot snapshot = new HistogramSnapshot(histogram, 20, "response time", //
                                                            "\u00B5s", //
                                                            TimeUnit.NANOSECONDS::toMicros);
@@ -80,11 +80,11 @@ public class LiveLatencyDisplayListener
 
     public long getCurrentQps()
     {
-        return currentQps.get();
+        return currentQps;
     }
 
     public long getFinalQps()
     {
-        return finalQps.get();
+        return finalQps;
     }
 }
