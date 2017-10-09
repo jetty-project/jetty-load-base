@@ -20,12 +20,19 @@ public class LoaderMain {
         LoadGeneratorStarterArgs starterArgs = LoadGeneratorStarter.parse(args);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
 
-        ServerInfo serverInfo = ServerInfo.retrieveServerInfo( starterArgs.getScheme(), //
-                                                               starterArgs.getHost(), //
-                                                               starterArgs.getPort(), //
-                                                               "/test/info/" );
+        try
+        {
+            ServerInfo serverInfo = ServerInfo.retrieveServerInfo( starterArgs.getScheme(), //
+                                                                   starterArgs.getHost(), //
+                                                                   starterArgs.getPort(), //
+                                                                   "/test/info/" );
 
-        LOGGER.info( "run load test on server:{}", serverInfo );
+            LOGGER.info( "run load test on server:{}", serverInfo );
+        }
+        catch ( Exception e )
+        {
+            LOGGER.info( "skip fail to retrieve serverInfo", e );
+        }
 
         LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
         builder = builder.requestListener(listener).listener( listener );
