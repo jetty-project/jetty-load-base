@@ -9,6 +9,7 @@ import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class LiveLatencyDisplayListener
     implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
@@ -18,6 +19,7 @@ public class LiveLatencyDisplayListener
     private Histogram interval;
     private Monitor.Start begin;
     private Monitor.Start start;
+    public AtomicLong currentQps = new AtomicLong( 0 ), finalQps = new AtomicLong( 0 );
 
     public LiveLatencyDisplayListener() {
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
@@ -44,13 +46,13 @@ public class LiveLatencyDisplayListener
         long start = interval.getStartTimeStamp();
         long end = interval.getEndTimeStamp();
         long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
-        long qps = totalRequestCommitted / timeInSeconds;
+        currentQps.set( totalRequestCommitted / timeInSeconds );
 
         LOGGER.info( String.format("response time: min/max=%d/%d \u00B5s, jit=%d ms, qps=%s, cpu=%.2f%%%n",
                 TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
                 TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue()),
                 stop.deltaJITTime,
-                qps,
+                currentQps.get(),
                 stop.cpuPercent));
 
         this.start = Monitor.start();
@@ -66,10 +68,23 @@ public class LiveLatencyDisplayListener
         Monitor.Stop end = begin.stop();
         long totalRequestCommitted = histogram.getTotalCount();
         long start = histogram.getStartTimeStamp();
-        long timeInSeconds = TimeUnit.SECONDS.convert( histogram.getEndTimeStamp() - start, TimeUnit.MILLISECONDS );
-        long qps = totalRequestCommitted / timeInSeconds;
-        System.err.printf("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, qps, end.cpuPercent);
-        HistogramSnapshot snapshot = new HistogramSnapshot(histogram, 20, "response time", "\u00B5s", TimeUnit.NANOSECONDS::toMicros);
+        long timeInSeconds = TimeUnit.SECONDS.convert( histogram.getEndTimeStamp() - start, //
+                                                       TimeUnit.MILLISECONDS );
+        finalQps.set( totalRequestCommitted / timeInSeconds );
+        LOGGER.info( String.format("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, finalQps.get(), end.cpuPercent);
+        HistogramSnapshot snapshot = new HistogramSnapshot(histogram, 20, "response time", //
+                                                           "\u00B5s", //
+                                                           TimeUnit.NANOSECONDS::toMicros);
         System.err.println(snapshot);
+    }
+
+    public long getCurrentQps()
+    {
+        return currentQps.get();
+    }
+
+    public long getFinalQps()
+    {
+        return finalQps.get();
     }
 }

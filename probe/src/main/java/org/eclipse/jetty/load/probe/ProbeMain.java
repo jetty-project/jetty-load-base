@@ -43,5 +43,7 @@ public class ProbeMain {
             task.cancel(false);
             scheduler.shutdown();
         }
+
+        // we can record result
     }
 }
