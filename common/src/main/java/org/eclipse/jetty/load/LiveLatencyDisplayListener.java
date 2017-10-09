@@ -71,7 +71,7 @@ public class LiveLatencyDisplayListener
         long timeInSeconds = TimeUnit.SECONDS.convert( histogram.getEndTimeStamp() - start, //
                                                        TimeUnit.MILLISECONDS );
         finalQps = totalRequestCommitted / timeInSeconds;
-        LOGGER.info( String.format("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, finalQps, end.cpuPercent);
+        LOGGER.info( String.format("jit=%d ms, qps=%d, cpu=%.4f ms%n", end.deltaJITTime, finalQps, end.cpuPercent) );
         HistogramSnapshot snapshot = new HistogramSnapshot(histogram, 20, "response time", //
                                                            "\u00B5s", //
                                                            TimeUnit.NANOSECONDS::toMicros);
