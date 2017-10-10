@@ -28,7 +28,7 @@ public class ProbeMain {
         LOGGER.info( "run load test on server:{}", serverInfo );
 
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
-        LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener();
+        LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener().serverInfo( serverInfo );
         builder = builder.resourceListener(listener).listener(listener);
 
         ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 3, 3, TimeUnit.SECONDS);
