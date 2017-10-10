@@ -22,6 +22,10 @@
       <artifactId>jetty-load-generator-client</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.mortbay.jetty.loadgenerator</groupId>
+      <artifactId>jetty-load-generator-listeners</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>

@@ -31,7 +31,7 @@ public class ProbeMain {
         LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener();
         builder = builder.resourceListener(listener).listener(listener);
 
-        ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 1, TimeUnit.SECONDS);
+        ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 3, 3, TimeUnit.SECONDS);
         LOGGER.info( "start load generator run" );
         long start = System.currentTimeMillis();
         try {

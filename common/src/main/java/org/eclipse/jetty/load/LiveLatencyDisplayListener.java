@@ -7,6 +7,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
+import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -76,6 +77,11 @@ public class LiveLatencyDisplayListener
                                                            "\u00B5s", //
                                                            TimeUnit.NANOSECONDS::toMicros);
         System.err.println(snapshot);
+
+        CollectorInformations collectorInformations = new CollectorInformations( histogram );
+
+        LOGGER.info( "collectorInformations: {}", collectorInformations );
+
     }
 
     public long getCurrentQps()
@@ -87,4 +93,5 @@ public class LiveLatencyDisplayListener
     {
         return finalQps;
     }
+
 }
