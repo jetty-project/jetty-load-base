@@ -33,6 +33,8 @@ public class LiveLatencyDisplayListener
 
     private ServerInfo serverInfo;
 
+    private LoadResult loadResult;
+
     public LiveLatencyDisplayListener()
     {
         this( TimeUnit.MICROSECONDS.toNanos( 1 ), TimeUnit.SECONDS.toNanos( 60 ), 3 );
@@ -101,19 +103,7 @@ public class LiveLatencyDisplayListener
 
         CollectorInformations collectorInformations = new CollectorInformations( histogram );
 
-        LoadResult loadResult = new LoadResult( serverInfo, collectorInformations );
-
-        StringWriter stringWriter = new StringWriter();
-
-        try
-        {
-            new ObjectMapper().writeValue( stringWriter, loadResult );
-        } catch ( IOException e ) {
-            LOGGER.info( "skip cannot write LoadResult as json", e );
-        }
-
-        LOGGER.info( "loadResult json: {}", stringWriter.toString() );
-
+        loadResult = new LoadResult( serverInfo, collectorInformations );
     }
 
     public long getCurrentQps()
@@ -126,4 +116,8 @@ public class LiveLatencyDisplayListener
         return finalQps;
     }
 
+    public LoadResult getLoadResult()
+    {
+        return loadResult;
+    }
 }
