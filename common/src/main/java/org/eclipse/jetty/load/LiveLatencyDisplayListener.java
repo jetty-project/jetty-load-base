@@ -1,6 +1,5 @@
 package org.eclipse.jetty.load;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.toolchain.perf.HistogramSnapshot;
@@ -9,9 +8,9 @@ import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
+import org.mortbay.jetty.load.generator.listeners.LoadResult;
+import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.concurrent.TimeUnit;
 
 public class LiveLatencyDisplayListener
