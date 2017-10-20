@@ -8,6 +8,7 @@ import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
+import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 
@@ -102,7 +103,7 @@ public class LiveLatencyDisplayListener
 
         CollectorInformations collectorInformations = new CollectorInformations( histogram );
 
-        loadResult = new LoadResult( serverInfo, collectorInformations );
+        loadResult = new LoadResult( serverInfo, collectorInformations, new LoadConfig( loadGenerator.getConfig() ) );
     }
 
     public long getCurrentQps()

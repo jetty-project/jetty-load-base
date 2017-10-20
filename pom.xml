@@ -74,6 +74,11 @@
         <version>${loadGeneratorVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.mortbay.jetty.loadgenerator</groupId>
+        <artifactId>jetty-load-generator-store</artifactId>
+        <version>${loadGeneratorVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.hdrhistogram</groupId>
         <artifactId>HdrHistogram</artifactId>
         <version>2.1.9</version>
