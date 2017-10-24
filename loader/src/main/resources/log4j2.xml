@@ -10,7 +10,7 @@
 
     <Console name="STDOUT">
       <PatternLayout>
-        <pattern>%d{DEFAULT} [%t] [%X{user}] [%marker] %-5level %logger{36} - %msg%n</pattern>
+        <pattern>%d [%t] %-5p %logger{36} - %m%n</pattern>
       </PatternLayout>
     </Console>
 
@@ -18,7 +18,7 @@
                              filePattern="${logsDirectory}/loader-debug-%d{yyyyMMdd}.log"
                              immediateFlush="true" append="true">
       <PatternLayout>
-        <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
+        <pattern>%d [%t] %-5p %logger{18} - %m%n</pattern>
       </PatternLayout>
       <Policies>
         <TimeBasedTriggeringPolicy />
