@@ -16,7 +16,7 @@
 
     <RollingRandomAccessFile name="debug_logs" fileName="${logsDirectory}/loader.log"
                              filePattern="${logsDirectory}/loader-debug-%d{yyyyMMdd}.log"
-                             immediateFlush="true" append="true">
+                             immediateFlush="true" append="false">
       <PatternLayout>
         <pattern>%d [%t] %-5p %logger{18} - %m%n</pattern>
       </PatternLayout>
