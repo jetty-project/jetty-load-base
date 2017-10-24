@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+
+  <properties>
+    <property name="logsDirectory">./logs</property>
+  </properties>
+
+  <appenders>
+
+    <Console name="STDOUT">
+      <PatternLayout>
+        <pattern>%d{DEFAULT} [%t] [%X{user}] [%marker] %-5level %logger{36} - %msg%n</pattern>
+      </PatternLayout>
+    </Console>
+
+    <RollingRandomAccessFile name="debug_logs" fileName="${logsDirectory}/loader.log"
+                             filePattern="${logsDirectory}/loader-debug-%d{yyyyMMdd}.log"
+                             immediateFlush="true" append="true">
+      <PatternLayout>
+        <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy />
+      </Policies>
+    </RollingRandomAccessFile>
+
+
+  </appenders>
+  <loggers>
+
+    <logger name="org.mortbay.jetty.load.generator" additivity="false" level="debug">
+      <appender-ref ref="debug_logs" />
+    </logger>
+    <logger name="org.eclipse.jetty.client" additivity="false" level="debug">
+      <appender-ref ref="debug_logs" />
+    </logger>
+
+    <root level="info" includeLocation="true">
+      <appender-ref ref="STDOUT"/>
+    </root>
+  </loggers>
+</configuration>
+
