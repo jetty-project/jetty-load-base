@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -95,7 +96,9 @@ public class ProbeMain
 
         resultStores
             .stream() //
-            .forEach( resultStore -> resultStore.save( loadResult ) );
+            .forEach( resultStore ->
+                          resultStore.save( new ResultStore.ExtendedLoadResult( UUID.randomUUID().toString(), //
+                                                                                loadResult ) ));
 
         System.exit( 0 );
     }
