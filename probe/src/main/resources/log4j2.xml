@@ -28,6 +28,7 @@
 
   </appenders>
   <loggers>
+
     <!--
     <logger name="org.mortbay.jetty.load.generator" additivity="false" level="debug">
       <appender-ref ref="debug_logs" />
