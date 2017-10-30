@@ -8,6 +8,7 @@ import org.eclipse.jetty.load.LiveLatencyDisplayListener;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarter;
@@ -47,7 +48,8 @@ public class ProbeMain
         LOGGER.info( "run load test on server:{}", serverInfo );
 
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare( starterArgs );
-        LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener().serverInfo( serverInfo );
+        LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener().serverInfo( serverInfo )
+            .loadConfigType( LoadConfig.Type.PROBE );
         builder = builder.resourceListener( listener ).listener( listener );
 
         ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay( listener, 3, 3, TimeUnit.SECONDS );
@@ -69,6 +71,7 @@ public class ProbeMain
         // we can record result
         // this can be moved to a resultStore implementation
         LoadResult loadResult = listener.getLoadResult();
+
         StringWriter stringWriter = new StringWriter();
         try
         {
@@ -97,8 +100,7 @@ public class ProbeMain
         resultStores
             .stream() //
             .forEach( resultStore ->
-                          resultStore.save( new ResultStore.ExtendedLoadResult( UUID.randomUUID().toString(), //
-                                                                                loadResult ) ));
+                          resultStore.save( loadResult ) );
 
         System.exit( 0 );
     }

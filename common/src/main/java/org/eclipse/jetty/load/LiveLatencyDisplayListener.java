@@ -35,6 +35,8 @@ public class LiveLatencyDisplayListener
 
     private LoadResult loadResult;
 
+    private LoadConfig.Type loadConfigType;
+
     public LiveLatencyDisplayListener()
     {
         this( TimeUnit.MICROSECONDS.toNanos( 1 ), TimeUnit.SECONDS.toNanos( 60 ), 3 );
@@ -50,6 +52,12 @@ public class LiveLatencyDisplayListener
     public LiveLatencyDisplayListener serverInfo( ServerInfo serverInfo )
     {
         this.serverInfo = serverInfo;
+        return this;
+    }
+
+    public LiveLatencyDisplayListener loadConfigType( LoadConfig.Type loadConfigType )
+    {
+        this.loadConfigType = loadConfigType;
         return this;
     }
 
@@ -103,7 +111,8 @@ public class LiveLatencyDisplayListener
 
         CollectorInformations collectorInformations = new CollectorInformations( histogram );
 
-        loadResult = new LoadResult( serverInfo, collectorInformations, new LoadConfig( loadGenerator.getConfig() ) );
+        loadResult = new LoadResult( serverInfo, collectorInformations, //
+                                     new LoadConfig( loadGenerator.getConfig() ).type( loadConfigType ) );
     }
 
     public long getCurrentQps()
@@ -120,4 +129,6 @@ public class LiveLatencyDisplayListener
     {
         return loadResult;
     }
+
+
 }
