@@ -21,6 +21,8 @@
     <host>localhost</host>
     <port>8080</port>
     <maxMem>8G</maxMem>
+    <!--jetty.version>9.4.8-SNAPSHOT</--jetty.version-->
+    <jetty.version>9.4.6.v20170531</jetty.version>
   </properties>
 
   <build>
@@ -110,6 +112,11 @@
     <dependency>
       <groupId>org.mortbay.jetty.loadgenerator</groupId>
       <artifactId>jetty-load-generator-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-client</artifactId>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
