@@ -21,7 +21,7 @@
     <host>localhost</host>
     <port>8080</port>
     <maxMem>8G</maxMem>
-    <!--jetty.version>9.4.8-SNAPSHOT</--jetty.version-->
+    <!--jetty.version>9.4.8-SNAPSHOT</jetty.version-->
     <jetty.version>9.4.6.v20170531</jetty.version>
   </properties>
 
