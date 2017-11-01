@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -19,6 +20,8 @@ public class LoaderMain {
 
         LoadGeneratorStarterArgs starterArgs = LoadGeneratorStarter.parse(args);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
+
+        builder.executor( Executors.newCachedThreadPool() );
 
         try
         {
