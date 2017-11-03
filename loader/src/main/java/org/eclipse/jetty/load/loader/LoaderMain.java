@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.client.api.Request;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -19,8 +20,6 @@ public class LoaderMain {
 
         LoadGeneratorStarterArgs starterArgs = LoadGeneratorStarter.parse(args);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
-
-        builder.executor( Executors.newCachedThreadPool() );
 
         try
         {
@@ -37,7 +36,14 @@ public class LoaderMain {
         }
 
         LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
-        builder = builder.requestListener(listener).listener( listener );
+        builder = builder.requestListener(listener).listener( listener )
+                            .requestListener( new Request.Listener.Adapter() {
+                                @Override
+                                public void onFailure( Request request, Throwable failure )
+                                {
+                                    LOGGER.info( "fail to send request: " + request, failure );
+                                }
+                            } );
 
         ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 2, TimeUnit.SECONDS);
         LOGGER.info( "start load generator run" );
