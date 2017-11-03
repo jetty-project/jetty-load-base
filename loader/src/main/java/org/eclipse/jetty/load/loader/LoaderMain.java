@@ -20,7 +20,7 @@ public class LoaderMain {
         LoadGeneratorStarterArgs starterArgs = LoadGeneratorStarter.parse(args);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
 
-
+        builder.executor( Executors.newCachedThreadPool() );
 
         try
         {

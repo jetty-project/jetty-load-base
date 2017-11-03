@@ -42,7 +42,7 @@
     <logger name="org.mortbay.jetty.load.generator" additivity="false" level="debug">
       <appender-ref ref="debug_logs" />
     </logger>
-    
+
     <root level="info" includeLocation="true">
       <appender-ref ref="STDOUT"/>
     </root>
