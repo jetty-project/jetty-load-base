@@ -41,7 +41,7 @@ public class LoaderMain {
                                 @Override
                                 public void onFailure( Request request, Throwable failure )
                                 {
-                                    LOGGER.info( "fail to send request: " + request, failure );
+                                    LOGGER.debug( "fail to send request: " + request, failure );
                                 }
                             } );
 

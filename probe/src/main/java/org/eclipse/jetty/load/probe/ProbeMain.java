@@ -4,6 +4,7 @@ import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.load.LiveLatencyDisplayListener;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -23,7 +24,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -55,12 +55,9 @@ public class ProbeMain
         ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay( listener, 3, 3, TimeUnit.SECONDS );
         LOGGER.info( "start load generator run" );
         long start = System.currentTimeMillis();
-        try
-        {
+        try {
             LoadGeneratorStarter.run( builder );
-        }
-        finally
-        {
+        } finally {
             long end = System.currentTimeMillis();
             LOGGER.info( "end load generator run {} seconds", //
                          TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS ) );
@@ -71,6 +68,11 @@ public class ProbeMain
         // we can record result
         // this can be moved to a resultStore implementation
         LoadResult loadResult = listener.getLoadResult();
+        String comment = starterArgs.getDynamicParams().get( "loadresult.comment" );
+        if ( StringUtils.isNotEmpty( comment ) )
+        {
+            loadResult.setComment( comment );
+        }
 
         StringWriter stringWriter = new StringWriter();
         try
@@ -93,14 +95,11 @@ public class ProbeMain
 
         List<ResultStore> resultStores = ResultStore.getActives( starterArgs.getDynamicParams() );
 
-        resultStores
-            .stream() //
-            .forEach( resultStore -> resultStore.initialize( starterArgs.getDynamicParams() ));
+        resultStores.stream() //
+            .forEach( resultStore -> resultStore.initialize( starterArgs.getDynamicParams() ) );
 
-        resultStores
-            .stream() //
-            .forEach( resultStore ->
-                          resultStore.save( loadResult ) );
+        resultStores.stream() //
+            .forEach( resultStore -> resultStore.save( loadResult ) );
 
         System.exit( 0 );
     }
@@ -113,7 +112,7 @@ public class ProbeMain
         private String resultFilePath;
 
         @DynamicParameter( names = "-D", description = "Dynamic parameters go here" )
-        public Map<String, String> dynamicParams = new HashMap<String, String>();
+        public Map<String, String> dynamicParams = new HashMap<>();
 
         public String getResultFilePath()
         {
