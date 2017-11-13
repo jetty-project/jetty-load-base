@@ -51,5 +51,8 @@ public class ServerInfoServlet
         @JsonProperty
         private long totalMemory = Runtime.getRuntime().totalMemory();
 
+        @JsonProperty
+        private String gitHash = System.getProperty( "jetty.git.hash" );
+
     }
 }

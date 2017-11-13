@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.load.Version;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -29,6 +30,7 @@ public class LoaderMain {
                                                                    "/test/info/" );
 
             LOGGER.info( "run load test on server:{}", serverInfo );
+            LOGGER.info( "loader version: {}", Version.getInstance() );
         }
         catch ( Exception e )
         {

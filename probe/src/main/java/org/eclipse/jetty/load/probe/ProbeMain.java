@@ -6,6 +6,7 @@ import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.load.LiveLatencyDisplayListener;
+import org.eclipse.jetty.load.Version;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
@@ -46,6 +47,7 @@ public class ProbeMain
                                                                "/test/info/" );
 
         LOGGER.info( "run load test on server:{}", serverInfo );
+        LOGGER.info( "Probe version: {}", Version.getInstance() );
 
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare( starterArgs );
         LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener().serverInfo( serverInfo )
