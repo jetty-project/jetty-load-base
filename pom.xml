@@ -10,8 +10,15 @@
   <packaging>pom</packaging>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <loadGeneratorVersion>1.0.0-SNAPSHOT</loadGeneratorVersion>
   </properties>
+
+  <scm>
+    <connection>scm:git:https://github.com/jetty-project/jetty-load-base.git</connection>
+    <developerConnection>scm:git:git@github.com:jetty-project/jetty-load-base.git</developerConnection>
+    <url>https://github.com/jetty-project/jetty-load-base</url>
+  </scm>
 
   <modules>
     <module>test-webapp</module>
