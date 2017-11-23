@@ -43,7 +43,10 @@ public class LoaderMain {
                                 @Override
                                 public void onFailure( Request request, Throwable failure )
                                 {
-                                    LOGGER.debug( "fail to send request: " + request, failure );
+                                    if (LOGGER.isDebugEnabled())
+                                    {
+                                        LOGGER.debug( "fail to send request: " + request, failure );
+                                    }
                                 }
                             } );
 
