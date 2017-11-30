@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.eclipse.jetty.load</groupId>
+    <groupId>org.mortbay.jetty.load</groupId>
     <artifactId>jetty-load-base-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
@@ -103,7 +103,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.jetty.load</groupId>
+      <groupId>org.mortbay.jetty.load</groupId>
       <artifactId>jetty-load-base-common</artifactId>
     </dependency>
     <dependency>

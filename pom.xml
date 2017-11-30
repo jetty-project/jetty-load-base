@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <name>Jetty Load Test Base</name>
-  <groupId>org.eclipse.jetty.load</groupId>
+  <groupId>org.mortbay.jetty.load</groupId>
   <artifactId>jetty-load-base-parent</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -91,7 +91,7 @@
         <version>2.1.10</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty.load</groupId>
+        <groupId>org.mortbay.jetty.load</groupId>
         <artifactId>jetty-load-base-common</artifactId>
         <version>${project.version}</version>
       </dependency>
