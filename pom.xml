@@ -137,4 +137,12 @@
     </repository>
   </repositories>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>oss.sonatype.org</id>
+      <name>Jetty Snapshot Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 </project>
