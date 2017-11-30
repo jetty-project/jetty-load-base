@@ -13,7 +13,7 @@ node {
     withMaven(
             maven: 'maven3',
             jdk: 'jdk8',
-            mavenSettingsConfig: 'OssGlobalSettings') {
+            mavenSettingsConfig: 'oss-settings.xml') {
       sh "mvn clean install"
     }
   }
