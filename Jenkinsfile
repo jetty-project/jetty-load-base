@@ -1,9 +1,7 @@
 #!groovy
 
 node {
-  def mvntool = tool name: 'maven3', type: 'hudson.tasks.Maven$MavenInstallation'
-  def jdktool = tool name: 'jdk8', type: 'hudson.model.JDK'
-
+  
   stage('Checkout') {
     checkout scm
   }
@@ -14,7 +12,7 @@ node {
             maven: 'maven3',
             jdk: 'jdk8',
             mavenSettingsConfig: 'oss-settings.xml') {
-      sh "mvn clean install"
+      sh "mvn clean deploy"
     }
   }
 
