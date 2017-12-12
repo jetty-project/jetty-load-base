@@ -34,8 +34,10 @@ node() {
     }
   }, loader: {
     node('loader-node') {
+
+      git url:"https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+      /*
       // we do not need to build this it's build and deployed apart
-      /* git url:"https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
       withMaven(
           maven: 'maven3',
           mavenLocalRepo: '.repository') {
