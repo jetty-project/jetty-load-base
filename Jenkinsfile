@@ -2,6 +2,10 @@
 
 node() {
   def stopJob = false;
+  // default values to avoid pipeline error
+  jettyVersion = "9.2.22.v20170606"
+  jettyBaseVersion = "9.2"
+
   parameters {
     // choices are newline separated
     choice(choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?', name: 'jettyVersion')
