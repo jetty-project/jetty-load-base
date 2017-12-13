@@ -66,7 +66,7 @@ node() {
   failFast: true
 }
 
-def getLoaderNode(String instanceName) {
+def getLoaderNode(instanceName) {
   return {
     node('loader-node') {
       stage ('setup loader') {
