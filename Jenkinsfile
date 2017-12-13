@@ -16,17 +16,32 @@ node() {
   loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 
 
+  properties([
+          parameters([
+                  choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
+                  choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
+                  string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
+                  string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
+                  string(name: 'loaderThreads', defaultValue: '4', description: 'Loader Threads number')
+                  string(name: 'loaderUsers', defaultValue: '4', description: 'Loader Users number')
+                  string(name: 'loaderChannelsPerUser', defaultValue: '8', description: 'Loader Channel per user')
+                  string(name: 'loaderMaxRequestsInQueue', defaultValue: '10000', description: 'Loader max requests in queue')
+                  string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
+          ])
+  ])
+
+
+  // choices are newline separated
   parameters {
-    // choices are newline separated
-    choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
-    choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
-    string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
-    string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
-    string(name: 'loaderThreads', defaultValue: '4', description: 'Loader Threads number')
-    string(name: 'loaderUsers', defaultValue: '4', description: 'Loader Users number')
-    string(name: 'loaderChannelsPerUser', defaultValue: '8', description: 'Loader Channel per user')
-    string(name: 'loaderMaxRequestsInQueue', defaultValue: '10000', description: 'Loader max requests in queue')
-    string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
+//    choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
+//    choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
+//    string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
+//    string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
+//    string(name: 'loaderThreads', defaultValue: '4', description: 'Loader Threads number')
+//    string(name: 'loaderUsers', defaultValue: '4', description: 'Loader Users number')
+//    string(name: 'loaderChannelsPerUser', defaultValue: '8', description: 'Loader Channel per user')
+//    string(name: 'loaderMaxRequestsInQueue', defaultValue: '10000', description: 'Loader max requests in queue')
+//    string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
   }
   parallel server: {
     node('server-node') {
