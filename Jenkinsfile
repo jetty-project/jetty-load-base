@@ -34,25 +34,27 @@ node() {
     }
   }, loader: {
     node('loader-node') {
-
-      git url:"https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      /*
-      // we do not need to build this it's build and deployed apart
-      withMaven(
-          maven: 'maven3',
-          mavenLocalRepo: '.repository') {
-          sh "mvn clean install -pl :jetty-load-base-loader -am"
-      } */
-      waitUntil {
-        sh "wget --retry-connrefused --tries=150 -q --waitretry=10 http://54.197.97.185:8080"
-        return true
+      stage ('setup loader') {
+        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+        /*
+        // we do not need to build this it's build and deployed apart
+        withMaven(
+            maven: 'maven3',
+            mavenLocalRepo: '.repository') {
+            sh "mvn clean install -pl :jetty-load-base-loader -am"
+        } */
+        waitUntil {
+          sh "wget --retry-connrefused --tries=150 -q --waitretry=10 http://54.197.97.185:8080"
+          return true
+        }
+        sh "bash loader/src/main/scripts/populate.sh 54.197.97.185"
+        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
       }
-      sh "bash loader/src/main/scripts/populate.sh 54.197.97.185"
-      sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
-      sh "java -showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC -jar jetty-base-loader.jar --running-time 120 --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate 100 --threads 4 --users 4 --channels-per-user 6 --host 54.197.97.185 --port 8080 --max-requests-queued 1000"
-      currentBuild.result = 'SUCCESS'
-      stopJob = true;
-      //return 0
+      stage ('run loader') {
+        sh "java -showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC -jar jetty-base-loader.jar --running-time 120 --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate 100 --threads 4 --users 4 --channels-per-user 6 --host 54.197.97.185 --port 8080 --max-requests-queued 1000"
+        currentBuild.result = 'SUCCESS'
+        stopJob = true;
+      }
     }
   }, probe: {
     node('probe-node') {
