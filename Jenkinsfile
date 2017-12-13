@@ -14,6 +14,7 @@ node() {
   loaderChannelsPerUser = "8"
   loaderMaxRequestsInQueue = "10000"
   loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
+  loaderInstancesNumber = 1
 
 
   // choices are newline separated
@@ -28,6 +29,7 @@ node() {
 //    string(name: 'loaderMaxRequestsInQueue', defaultValue: '10000', description: 'Loader max requests in queue')
 //    string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
   }
+
   parallel server: {
     node('server-node') {
       stage ('build jetty app') {
@@ -50,6 +52,22 @@ node() {
       }
     }
   }, loader: {
+    // possible multiple loader node
+    def loaderNodes = [:]
+    for (int i = 0; i < loaderInstancesNumber; i++) {
+      loaderNodes =  getLoaderNode();
+    }
+    parallel loaderNodes
+  }, probe: {
+    node('probe-node') {
+      echo "probe node"
+    }
+  },
+  failFast: true
+}
+
+def getLoaderNode() {
+  return {
     node('loader-node') {
       stage ('setup loader') {
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
@@ -73,10 +91,5 @@ node() {
         stopJob = true;
       }
     }
-  }, probe: {
-    node('probe-node') {
-      echo "probe node"
-    }
-  },
-  failFast: true
+  }
 }
