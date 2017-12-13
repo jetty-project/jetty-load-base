@@ -7,7 +7,7 @@ node() {
   jettyBaseVersion = "9.2"
   loadServerHostName = env.LOAD_TEST_SERVER_HOST
   loadServerPort = env.LOAD_TEST_SERVER_PORT
-  loaderVmOptions "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
+  loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 
   parameters {
     // choices are newline separated
