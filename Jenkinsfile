@@ -1,5 +1,33 @@
 #!groovy
 
+def getLoaderNode() {
+  return {
+    node('loader-node') {
+      stage ('setup loader') {
+        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+        /*
+        // we do not need to build this it's build and deployed apart
+        withMaven(
+            maven: 'maven3',
+            mavenLocalRepo: '.repository') {
+            sh "mvn clean install -pl :jetty-load-base-loader -am"
+        } */
+        waitUntil {
+          sh "wget --retry-connrefused --tries=150 -q --waitretry=10 http://$loadServerHostName:$loadServerPort"
+          return true
+        }
+        sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
+        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+      }
+      stage ('run loader') {
+        sh "java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users $loaderUsers --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+        currentBuild.result = 'SUCCESS'
+        stopJob = true;
+      }
+    }
+  }
+}
+
 node() {
   def stopJob = false;
   // default values to avoid pipeline error
@@ -66,30 +94,3 @@ node() {
   failFast: true
 }
 
-def getLoaderNode() {
-  return {
-    node('loader-node') {
-      stage ('setup loader') {
-        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        /*
-        // we do not need to build this it's build and deployed apart
-        withMaven(
-            maven: 'maven3',
-            mavenLocalRepo: '.repository') {
-            sh "mvn clean install -pl :jetty-load-base-loader -am"
-        } */
-        waitUntil {
-          sh "wget --retry-connrefused --tries=150 -q --waitretry=10 http://$loadServerHostName:$loadServerPort"
-          return true
-        }
-        sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
-        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
-      }
-      stage ('run loader') {
-        sh "java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users $loaderUsers --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
-        currentBuild.result = 'SUCCESS'
-        stopJob = true;
-      }
-    }
-  }
-}
