@@ -14,6 +14,7 @@ loaderMaxRequestsInQueue = "10000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumber = 1
 
+// used to shared status of loader nodes with the server instance to stop the server run
 def loaderNodesFinished = new boolean[loaderInstancesNumber];
 
 // choices are newline separated
@@ -55,6 +56,7 @@ node() {
         if (jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3")
           jettyStart ="java -jar ../jetty-distribution-$jettyVersion/start.jar"
         sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
+        // we wait the end of all loader run
         waitUntil {
           allFinished = true;
           for(item in loaderNodesFinished){
@@ -103,4 +105,3 @@ def getLoaderNode(index,loaderNodesFinished) {
     }
   }
 }
-
