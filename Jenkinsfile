@@ -83,7 +83,7 @@ node() {
     // possible multiple loader node
     def loaderNodes = [:]
     for (int i = 0; i < loaderInstancesNumber; i++) {
-      loaderNodes =  getLoaderNode();
+      loaderNodes["loader-"+i] = getLoaderNode();
     }
     parallel loaderNodes
   }, probe: {
