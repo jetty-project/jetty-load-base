@@ -18,8 +18,8 @@ node() {
 
   properties([
           parameters([
-                  choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
-                  choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
+                  choices(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
+                  choices(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
                   string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
                   string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
                   string(name: 'loaderThreads', defaultValue: '4', description: 'Loader Threads number')
