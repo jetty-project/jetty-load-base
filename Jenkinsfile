@@ -55,7 +55,7 @@ node() {
     // possible multiple loader node
     def loaderNodes = [:]
     for (int i = 0; i < loaderInstancesNumber; i++) {
-      loaderNodes =  getLoaderNode(i);
+      loaderNodes =  getLoaderNode();
     }
     parallel loaderNodes
   }, probe: {
@@ -66,7 +66,7 @@ node() {
   failFast: true
 }
 
-def Closure getLoaderNode(instanceName) {
+def Closure getLoaderNode() {
   return {
     node('loader-node') {
       stage ('setup loader') {
