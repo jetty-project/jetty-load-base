@@ -1,6 +1,6 @@
 #!groovy
 
-def getLoaderNode() {
+def getLoaderNode(stopJob) {
   return {
     node('loader-node') {
       stage ('setup loader') {
@@ -83,7 +83,7 @@ node() {
     // possible multiple loader node
     def loaderNodes = [:]
     for (int i = 0; i < loaderInstancesNumber; i++) {
-      loaderNodes["loader-"+i] = getLoaderNode();
+      loaderNodes["loader-"+i] = getLoaderNode(stopJob);
     }
     parallel loaderNodes
   }, probe: {
