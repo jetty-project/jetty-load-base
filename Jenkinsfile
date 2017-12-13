@@ -7,7 +7,14 @@ node() {
   jettyBaseVersion = "9.2"
   loadServerHostName = env.LOAD_TEST_SERVER_HOST
   loadServerPort = env.LOAD_TEST_SERVER_PORT
+  loaderRunningTime = "120"
+  loaderRate = "100"
+  loaderThreads = "4"
+  loaderUsers = "4"
+  loaderChannelsPerUser = "8"
+  loaderMaxRequestsInQueue = "10000"
   loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
+
 
   parameters {
     // choices are newline separated
@@ -58,7 +65,7 @@ node() {
           return true
         }
         sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
-        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
       }
       stage ('run loader') {
         sh "java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users $loaderUsers --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
