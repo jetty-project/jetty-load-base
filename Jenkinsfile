@@ -1,12 +1,13 @@
 #!groovy
 
+
+def jettyBaseFullVersionMap = ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.9-SNAPSHOT']
+
 // default values to avoid pipeline error
-jettyVersion = "9.2.22.v20170606"
-jettyBaseVersion = "9.2"
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "120"
-loaderRate = "100"
+loaderRates = ["100","150","200"]
 loaderThreads = "4"
 loaderUsers = "4"
 loaderChannelsPerUser = "8"
@@ -19,8 +20,8 @@ def loaderNodesFinished = new boolean[loaderInstancesNumber];
 
 // choices are newline separated
 parameters {
-  choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
-  choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
+  //choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
+  //choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
   string(name: 'loaderInstancesNumber', defaultValue: '1', description: 'Number of loader instances')
   string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
   string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
@@ -32,54 +33,65 @@ parameters {
 }
 
 node() {
-
-  // possible multiple loader node
-  def loaderNodes = [:]
-  for (int i = 0; i < loaderInstancesNumber; i++) {
-    loaderNodesFinished[i] = false
-    loaderNodes["loader-"+i] = getLoaderNode(i,loaderNodesFinished);
+  jettyBaseFullVersionMap.each {
+    jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion )
   }
-
-  parallel server: {
-    node('server-node') {
-      stage ('build jetty app') {
-        echo "$jettyVersion"
-        git url:"https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        withMaven(
-                maven: 'maven3',
-                mavenLocalRepo: '.repository') {
-          sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
-        }
-      }
-      stage ('starting jetty app') {
-        jettyStart ="java -jar ../jetty-home-$jettyVersion/start.jar"
-        if (jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3")
-          jettyStart ="java -jar ../jetty-distribution-$jettyVersion/start.jar"
-        sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
-        // we wait the end of all loader run
-        waitUntil {
-          allFinished = true;
-          for(item in loaderNodesFinished){
-            if(!item) {
-              allFinished = false
-            }
-          }
-          return allFinished
-        }
-      }
-    }
-  }, loader: {
-    parallel loaderNodes
-  }, probe: {
-    node('probe-node') {
-      echo "probe node"
-    }
-  },
-  failFast: true
 }
 
+def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
+  node() {
+    for ( loaderRate in loaderRates )
+    {
+      echo "load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
-def getLoaderNode(index,loaderNodesFinished) {
+      // possible multiple loader node
+      def loaderNodes = [:]
+      for ( int i = 0; i < loaderInstancesNumber; i++ )
+      {
+        loaderNodesFinished[i] = false
+        loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate );
+      }
+
+      parallel server: {
+        node( 'server-node' ) {
+          stage( 'build jetty app' ) {
+            git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+            withMaven( maven: 'maven3',
+                       mavenLocalRepo: '.repository' ) {
+              sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+            }
+          }
+          stage( 'starting jetty app' ) {
+            jettyStart = "java -jar ../jetty-home-$jettyVersion/start.jar"
+            if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "java -jar ../jetty-distribution-$jettyVersion/start.jar"
+            sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
+            // we wait the end of all loader run
+            waitUntil {
+              allFinished = true;
+              for ( item in loaderNodesFinished )
+              {
+                if ( !item )
+                {
+                  allFinished = false
+                }
+              }
+              return allFinished
+            }
+          }
+        }
+      }, loader: {
+        parallel loaderNodes
+      }, probe: {
+        node( 'probe-node' ) {
+          echo "probe node"
+        }
+      },
+      failFast: true
+    }
+  }
+}
+
+def getLoaderNode(index,loaderNodesFinished,loaderRate) {
   return {
     node('loader-node') {
       stage ('setup loader') {
