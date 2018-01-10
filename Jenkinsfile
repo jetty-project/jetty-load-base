@@ -9,7 +9,7 @@ loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "120"
 loaderRates = ["100","150","200"]
 loaderThreads = "4"
-loaderUsers = "4"
+loaderUsersPerThread = "4"
 loaderChannelsPerUser = "8"
 loaderMaxRequestsInQueue = "10000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
@@ -26,7 +26,7 @@ parameters {
   string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
   string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
   string(name: 'loaderThreads', defaultValue: '4', description: 'Loader Threads number')
-  string(name: 'loaderUsers', defaultValue: '4', description: 'Loader Users number')
+  string(name: 'loaderUsersPerThread', defaultValue: '4', description: 'Loader Users number')
   string(name: 'loaderChannelsPerUser', defaultValue: '8', description: 'Loader Channel per user')
   string(name: 'loaderMaxRequestsInQueue', defaultValue: '10000', description: 'Loader max requests in queue')
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
@@ -111,7 +111,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
       }
       stage ('run loader') {
-        sh "java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users $loaderUsers --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+        sh "java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
         loaderNodesFinished[index] = true;
       }
     }
