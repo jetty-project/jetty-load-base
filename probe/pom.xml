@@ -13,15 +13,15 @@
   <artifactId>jetty-load-base-probe</artifactId>
 
   <properties>
-    <warmupIterations>60</warmupIterations>
-    <iterations>60</iterations>
-    <users>1</users>
-    <channelsPerUser>6</channelsPerUser>
-    <host>localhost</host>
-    <port>8080</port>
-    <resourceRate>1</resourceRate>
-    <jetty.version>9.4.7.v20170914</jetty.version>
-    <!--jetty.version>9.4.6.v20170531</jetty.version-->
+    <probe.heap>2G</probe.heap>
+    <probe.runningTime>3000</probe.runningTime>
+    <probe.resourceGroovyPath>src/main/resources/info.groovy</probe.resourceGroovyPath>
+    <probe.resourceRate>500</probe.resourceRate>
+    <probe.usersPerThread>1</probe.usersPerThread>
+    <probe.channelsPerUser>6</probe.channelsPerUser>
+    <probe.host>localhost</probe.host>
+    <probe.port>8080</probe.port>
+    <probe.transport>h2c</probe.transport>
   </properties>
 
   <build>
@@ -36,34 +36,31 @@
           <executable>java</executable>
           <arguments>
             <argument>-showversion</argument>
-            <argument>-Xmx2g</argument>
-            <argument>-Xms2g</argument>
-            <argument>-Xmn1g</argument>
+            <argument>-Xmx${probe.heap}</argument>
+            <argument>-Xms${probe.heap}</argument>
             <argument>-XX:+PrintCommandLineFlags</argument>
-            <argument>-XX:+PrintGCTimeStamps</argument>
-            <argument>-XX:+PrintGCDetails</argument>
-            <argument>-XX:+UseParallelOldGC</argument>
-            <!--<argument>-XX:+UseConcMarkSweepGC</argument>-->
-            <!--<argument>-XX:+UseG1GC</argument>-->
+            <argument>-Xlog:gc</argument>
+            <!--<argument>-XX:+UseParallelOldGC</argument>-->
+            <argument>-XX:+UseG1GC</argument>
             <argument>-cp</argument>
             <classpath />
             <argument>org.eclipse.jetty.load.probe.ProbeMain</argument>
-            <argument>--warmup-iterations</argument>
-            <argument>${warmupIterations}</argument>
-            <argument>--iterations</argument>
-            <argument>${iterations}</argument>
+            <argument>--running-time</argument>
+            <argument>${probe.runningTime}</argument>
             <argument>--resource-groovy-path</argument>
-            <argument>src/main/resources/probe.groovy</argument>
-            <argument>--users</argument>
-            <argument>${users}</argument>
-            <argument>--channels-per-user</argument>
-            <argument>${channelsPerUser}</argument>
+            <argument>${probe.resourceGroovyPath}</argument>
             <argument>--resource-rate</argument>
-            <argument>${resourceRate}</argument>
+            <argument>${probe.resourceRate}</argument>
+            <argument>--users-per-thread</argument>
+            <argument>${probe.usersPerThread}</argument>
+            <argument>--channels-per-user</argument>
+            <argument>${probe.channelsPerUser}</argument>
             <argument>--host</argument>
-            <argument>${host}</argument>
+            <argument>${probe.host}</argument>
             <argument>--port</argument>
-            <argument>${port}</argument>
+            <argument>${probe.port}</argument>
+            <argument>--transport</argument>
+            <argument>${probe.transport}</argument>
           </arguments>
         </configuration>
       </plugin>
