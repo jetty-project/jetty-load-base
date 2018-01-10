@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <jetty.version>9.4.7.v20170914</jetty.version>
+    <jetty.version>9.4.8-SNAPSHOT</jetty.version>
   </properties>
 
   <build>
@@ -118,7 +118,7 @@
             <argument>-jar</argument>
             <argument>../jetty-home-${jetty.version}/start.jar</argument>
             <argument>--create-startd</argument>
-            <argument>--add-to-start=server,http,webapp,deploy,jsp,jmx,jmx-remote</argument>
+            <argument>--add-to-start=server,http,http2c,webapp,deploy,jsp,jmx,jmx-remote</argument>
           </arguments>
         </configuration>
       </plugin>
