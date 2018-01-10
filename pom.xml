@@ -12,6 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <loadGeneratorVersion>1.0.0-SNAPSHOT</loadGeneratorVersion>
+    <jetty.version>9.4.8.v20171121</jetty.version>
   </properties>
 
   <scm>
