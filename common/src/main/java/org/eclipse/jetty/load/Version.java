@@ -1,72 +1,52 @@
 package org.eclipse.jetty.load;
 
 
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-public class Version
-{
+public class Version {
+    private static Version INSTANCE = new Version();
 
-    private static final Logger LOG = Log.getLogger( Version.class );
-
-    private String versionNumber, buildNumber, buildTimestamp;
-
-
-    private static class Holder
-    {
-        static Version instance = new Version();
+    public static Version getInstance() {
+        return INSTANCE;
     }
 
+    private String versionNumber;
+    private String buildNumber;
+    private String buildTimestamp;
 
-    public static Version getInstance()
-    {
-        return Holder.instance;
-    }
-
-    private Version()
-    {
-        try
-        {
+    private Version() {
+        try {
             try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                "org/eclipse/jetty/load/build.properties" ))
-            {
+                    "org/eclipse/jetty/load/build.properties")) {
                 Properties buildProperties = new Properties();
-                buildProperties.load( inputStream );
-                this.versionNumber = buildProperties.getProperty( "version" );
-                this.buildNumber = buildProperties.getProperty( "buildNumber" );
-                this.buildTimestamp = formatTimestamp( buildProperties.getProperty( "timestamp" ) );
+                buildProperties.load(inputStream);
+                this.versionNumber = buildProperties.getProperty("version");
+                this.buildNumber = buildProperties.getProperty("buildNumber");
+                this.buildTimestamp = formatTimestamp(buildProperties.getProperty("timestamp"));
             }
-        }
-        catch ( IOException e )
-        {
-            LOG.ignore( e );
+        } catch (IOException x) {
+            throw new UncheckedIOException(x);
         }
     }
 
-    private static String formatTimestamp( String timestamp )
-    {
-        try
-        {
-            return new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssXXX" ) //
-                .format( new Date( Long.valueOf( timestamp ) ) );
-        }
-        catch ( NumberFormatException e )
-        {
-            LOG.debug( e );
+    private static String formatTimestamp(String timestamp) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date(Long.valueOf(timestamp)));
+        } catch (NumberFormatException e) {
             return "unknown";
         }
     }
 
     @Override
-    public String toString()
-    {
-        return "Version{" + "versionNumber='" + versionNumber + '\'' + ", buildNumber='" + buildNumber + '\''
-            + ", buildTimestamp='" + buildTimestamp + '\'' + '}';
+    public String toString() {
+        return String.format("Version{versionNumber=%s, buildNumber=%s, buildTimestamp=%s}",
+                versionNumber,
+                buildNumber,
+                buildTimestamp);
     }
 }
