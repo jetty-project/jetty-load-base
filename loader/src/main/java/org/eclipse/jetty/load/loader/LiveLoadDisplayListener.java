@@ -3,33 +3,30 @@ package org.eclipse.jetty.load.loader;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
+import org.HdrHistogram.Histogram;
+import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.load.Monitor;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.mortbay.jetty.load.generator.Resource;
 
-public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable, LoadGenerator.EndListener, LoadGenerator.BeginListener {
-    private static final Logger LOGGER = Log.getLogger( LiveLoadDisplayListener.class);
+public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable, LoadGenerator.EndListener, Resource.NodeListener {
+    private static final Logger LOGGER = Log.getLogger(LiveLoadDisplayListener.class);
     private final LongAdder requestQueue = new LongAdder();
     private Monitor.Start monitor = Monitor.start();
-    private LongAdder intervalAdder = new LongAdder(), totalAdder = new LongAdder();
-    private long start, intervalStart;
-
+    private final Recorder recorder;
+    private final Histogram histogram;
+    private Histogram interval;
 
     public LiveLoadDisplayListener() {
-        this( TimeUnit.MICROSECONDS.toNanos( 1), TimeUnit.SECONDS.toNanos( 60), 3);
+        this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
     }
 
-    public LiveLoadDisplayListener( long low, long high, int digits) {
-        //
-    }
-
-    @Override
-    public void onCommit( Request request ) {
-        // we only care about total count and start/end so just record 1 :-)
-        //this.recorder.recordValue( 1 );
-        intervalAdder.increment();
+    public LiveLoadDisplayListener(long low, long high, int digits) {
+        histogram = new Histogram(low, high, digits);
+        recorder = new Recorder(low, high, digits);
     }
 
     @Override
@@ -42,51 +39,42 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
         requestQueue.decrement();
     }
 
+    @Override
+    public void onResourceNode(Resource.Info info) {
+        long responseTime = info.getResponseTime() - info.getRequestTime();
+        recorder.recordValue(responseTime);
+    }
+
     public void run() {
-        try
-        {
+        try {
             Monitor.Stop stop = monitor.stop();
 
-            long totalRequestCommitted = intervalAdder.longValue();
-            long start = intervalStart;
-            intervalStart = System.currentTimeMillis();
-            long end = System.currentTimeMillis();
-            long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
-            if (timeInSeconds <= 0)
-            {
-                LOGGER.debug( "O s so no qps" );
-                return;
-            }
-            long qps = totalRequestCommitted / timeInSeconds;
-            intervalAdder.reset();
-            LOGGER.info( String.format("request queue: %d, jit=%s ms, qps=%s, committed=%s, cpu=%.2f%%%n",
-                    requestQueue.intValue(),
+            interval = recorder.getIntervalHistogram(interval);
+            histogram.add(interval);
+
+            long elapsed = interval.getEndTimeStamp() - interval.getStartTimeStamp();
+            long rate = elapsed > 0 ? interval.getTotalCount() * 1000 / elapsed : -1;
+
+            LOGGER.info(String.format("request queue: %d, rate=%d, cpu=%.2f%%, jit=%d ms, response min/mdn/max=%d/%d/%d \u00B5s",
+                    requestQueue.longValue(),
+                    rate,
+                    stop.cpuPercent,
                     stop.deltaJITTime,
-                    qps,
-                    totalRequestCommitted,
-                    stop.cpuPercent));
+                    TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
+                    TimeUnit.NANOSECONDS.toMicros(interval.getValueAtPercentile(50)),
+                    TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue())));
 
             monitor = Monitor.start();
-            totalAdder.add( totalRequestCommitted );
-        }
-        catch ( Exception e )
-        {
-            LOGGER.warn( e );
+        } catch (Exception x) {
+            LOGGER.warn(x);
         }
     }
 
     @Override
-    public void onBegin( LoadGenerator generator ) {
-        start = System.currentTimeMillis();
-        intervalStart = System.currentTimeMillis();
-    }
-
-    @Override
-    public void onEnd( LoadGenerator loadGenerator ) {
-        long totalRequestCommitted = totalAdder.longValue();
-        long end = System.currentTimeMillis();
-        long timeInSeconds = TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS );
-        long qps = totalRequestCommitted / timeInSeconds;
-        LOGGER.info( "Average qps: {}", qps);
+    public void onEnd(LoadGenerator loadGenerator) {
+        long requests = histogram.getTotalCount();
+        long time = TimeUnit.MILLISECONDS.toSeconds(histogram.getEndTimeStamp() - histogram.getStartTimeStamp());
+        long rate = time > 0 ? requests / time : -1;
+        LOGGER.info("average request rate: {}", rate);
     }
 }

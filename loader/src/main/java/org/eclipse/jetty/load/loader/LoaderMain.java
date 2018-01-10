@@ -1,67 +1,81 @@
 package org.eclipse.jetty.load.loader;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.client.api.Request;
+import com.beust.jcommander.Parameter;
 import org.eclipse.jetty.load.Version;
-import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
+import org.eclipse.jetty.util.thread.Scheduler;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarter;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarterArgs;
 
 public class LoaderMain {
-    private static final Logger LOGGER = Log.getLogger( LoaderMain.class);
+    private static final Logger LOGGER = Log.getLogger(LoaderMain.class);
+
     public static void main(String[] args) throws Exception {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        LoaderArgs loaderArgs = LoadGeneratorStarter.parse(args, LoaderArgs::new);
+        LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(loaderArgs);
 
-        LoadGeneratorStarterArgs starterArgs = LoadGeneratorStarter.parse(args);
-        LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(starterArgs);
-
-        try
-        {
-            ServerInfo serverInfo = ServerInfo.retrieveServerInfo( starterArgs.getScheme(), //
-                                                                   starterArgs.getHost(), //
-                                                                   starterArgs.getPort(), //
-                                                                   "/test/info/" );
-
-            LOGGER.info( "run load test on server:{}", serverInfo );
-            LOGGER.info( "loader version: {}", Version.getInstance() );
-        }
-        catch ( Exception e )
-        {
-            LOGGER.info( "skip fail to retrieve serverInfo", e );
+        QueuedThreadPool executor = null;
+        if (loaderArgs.sharedThreads > 0) {
+            executor = new QueuedThreadPool(loaderArgs.sharedThreads);
+            executor.setName("loader");
+            executor.start();
+            builder.executor(executor);
         }
 
-        LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
-        builder = builder.requestListener(listener).listener( listener )
-                            .requestListener( new Request.Listener.Adapter() {
-                                @Override
-                                public void onFailure( Request request, Throwable failure )
-                                {
-                                    if (LOGGER.isDebugEnabled())
-                                    {
-                                        LOGGER.debug( "fail to send request: " + request, failure );
-                                    }
-                                }
-                            } );
+        Scheduler scheduler = new ScheduledExecutorScheduler();
+        scheduler.start();
+        builder.scheduler(scheduler);
 
-        ScheduledFuture<?> task = scheduler.scheduleWithFixedDelay(listener, 1, 2, TimeUnit.SECONDS);
-        LOGGER.info( "start load generator run" );
-        long start = System.currentTimeMillis();
         try {
+            ServerInfo serverInfo = ServerInfo.retrieveServerInfo(loaderArgs.getScheme(),
+                    loaderArgs.getHost(),
+                    loaderArgs.getPort(),
+                    "/test/info/");
+
+            LOGGER.info("run load test on server: {}", serverInfo);
+            LOGGER.info("loader version: {}", Version.getInstance());
+
+            LiveLoadDisplayListener listener = new LiveLoadDisplayListener();
+            builder = builder.listener(listener).resourceListener(listener).requestListener(listener);
+
+            // Print loader activity periodically.
+            schedule(scheduler, new Runnable() {
+                @Override
+                public void run() {
+                    listener.run();
+                    schedule(scheduler, this);
+                }
+            });
+
+            LOGGER.info("start load generator run");
+            long start = System.nanoTime();
             LoadGeneratorStarter.run(builder);
+            long elapsed = System.nanoTime() - start;
+            LOGGER.info("end load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(elapsed));
         } finally {
-            long end = System.currentTimeMillis();
-            LOGGER.info( "end load generator run {} seconds", //
-                        TimeUnit.SECONDS.convert( end - start, TimeUnit.MILLISECONDS ) );
-            task.cancel(false);
-            scheduler.shutdown();
+            scheduler.stop();
+            if (executor != null) {
+                executor.stop();
+            }
         }
-        LOGGER.info( "load generator done" );
+    }
+
+    private static void schedule(Scheduler scheduler, Runnable task) {
+        scheduler.schedule(task, 2, TimeUnit.SECONDS);
+    }
+
+    private static class LoaderArgs extends LoadGeneratorStarterArgs {
+        @Parameter(
+                names = {"--shared-threads", "-st"},
+                description = "Max threads of the shared thread pool"
+        )
+        private int sharedThreads;
     }
 }

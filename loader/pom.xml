@@ -13,16 +13,17 @@
   <artifactId>jetty-load-base-loader</artifactId>
 
   <properties>
-    <runningTime>3000</runningTime>
-    <resourceRate>200</resourceRate>
-    <threads>10</threads>
-    <users>100</users>
-    <channelsPerUser>6</channelsPerUser>
-    <host>localhost</host>
-    <port>8080</port>
-    <maxMem>8G</maxMem>
-    <jetty.version>9.4.7.v20170914</jetty.version>
-    <!--jetty.version>9.4.6.v20170531</jetty.version-->
+    <loader.heap>2G</loader.heap>
+    <loader.runningTime>3000</loader.runningTime>
+    <loader.resourceGroovyPath>src/main/resources/info.groovy</loader.resourceGroovyPath>
+    <loader.resourceRate>600</loader.resourceRate>
+    <loader.threads>1</loader.threads>
+    <loader.usersPerThread>100</loader.usersPerThread>
+    <loader.channelsPerUser>6</loader.channelsPerUser>
+    <loader.sharedThreads>0</loader.sharedThreads>
+    <loader.host>localhost</loader.host>
+    <loader.port>8080</loader.port>
+    <loader.transport>h2c</loader.transport>
   </properties>
 
   <build>
@@ -34,34 +35,35 @@
           <executable>java</executable>
           <arguments>
             <argument>-showversion</argument>
-            <argument>-Xmx${maxMem}</argument>
-            <argument>-Xms8G</argument>
-            <argument>-Xmn2g</argument>
+            <argument>-Xmx${loader.heap}</argument>
+            <argument>-Xms${loader.heap}</argument>
             <argument>-XX:+PrintCommandLineFlags</argument>
-            <argument>-XX:+PrintGCTimeStamps</argument>
-            <argument>-XX:+PrintGCDetails</argument>
-            <argument>-XX:+UseParallelOldGC</argument>
-            <!--<argument>-XX:+UseConcMarkSweepGC</argument>-->
-            <!--<argument>-XX:+UseG1GC</argument>-->
+            <argument>-Xlog:gc</argument>
+            <!--<argument>-XX:+UseParallelOldGC</argument>-->
+            <argument>-XX:+UseG1GC</argument>
             <argument>-cp</argument>
             <classpath />
             <argument>org.eclipse.jetty.load.loader.LoaderMain</argument>
             <argument>--running-time</argument>
-            <argument>${runningTime}</argument>
+            <argument>${loader.runningTime}</argument>
             <argument>--resource-groovy-path</argument>
-            <argument>src/main/resources/loader.groovy</argument>
+            <argument>${loader.resourceGroovyPath}</argument>
             <argument>--resource-rate</argument>
-            <argument>${resourceRate}</argument>
+            <argument>${loader.resourceRate}</argument>
             <argument>--threads</argument>
-            <argument>${threads}</argument>
-            <argument>--users</argument>
-            <argument>${users}</argument>
+            <argument>${loader.threads}</argument>
+            <argument>--users-per-thread</argument>
+            <argument>${loader.usersPerThread}</argument>
             <argument>--channels-per-user</argument>
-            <argument>${channelsPerUser}</argument>
+            <argument>${loader.channelsPerUser}</argument>
+            <argument>--shared-threads</argument>
+            <argument>${loader.sharedThreads}</argument>
             <argument>--host</argument>
-            <argument>${host}</argument>
+            <argument>${loader.host}</argument>
             <argument>--port</argument>
-            <argument>${port}</argument>
+            <argument>${loader.port}</argument>
+            <argument>--transport</argument>
+            <argument>${loader.transport}</argument>
           </arguments>
         </configuration>
       </plugin>
