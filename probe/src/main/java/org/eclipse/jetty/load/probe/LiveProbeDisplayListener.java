@@ -16,8 +16,8 @@ import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 
-public class LiveLatencyDisplayListener extends Request.Listener.Adapter implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
-    private static final Logger LOGGER = Log.getLogger(LiveLatencyDisplayListener.class);
+public class LiveProbeDisplayListener extends Request.Listener.Adapter implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
+    private static final Logger LOGGER = Log.getLogger(LiveProbeDisplayListener.class);
 
     private final Recorder recorder;
     private final Histogram histogram;
@@ -28,22 +28,22 @@ public class LiveLatencyDisplayListener extends Request.Listener.Adapter impleme
     private LoadResult loadResult;
     private LoadConfig.Type loadConfigType;
 
-    public LiveLatencyDisplayListener() {
+    public LiveProbeDisplayListener() {
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
     }
 
-    public LiveLatencyDisplayListener(long low, long high, int digits) {
+    public LiveProbeDisplayListener(long low, long high, int digits) {
         histogram = new Histogram(low, high, digits);
         recorder = new Recorder(low, high, digits);
         start = Monitor.start();
     }
 
-    public LiveLatencyDisplayListener serverInfo(ServerInfo serverInfo) {
+    public LiveProbeDisplayListener serverInfo(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
         return this;
     }
 
-    public LiveLatencyDisplayListener loadConfigType(LoadConfig.Type loadConfigType) {
+    public LiveProbeDisplayListener loadConfigType(LoadConfig.Type loadConfigType) {
         this.loadConfigType = loadConfigType;
         return this;
     }

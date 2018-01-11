@@ -47,7 +47,7 @@ public class ProbeMain {
             LOGGER.info("run load test on server:{}", serverInfo);
             LOGGER.info("Probe version: {}", Version.getInstance());
 
-            LiveLatencyDisplayListener listener = new LiveLatencyDisplayListener().serverInfo(serverInfo)
+            LiveProbeDisplayListener listener = new LiveProbeDisplayListener().serverInfo(serverInfo)
                     .loadConfigType(LoadConfig.Type.PROBE);
             builder = builder.listener(listener).resourceListener(listener).requestListener(listener);
 
