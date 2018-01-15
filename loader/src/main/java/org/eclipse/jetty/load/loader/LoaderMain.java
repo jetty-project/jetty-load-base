@@ -1,8 +1,10 @@
 package org.eclipse.jetty.load.loader;
 
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.Parameter;
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.load.Version;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -18,6 +20,8 @@ public class LoaderMain {
     private static final Logger LOGGER = Log.getLogger(LoaderMain.class);
 
     public static void main(String[] args) throws Exception {
+        MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+
         LoaderArgs loaderArgs = LoadGeneratorStarter.parse(args, LoaderArgs::new);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(loaderArgs);
 
@@ -27,11 +31,13 @@ public class LoaderMain {
             executor.setName("loader");
             executor.start();
             builder.executor(executor);
+            mbeanContainer.beanAdded(null, executor);
         }
 
-        Scheduler scheduler = new ScheduledExecutorScheduler();
+        Scheduler scheduler = new ScheduledExecutorScheduler("loader-scheduler", false);
         scheduler.start();
         builder.scheduler(scheduler);
+        mbeanContainer.beanAdded(null, scheduler);
 
         try {
             ServerInfo serverInfo = ServerInfo.retrieveServerInfo(loaderArgs.getScheme(),
@@ -54,9 +60,12 @@ public class LoaderMain {
                 }
             });
 
+            LoadGenerator loadGenerator = builder.build();
+            loadGenerator.addBean(mbeanContainer);
+
             LOGGER.info("start load generator run");
             long start = System.nanoTime();
-            LoadGeneratorStarter.run(builder);
+            LoadGeneratorStarter.run(loadGenerator);
             long elapsed = System.nanoTime() - start;
             LOGGER.info("end load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(elapsed));
         } finally {
