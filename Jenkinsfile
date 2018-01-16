@@ -53,7 +53,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
       }
 
       parallel server: {
-        node( 'server-node' ) {
+        node( 'load-test-server-node' ) {
           stage( 'build jetty app' ) {
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
             withMaven( maven: 'maven3',
@@ -82,7 +82,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
       }, loader: {
         parallel loaderNodes
       }, probe: {
-        node( 'probe-node' ) {
+        node( 'load-test-probe-node' ) {
           echo "probe node"
         }
       },
@@ -93,7 +93,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
 
 def getLoaderNode(index,loaderNodesFinished,loaderRate) {
   return {
-    node('loader-node') {
+    node('load-test-loader-node') {
       stage ('setup loader') {
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         /*
