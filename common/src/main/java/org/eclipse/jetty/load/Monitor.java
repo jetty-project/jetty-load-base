@@ -1,6 +1,8 @@
 package org.eclipse.jetty.load;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryUsage;
+import java.lang.management.OperatingSystemMXBean;
 import java.time.ZonedDateTime;
 
 public class Monitor {
@@ -14,6 +16,10 @@ public class Monitor {
         public final ZonedDateTime date = ZonedDateTime.now();
         public final long jitTime = ManagementFactory.getCompilationMXBean().getTotalCompilationTime();
         public final long cpuTime = CPUTime.get();
+        public final String jvm = String.format("%s %s %s %s", System.getProperty("java.vm.vendor"), System.getProperty("java.vm.name"), System.getProperty("java.vm.version"), System.getProperty("java.runtime.version"));
+        private final OperatingSystemMXBean osMBean = ManagementFactory.getOperatingSystemMXBean();
+        public final String os = String.format("%s %s %s", osMBean.getName(), osMBean.getVersion(), osMBean.getArch());
+        public final MemoryUsage heap = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
     }
 
     public static class Start extends Base {

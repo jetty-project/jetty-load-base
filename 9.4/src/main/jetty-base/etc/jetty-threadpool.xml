@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+
+<Configure id="threadPool" class="org.eclipse.jetty.load.MonitoredQueuedThreadPool">
+  <Set name="minThreads" type="int"><Property name="jetty.threadPool.minThreads" default="10"/></Set>
+  <Set name="maxThreads" type="int"><Property name="jetty.threadPool.maxThreads" default="200"/></Set>
+  <Set name="idleTimeout" type="int"><Property name="jetty.threadPool.idleTimeout" default="60000"/></Set>
+  <Set name="detailedDump" type="boolean"><Property name="jetty.threadPool.detailedDump" default="false"/></Set>
+</Configure>

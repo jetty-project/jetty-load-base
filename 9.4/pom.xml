@@ -68,6 +68,17 @@
             </configuration>
           </execution>
           <execution>
+            <id>jetty-home-extra</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>jetty-load-base-server,jetty-load-base-common,HdrHistogram,jetty-perf-helper</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/jetty-base/lib</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
             <id>load-war</id>
             <phase>generate-resources</phase>
             <goals>
@@ -124,4 +135,13 @@
       </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.mortbay.jetty.load</groupId>
+      <artifactId>jetty-load-base-server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>

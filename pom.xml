@@ -22,11 +22,12 @@
   </scm>
 
   <modules>
+    <module>common</module>
     <module>test-webapp</module>
+    <module>server</module>
     <module>9.2</module>
     <module>9.3</module>
     <module>9.4</module>
-    <module>common</module>
     <module>loader</module>
     <module>probe</module>
   </modules>
