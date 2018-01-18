@@ -14,6 +14,7 @@ import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.load.Version;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -38,6 +39,9 @@ public class ProbeMain {
         scheduler.start();
         builder.scheduler(scheduler);
 
+        HttpClient httpClient = new HttpClient();
+        httpClient.start();
+
         try {
             ServerInfo serverInfo = ServerInfo.retrieveServerInfo(probeArgs.getScheme(),
                     probeArgs.getHost(),
@@ -60,11 +64,21 @@ public class ProbeMain {
                 }
             });
 
+            httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
+                    .scheme(probeArgs.getScheme())
+                    .path("/stats/start")
+                    .send();
+
             LOGGER.info("start load generator run");
             long start = System.nanoTime();
             LoadGeneratorStarter.run(builder);
             long end = System.nanoTime();
             LOGGER.info("end load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(end - start));
+
+            httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
+                    .scheme(probeArgs.getScheme())
+                    .path("/stats/stop")
+                    .send();
 
             LoadResult loadResult = listener.getLoadResult();
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
@@ -88,6 +102,7 @@ public class ProbeMain {
             resultStores.forEach(resultStore -> resultStore.initialize(probeArgs.dynamicParams));
             resultStores.forEach(resultStore -> resultStore.save(loadResult));
         } finally {
+            httpClient.stop();
             scheduler.stop();
         }
     }
