@@ -54,11 +54,13 @@ public class StatsHandler extends AbstractHandler.ErrorDispatchHandler {
                 statsListener.reset();
                 printStart(start);
                 System.gc();
+                statsListener.enabled = true;
             }
         } else if (uri.endsWith("/stop")) {
             Monitor.Stop stop = stopStats();
             if (stop != null) {
-                this.start = null;
+                statsListener.enabled = false;
+                start = null;
                 printStop(stop);
                 if (threadPool instanceof MonitoredQueuedThreadPool) {
                     printThreadPoolStats((MonitoredQueuedThreadPool)threadPool);
@@ -107,7 +109,7 @@ public class StatsHandler extends AbstractHandler.ErrorDispatchHandler {
     }
 
     private void printProcessingStats() {
-        LOGGER.info("request processing times:{}{}", System.lineSeparator(), new HistogramSnapshot(statsListener.histogram, 20, "requests", "\u00B5s", TimeUnit.NANOSECONDS::toMicros));
+        LOGGER.info("request processing times:{}{}", System.lineSeparator(), new HistogramSnapshot(statsListener.histogram.copy(), 20, "requests", "\u00B5s", TimeUnit.NANOSECONDS::toMicros));
     }
 
     private float gibi(long bytes) {
@@ -124,22 +126,28 @@ public class StatsHandler extends AbstractHandler.ErrorDispatchHandler {
     private static class StatsListener implements HttpChannel.Listener {
         private final ConcurrentMap<Request, Long> stats = new ConcurrentHashMap<>();
         private final Histogram histogram = new ConcurrentHistogram(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
+        private boolean enabled;
 
         private void reset() {
             stats.clear();
             histogram.reset();
+            enabled = false;
         }
 
         @Override
         public void onRequestBegin(Request request) {
-            stats.put(request, System.nanoTime());
+            if (enabled) {
+                stats.put(request, System.nanoTime());
+            }
         }
 
         @Override
         public void onComplete(Request request) {
-            Long start = stats.remove(request);
-            if (start != null) {
-                histogram.recordValue(System.nanoTime() - start);
+            if (enabled) {
+                Long start = stats.remove(request);
+                if (start != null) {
+                    histogram.recordValue(System.nanoTime() - start);
+                }
             }
         }
     }
