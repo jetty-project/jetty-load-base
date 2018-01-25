@@ -129,7 +129,7 @@
             <argument>-jar</argument>
             <argument>../jetty-home-${jetty.version}/start.jar</argument>
             <argument>--create-startd</argument>
-            <argument>--add-to-start=server,http,http2c,webapp,deploy,jsp,jmx,jmx-remote</argument>
+            <argument>--add-to-start=resources,server,http,http2c,webapp,deploy,jsp,jmx,jmx-remote</argument>
           </arguments>
         </configuration>
       </plugin>
