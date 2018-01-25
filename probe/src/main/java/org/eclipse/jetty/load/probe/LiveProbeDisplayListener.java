@@ -81,7 +81,7 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
     @Override
     public void onEnd(LoadGenerator loadGenerator) {
         Monitor.Stop end = begin.stop();
-        long elapsed = TimeUnit.NANOSECONDS.toMillis(histogram.getEndTimeStamp() - histogram.getStartTimeStamp());
+        long elapsed = histogram.getEndTimeStamp() - histogram.getStartTimeStamp();
         long rate = elapsed > 0 ? histogram.getTotalCount() * 1000 / elapsed : -1;
         LOGGER.info(String.format("rate=%d, cpu=%.2f%%, jit=%d ms", rate, end.cpuPercent, end.deltaJITTime));
         HistogramSnapshot snapshot = new HistogramSnapshot(histogram, 20, "response time",
