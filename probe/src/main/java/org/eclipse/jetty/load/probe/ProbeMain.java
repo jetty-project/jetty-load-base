@@ -15,9 +15,11 @@ import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.load.MonitoredQueuedThreadPool;
 import org.eclipse.jetty.load.Version;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.mortbay.jetty.load.generator.LoadGenerator;
@@ -34,6 +36,14 @@ public class ProbeMain {
     public static void main(String[] args) throws Exception {
         ProbeArgs probeArgs = LoadGeneratorStarter.parse(args, ProbeArgs::new);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(probeArgs);
+
+        QueuedThreadPool executor = null;
+        if (probeArgs.sharedThreads > 0) {
+            executor = new MonitoredQueuedThreadPool(probeArgs.sharedThreads);
+            executor.setName("loader");
+            executor.start();
+            builder.executor(executor);
+        }
 
         Scheduler scheduler = new ScheduledExecutorScheduler();
         scheduler.start();
@@ -102,6 +112,9 @@ public class ProbeMain {
             resultStores.forEach(resultStore -> resultStore.initialize(probeArgs.dynamicParams));
             resultStores.forEach(resultStore -> resultStore.save(loadResult));
         } finally {
+            if (executor instanceof MonitoredQueuedThreadPool) {
+                printThreadPoolStats((MonitoredQueuedThreadPool)executor);
+            }
             httpClient.stop();
             scheduler.stop();
         }
@@ -111,7 +124,21 @@ public class ProbeMain {
         scheduler.schedule(task, 2, TimeUnit.SECONDS);
     }
 
+    private static void printThreadPoolStats(MonitoredQueuedThreadPool threadPool) {
+        LOGGER.info("thread pool - tasks = {} | concurrent threads max = {} | queue size max = {} | queue latency avg/max = {}/{} ms | task time avg/max = {}/{} ms",
+                threadPool.getTasks(),
+                threadPool.getMaxActiveThreads(),
+                threadPool.getMaxQueueSize(),
+                TimeUnit.NANOSECONDS.toMillis(threadPool.getAverageQueueLatency()),
+                TimeUnit.NANOSECONDS.toMillis(threadPool.getMaxQueueLatency()),
+                TimeUnit.NANOSECONDS.toMillis(threadPool.getAverageTaskLatency()),
+                TimeUnit.NANOSECONDS.toMillis(threadPool.getMaxTaskLatency()));
+    }
+
     private static class ProbeArgs extends LoadGeneratorStarterArgs {
+        @Parameter(names = {"--shared-threads", "-st"}, description = "Max threads of the shared thread pool")
+        private int sharedThreads;
+
         @Parameter(names = {"--result-path", "-rp"}, description = "Path to store json result file")
         private String resultFilePath;
 
