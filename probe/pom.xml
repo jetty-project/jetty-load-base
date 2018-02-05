@@ -13,12 +13,15 @@
   <artifactId>jetty-load-base-probe</artifactId>
 
   <properties>
+    <!--<jetty.version>9.4.9-SNAPSHOT</jetty.version>-->
     <probe.heap>2G</probe.heap>
-    <probe.runningTime>3000</probe.runningTime>
+    <probe.warmupIterations>15000</probe.warmupIterations>
+    <probe.iterations>30000</probe.iterations>
     <probe.resourceGroovyPath>src/main/resources/info.groovy</probe.resourceGroovyPath>
     <probe.resourceRate>500</probe.resourceRate>
     <probe.usersPerThread>1</probe.usersPerThread>
     <probe.channelsPerUser>6</probe.channelsPerUser>
+    <probe.sharedThreads>0</probe.sharedThreads>
     <probe.host>localhost</probe.host>
     <probe.port>8080</probe.port>
     <probe.transport>h2c</probe.transport>
@@ -45,8 +48,10 @@
             <argument>-cp</argument>
             <classpath />
             <argument>org.eclipse.jetty.load.probe.ProbeMain</argument>
-            <argument>--running-time</argument>
-            <argument>${probe.runningTime}</argument>
+            <argument>--warmup-iterations</argument>
+            <argument>${probe.warmupIterations}</argument>
+            <argument>--iterations</argument>
+            <argument>${probe.iterations}</argument>
             <argument>--resource-groovy-path</argument>
             <argument>${probe.resourceGroovyPath}</argument>
             <argument>--resource-rate</argument>
@@ -55,6 +60,8 @@
             <argument>${probe.usersPerThread}</argument>
             <argument>--channels-per-user</argument>
             <argument>${probe.channelsPerUser}</argument>
+            <argument>--shared-threads</argument>
+            <argument>${probe.sharedThreads}</argument>
             <argument>--host</argument>
             <argument>${probe.host}</argument>
             <argument>--port</argument>

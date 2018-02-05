@@ -13,6 +13,7 @@
   <artifactId>jetty-load-base-loader</artifactId>
 
   <properties>
+    <!--<jetty.version>9.4.9-SNAPSHOT</jetty.version>-->
     <loader.heap>2G</loader.heap>
     <loader.runningTime>3000</loader.runningTime>
     <loader.resourceGroovyPath>src/main/resources/info.groovy</loader.resourceGroovyPath>
