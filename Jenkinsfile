@@ -113,10 +113,14 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
       }
       stage ('run loader') {
-        withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
-          sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+        try {
+          withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
+            sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+          }
+        } finally {
           loaderNodesFinished[index] = true;
         }
+
       }
     }
   }
