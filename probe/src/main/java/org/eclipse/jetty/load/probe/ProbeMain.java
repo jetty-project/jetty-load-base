@@ -117,6 +117,9 @@ public class ProbeMain {
             }
             httpClient.stop();
             scheduler.stop();
+            if (executor != null) {
+                executor.stop();
+            }
         }
     }
 
