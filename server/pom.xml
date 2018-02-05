@@ -12,6 +12,10 @@
   <artifactId>jetty-load-base-server</artifactId>
   <name>Jetty Load Test Server</name>
 
+  <properties>
+    <!--<jetty.version>9.4.9-SNAPSHOT</jetty.version>-->
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.mortbay.jetty.load</groupId>

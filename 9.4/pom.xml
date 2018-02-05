@@ -14,7 +14,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <jetty.version>9.4.8-SNAPSHOT</jetty.version>
+    <!--<jetty.version>9.4.9-SNAPSHOT</jetty.version>-->
+    <jetty.version>9.4.8.v20171121</jetty.version>
   </properties>
 
   <build>
