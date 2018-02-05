@@ -62,9 +62,9 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
             }
           }
           stage( 'starting jetty app' ) {
-            withEnv(["JAVA_HOME=${ tool 'jdk8' }", "PATH+JAVA=${env.JAVA_HOME}/bin"]) {
-              jettyStart = "java -jar ../jetty-home-$jettyVersion/start.jar"
-              if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "java -jar ../jetty-distribution-$jettyVersion/start.jar"
+            withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
+              jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-home-$jettyVersion/start.jar"
+              if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
               sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
               // we wait the end of all loader run
               waitUntil {
