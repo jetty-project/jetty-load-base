@@ -106,7 +106,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
             sh "mvn clean install -pl :jetty-load-base-loader -am"
         } */
         waitUntil {
-          sh "wget --retry-connrefused --tries=150 -q --waitretry=10 http://$loadServerHostName:$loadServerPort"
+          sh "wget --retry-connrefused --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
           return true
         }
         sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
