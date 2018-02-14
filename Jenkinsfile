@@ -13,7 +13,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "50000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumber = 1
+loaderInstancesNumber = 2
 rateRampUp = 30
 
 // used to shared status of loader nodes with the server instance to stop the server run
