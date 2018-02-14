@@ -7,7 +7,7 @@ def jettyBaseFullVersionMap = ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "120"
-loaderRates = ["100"]//,"150","200"]
+loaderRates = ["100","150"]//,"200"]
 loaderThreads = "8"
 loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
@@ -107,7 +107,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
             sh "mvn clean install -pl :jetty-load-base-loader -am"
         } */
         waitUntil {
-          sh "wget --retry-connrefused --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+          sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
           return true
         }
         sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
