@@ -14,6 +14,7 @@ loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "50000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumber = 1
+rateRampUp = 30
 
 // used to shared status of loader nodes with the server instance to stop the server run
 def loaderNodesFinished = new boolean[loaderInstancesNumber];
@@ -115,7 +116,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
       stage ('run loader') {
         try {
           withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
-            sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+            sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
           }
         } finally {
           loaderNodesFinished[index] = true;
