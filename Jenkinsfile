@@ -8,6 +8,7 @@ loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "120"
 loaderRates = ["100","150","200","250"]
+probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
@@ -86,7 +87,24 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
         parallel loaderNodes
       }, probe: {
         node( 'load-test-probe-node' ) {
-          echo "probe node"
+          stage ('setup probe') {
+            //echo "probe node"
+            git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+            sh 'rm -f jetty-base-loader-probe.jar && wget -O jetty-base-loader-probe.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-probe&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+            waitUntil {
+              sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+              return true
+            }
+          }
+          stage ('run probe') {
+            try {
+              withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
+                sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+              }
+            } finally {
+              //loaderNodesFinished[index] = true;
+            }
+          }
         }
       },
       failFast: true
@@ -106,12 +124,12 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
             mavenLocalRepo: '.repository') {
             sh "mvn clean install -pl :jetty-load-base-loader -am"
         } */
+        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
         waitUntil {
           sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
           return true
         }
         sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
-        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
       }
       stage ('run loader') {
         try {
@@ -121,7 +139,6 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         } finally {
           loaderNodesFinished[index] = true;
         }
-
       }
     }
   }
