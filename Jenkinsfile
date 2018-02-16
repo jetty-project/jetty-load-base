@@ -142,7 +142,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
             sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
           }
         } catch ( Exception e ) {
-          echo "failure running loader with rate " + $loaderRate
+          echo "failure running loader with rate $loaderRate"
         } finally {
           loaderNodesFinished[index] = true;
         }
