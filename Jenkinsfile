@@ -6,8 +6,8 @@ def jettyBaseFullVersionMap = ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531
 // default values to avoid pipeline error
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
-loaderRunningTime = "300"
-loaderRates = ["100","150","200","250"]
+loaderRunningTime = "100"//"300"
+loaderRates = ["100"]//,"150","200","250"]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
@@ -58,7 +58,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
         node( 'load-test-server-node' ) {
           stage( 'build jetty app' ) {
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-            withMaven( maven: 'maven3', jdk: 'jdk8',
+            withMaven( maven: 'maven3', jdk: 'jdk8', publisherStrategy: 'EXPLICIT',
                        mavenLocalRepo: '.repository' ) {
               sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
             }
@@ -71,9 +71,9 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
               // we wait the end of all loader run
               waitUntil {
                 allFinished = true;
-                for ( item in loaderNodesFinished )
+                for ( nodeFinished in loaderNodesFinished )
                 {
-                  if ( !item )
+                  if ( !nodeFinished )
                   {
                     allFinished = false
                   }
@@ -104,7 +104,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
               }
             } catch ( Exception e ) {
               echo "failure running probe"
-              throw e
+              //throw e
             } finally {
               //loaderNodesFinished[index] = true;
             }
