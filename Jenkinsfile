@@ -71,9 +71,11 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
               // we wait the end of all loader run
               waitUntil {
                 allFinished = true;
-                for ( nodeFinished in loaderNodesFinished ) {
+                //for ( nodeFinished in loaderNodesFinished ) {
+                for (i = 0; i <loaderNodesFinished.length; i++) {
+                  nodeFinished = loaderNodesFinished[i]
                   if (!nodeFinished ) {
-                    echo "not finished"
+                    echo "not finished " + i
                     allFinished = false
                   }
                 }
