@@ -44,7 +44,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
   node() {
     for ( loaderRate in loaderRates )
     {
-      echo "load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
+      echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
       // possible multiple loader node
       def loaderNodes = [:]
@@ -113,6 +113,8 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
         }
       },
       failFast: true
+
+      echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
     }
   }
 }
