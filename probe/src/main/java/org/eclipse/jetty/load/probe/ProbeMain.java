@@ -121,6 +121,8 @@ public class ProbeMain {
                 executor.stop();
             }
         }
+        LOGGER.info( "Probe main end" );
+        return;
     }
 
     private static void schedule(Scheduler scheduler, Runnable task) {
