@@ -71,10 +71,8 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
               // we wait the end of all loader run
               waitUntil {
                 allFinished = true;
-                for ( nodeFinished in loaderNodesFinished )
-                {
-                  if ( !nodeFinished )
-                  {
+                for ( nodeFinished in loaderNodesFinished ) {
+                  if ( !nodeFinished ) {
                     allFinished = false
                   }
                 }
@@ -97,11 +95,13 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
             }
           }
           stage ('run probe') {
+            echo "start running probe"
             try
             {
               withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
                 sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Delastic.host=10.0.0.10 -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort"
               }
+              echo "end running probe"
             } catch ( Exception e ) {
               echo "failure running probe"
               //throw e
@@ -136,11 +136,13 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
       }
       stage ('run loader') {
+        echo "loader $index started"
         try
         {
           withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
             sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
           }
+          echo "loader $index finished on " + loaderNodesFinished.length
         } catch ( Exception e ) {
           echo "failure running loader with rate $loaderRate"
         } finally {
