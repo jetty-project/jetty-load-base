@@ -102,7 +102,8 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
             try
             {
               withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
-                sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Delastic.host=10.0.0.10 -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort"
+                // -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true
+                sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort"
               }
               echo "end running probe"
             } catch ( Exception e ) {
