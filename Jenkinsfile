@@ -34,14 +34,14 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-node() {
+//node() {
   jettyBaseFullVersionMap.each {
     jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion )
   }
-}
+//}
 
 def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
-  node() {
+  //node() {
     for ( loaderRate in loaderRates )
     {
       echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
@@ -118,7 +118,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
 
       echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
     }
-  }
+  //}
 }
 
 def getLoaderNode(index,loaderNodesFinished,loaderRate) {
