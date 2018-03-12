@@ -109,8 +109,17 @@ public class ProbeMain {
             }
 
             List<ResultStore> resultStores = ResultStore.getActives(probeArgs.dynamicParams);
-            resultStores.forEach(resultStore -> resultStore.initialize(probeArgs.dynamicParams));
-            resultStores.forEach(resultStore -> resultStore.save(loadResult));
+            resultStores.forEach(resultStore ->
+                                 {
+                                     try
+                                     {
+                                         resultStore.initialize(probeArgs.dynamicParams);
+                                         resultStore.save(loadResult);
+                                         resultStore.close();
+                                     } catch ( Throwable e ) {
+                                         LOGGER.info( "ignore saving result error:" + e.getMessage(),e);
+                                     }
+                                 });
         } finally {
             if (executor instanceof MonitoredQueuedThreadPool) {
                 printThreadPoolStats((MonitoredQueuedThreadPool)executor);
