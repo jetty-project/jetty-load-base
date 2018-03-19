@@ -63,7 +63,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
               sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
             }
           }
-          stage( 'starting jetty app ${jettyVersion}' ) {
+          stage( "starting jetty app ${jettyVersion}" ) {
             withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
               jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-home-$jettyVersion/start.jar"
               if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
@@ -141,7 +141,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         }
         sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
       }
-      stage ('run loader rate ${loaderRate}') {
+      stage ("run loader rate ${loaderRate}") {
         echo "loader $index started"
         try
         {
