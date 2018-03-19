@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.DynamicParameter;
@@ -91,6 +92,7 @@ public class ProbeMain {
                     .send();
 
             LoadResult loadResult = listener.getLoadResult();
+            loadResult.uuid( UUID.randomUUID().toString() );
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
             if (StringUtils.isNotEmpty(comment)) {
                 loadResult.setComment(comment);
