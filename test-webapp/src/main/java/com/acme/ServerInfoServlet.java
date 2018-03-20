@@ -54,5 +54,8 @@ public class ServerInfoServlet
         @JsonProperty
         private String gitHash = System.getProperty( "jetty.git.hash" );
 
+        @JsonProperty
+        private String javaVersion = System.getProperty( "java.version" );
+
     }
 }

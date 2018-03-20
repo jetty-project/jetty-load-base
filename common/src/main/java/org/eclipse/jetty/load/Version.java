@@ -29,7 +29,6 @@ public class Version {
                 this.versionNumber = buildProperties.getProperty("version");
                 this.buildNumber = buildProperties.getProperty("buildNumber");
                 this.buildTimestamp = formatTimestamp(buildProperties.getProperty("timestamp"));
-                this.javaVersion = System.getProperty( "java.version" );
             }
         } catch (IOException x) {
             throw new UncheckedIOException(x);
