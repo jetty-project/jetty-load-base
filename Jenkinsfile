@@ -42,14 +42,13 @@ parameters {
 
 def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
   //node() {
-    for ( loaderRate in loaderRates )
-    {
+  for ( loaderRate in loaderRates ) {
+    timeout(time: 10, unit: 'MINUTES') {
       echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
       // possible multiple loader node
       def loaderNodes = [:]
-      for ( int i = 0; i < loaderInstancesNumber; i++ )
-      {
+      for ( int i = 0; i < loaderInstancesNumber; i++ ) {
         loaderNodesFinished[i] = false
         loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate );
       }
@@ -59,7 +58,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
           stage( 'build jetty app' ) {
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
             withMaven( maven: 'maven3', jdk: 'jdk8', publisherStrategy: 'EXPLICIT',
-                       mavenLocalRepo: '.repository' ) {
+                     mavenLocalRepo: '.repository' ) {
               sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
             }
           }
@@ -89,7 +88,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
       }, probe: {
         node( 'load-test-probe-node' ) {
           stage ('setup probe') {
-            //echo "probe node"
+          //echo "probe node"
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
             sh 'rm -f jetty-base-loader-probe.jar && wget -O jetty-base-loader-probe.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-probe&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
             waitUntil {
@@ -99,8 +98,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
           }
           stage ('run probe') {
             echo "start running probe"
-            try
-            {
+            try {
               withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
                 // -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true
                 sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort"
@@ -114,12 +112,11 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
             }
           }
         }
-      },
-      failFast: true
+      }, failFast: true
 
       echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
     }
-  //}
+  }
 }
 
 def getLoaderNode(index,loaderNodesFinished,loaderRate) {
