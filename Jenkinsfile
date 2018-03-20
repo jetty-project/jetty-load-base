@@ -43,7 +43,7 @@ parameters {
 def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
   //node() {
   for ( loaderRate in loaderRates ) {
-    timeout(time: 10, unit: 'MINUTES') {
+
       echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
       // possible multiple loader node
@@ -99,9 +99,11 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
           stage ('run probe') {
             echo "start running probe"
             try {
-              withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
-                // -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true
-                sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort"
+              timeout(time: 10, unit: 'MINUTES') {
+                withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
+                  // -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true
+                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort"
+                }
               }
               echo "end running probe"
             } catch ( Exception e ) {
@@ -115,7 +117,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
       }, failFast: true
 
       echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
-    }
+
   }
 }
 
@@ -142,8 +144,10 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         echo "loader $index started"
         try
         {
-          withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
-            sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+          timeout(time: 10, unit: 'MINUTES') {
+            withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
+              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+            }
           }
           echo "loader $index finished on " + loaderNodesFinished.length
         } catch ( Exception e ) {
