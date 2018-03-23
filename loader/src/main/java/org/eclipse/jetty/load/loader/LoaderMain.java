@@ -95,7 +95,7 @@ public class LoaderMain {
         try {
             httpClient.newRequest( loadConfig.getHost(), loadConfig.getPort() ) //
                 .method( HttpMethod.POST ) //
-                .path( "/loadConfig" ) //
+                .path( "/test/loadConfig" ) //
                 .content( new StringContentProvider( new ObjectMapper(  ).writeValueAsString( loadConfig ) ) ) //
                 .send();
         } finally {

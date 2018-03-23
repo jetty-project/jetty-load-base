@@ -166,7 +166,7 @@ public class ProbeMain {
         try {
             ContentResponse contentResponse = httpClient.newRequest( probeArgs.getHost(), probeArgs.getPort() ) //
                 .method( HttpMethod.GET ) //
-                .path( "/loadConfig" ) //
+                .path( "/test/loadConfig" ) //
                 .send();
             String content = contentResponse.getContentAsString();
             if (contentResponse.getStatus() == HttpStatus.NO_CONTENT_204 || StringUtils.isEmpty( content )) {
