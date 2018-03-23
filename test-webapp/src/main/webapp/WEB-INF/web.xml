@@ -92,6 +92,17 @@
     <url-pattern>/info/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>LoadConfig</servlet-name>
+    <servlet-class>com.acme.LoaderConfigServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>LoadConfig</servlet-name>
+    <url-pattern>/loadConfig/*</url-pattern>
+  </servlet-mapping>
+
   <error-page>
     <error-code>404</error-code>
     <location>/error404.html</location>

@@ -13,9 +13,14 @@ import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.load.MonitoredQueuedThreadPool;
 import org.eclipse.jetty.load.Version;
 import org.eclipse.jetty.util.log.Log;
@@ -80,11 +85,26 @@ public class ProbeMain {
                     .path("/stats/start")
                     .send();
 
-            LOGGER.info("start load generator run");
+            LoadConfig loadConfig = retrieveLoaderConfig(probeArgs);
+            long startRetrieve = System.currentTimeMillis();
+            while(loadConfig == null){
+                loadConfig = retrieveLoaderConfig(probeArgs);
+                Thread.sleep( 1000 );
+                // max wait 60 s
+                if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) > 60)
+                {
+                    LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config" );
+                    return;
+                }
+            }
+
+            LOGGER.info( "Loader config: {}", loadConfig );
+
+            LOGGER.info("start probe load generator run");
             long start = System.nanoTime();
             LoadGeneratorStarter.run(builder);
             long end = System.nanoTime();
-            LOGGER.info("end load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(end - start));
+            LOGGER.info("end probe load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(end - start));
 
             httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
                     .scheme(probeArgs.getScheme())
@@ -92,6 +112,7 @@ public class ProbeMain {
                     .send();
 
             LoadResult loadResult = listener.getLoadResult();
+            loadResult.addLoadConfig( loadConfig );
             loadResult.uuid( UUID.randomUUID().toString() );
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
             if (StringUtils.isNotEmpty(comment)) {
@@ -99,7 +120,9 @@ public class ProbeMain {
             }
 
             StringWriter stringWriter = new StringWriter();
-            new ObjectMapper().writeValue(stringWriter, loadResult);
+            new ObjectMapper()
+                .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .writeValue( stringWriter, loadResult);
             String jsonLoadResult = stringWriter.toString();
             LOGGER.info("loadResult json: {}", jsonLoadResult);
 
@@ -137,6 +160,28 @@ public class ProbeMain {
         //return;
     }
 
+    private static LoadConfig retrieveLoaderConfig(ProbeArgs probeArgs) throws Exception {
+        HttpClient httpClient = new HttpClient( );
+        httpClient.start();
+        try {
+            ContentResponse contentResponse = httpClient.newRequest( probeArgs.getHost(), probeArgs.getPort() ) //
+                .method( HttpMethod.GET ) //
+                .path( "/loadConfig" ) //
+                .send();
+            String content = contentResponse.getContentAsString();
+            if (contentResponse.getStatus() == HttpStatus.NO_CONTENT_204 || StringUtils.isEmpty( content )) {
+                return null;
+            }
+            return new ObjectMapper( ) //
+                .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false )
+                .readValue( content, LoadConfig.class );
+        } finally {
+            if(httpClient != null) {
+                httpClient.stop();
+            }
+        }
+    }
+
     private static void schedule(Scheduler scheduler, Runnable task) {
         scheduler.schedule(task, 2, TimeUnit.SECONDS);
     }
@@ -161,5 +206,12 @@ public class ProbeMain {
 
         @DynamicParameter(names = "-D", description = "Dynamic parameters go here")
         private Map<String, String> dynamicParams = new HashMap<>();
+
+        @Parameter(names = {"--loader-resources-path", "-lrp"}, description = "Path to loader resources path")
+        private String loaderResourcesPath;
+
+        @Parameter(names = {"--loader-rate", "-lr"}, description = "Loader rate")
+        private int loaderRate;
+
     }
 }

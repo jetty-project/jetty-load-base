@@ -4,6 +4,11 @@ import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.Parameter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.load.MonitoredQueuedThreadPool;
 import org.eclipse.jetty.load.Version;
@@ -13,6 +18,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarter;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarterArgs;
@@ -64,6 +70,9 @@ public class LoaderMain {
             LoadGenerator loadGenerator = builder.build();
             loadGenerator.addBean(mbeanContainer);
 
+            LoadConfig loadConfig = new LoadConfig( loadGenerator.getConfig() ).type( LoadConfig.Type.LOADER );
+            storeLoadConfig( loadConfig );
+
             LOGGER.info("start load generator run");
             long start = System.nanoTime();
             LoadGeneratorStarter.run(loadGenerator);
@@ -78,6 +87,23 @@ public class LoaderMain {
                 executor.stop();
             }
         }
+    }
+
+    private static void storeLoadConfig(LoadConfig loadConfig) throws Exception {
+        HttpClient httpClient = new HttpClient( );
+        httpClient.start();
+        try {
+            httpClient.newRequest( loadConfig.getHost(), loadConfig.getPort() ) //
+                .method( HttpMethod.POST ) //
+                .path( "/loadConfig" ) //
+                .content( new StringContentProvider( new ObjectMapper(  ).writeValueAsString( loadConfig ) ) ) //
+                .send();
+        } finally {
+            if(httpClient != null) {
+                httpClient.stop();
+            }
+        }
+
     }
 
     private static void schedule(Scheduler scheduler, Runnable task) {
