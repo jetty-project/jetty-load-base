@@ -6,7 +6,7 @@ def jettyBaseFullVersionMap = ['9.4':'9.4.8.v20171121'] // ['9.2':'9.2.22.v20170
 // default values to avoid pipeline error
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
-loaderRunningTime = "30"//"300"
+loaderRunningTime = "120"//"300"
 loaderRates = ["100"]//,"150","200","250","300","350","400","450","500"]
 probeResourceRate = "500"
 loaderThreads = "8"
