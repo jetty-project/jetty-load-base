@@ -1,10 +1,12 @@
 package org.eclipse.jetty.load.probe;
 
+import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
@@ -96,6 +99,15 @@ public class ProbeMain {
                     LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config" );
                     return;
                 }
+            }
+
+            loadConfig.setInstanceNumber( probeArgs.loaderNumber );
+
+            // we calculate the resource number
+            try(Reader reader  = Files.newBufferedReader( Paths.get( probeArgs.loaderResourcesPath )))
+            {
+                Resource resource = LoadGeneratorStarterArgs.evaluateGroovy( reader, Collections.emptyMap());
+                loadConfig.setResourceNumber( resource.descendantCount() );
             }
 
             LOGGER.info( "Loader config: {}", loadConfig );
@@ -212,6 +224,9 @@ public class ProbeMain {
 
         @Parameter(names = {"--loader-rate", "-lr"}, description = "Loader rate")
         private int loaderRate;
+
+        @Parameter(names = {"--loader-number", "-ln"}, description = "Loader number")
+        private int loaderNumber;
 
     }
 }
