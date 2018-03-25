@@ -7,7 +7,7 @@ def jettyBaseFullVersionMap = ['9.4':'9.4.8.v20171121'] // ['9.2':'9.2.22.v20170
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "240"//"300"
-loaderRates = ["100","150","200","250","300","350","400","450","500"]
+loaderRates = ["200","300","400","500","600"]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
@@ -16,6 +16,7 @@ loaderMaxRequestsInQueue = "50000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumber = 2
 rateRampUp = 30
+jdk = "jdk8"
 
 // used to shared status of loader nodes with the server instance to stop the server run
 def loaderNodesFinished = new boolean[loaderInstancesNumber];
@@ -36,11 +37,11 @@ parameters {
 
 //node() {
   jettyBaseFullVersionMap.each {
-    jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion )
+    jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk)
   }
 //}
 
-def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
+def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk) {
   //node() {
   for ( loaderRate in loaderRates ) {
 
@@ -50,20 +51,20 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
       def loaderNodes = [:]
       for ( int i = 0; i < loaderInstancesNumber; i++ ) {
         loaderNodesFinished[i] = false
-        loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate );
+        loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate,$jdk);
       }
 
       parallel server: {
         node( 'load-test-server-node' ) {
           stage( 'build jetty app' ) {
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-            withMaven( maven: 'maven3', jdk: 'jdk8', publisherStrategy: 'EXPLICIT',
+            withMaven( maven: 'maven3.5', jdk: $jdk, publisherStrategy: 'EXPLICIT',
                      mavenLocalRepo: '.repository' ) {
               sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
             }
           }
           stage( "starting jetty app ${jettyVersion}" ) {
-            withEnv(["JAVA_HOME=${ tool 'jdk8' }"]) {
+            withEnv(["JAVA_HOME=${ tool "$jdk" }"]) {
               jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-home-$jettyVersion/start.jar"
               if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
               sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
@@ -100,7 +101,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
             echo "start running probe"
             try {
               timeout(time: 10, unit: 'MINUTES') {
-                withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
+                withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
                   sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
                 }
               }
@@ -120,7 +121,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion) {
   }
 }
 
-def getLoaderNode(index,loaderNodesFinished,loaderRate) {
+def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
   return {
     node('load-test-loader-node') {
       stage ('setup loader') {
@@ -144,7 +145,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate) {
         try
         {
           timeout(time: 10, unit: 'MINUTES') {
-            withEnv( ["JAVA_HOME=${tool 'jdk8'}"] ) {
+            withEnv( ["JAVA_HOME=${tool "$jdk" }"] ) {
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
             }
           }
