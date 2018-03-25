@@ -21,7 +21,7 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
     private Histogram interval;
 
     public LiveLoadDisplayListener() {
-        this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(120), 3);
+        this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(300), 3);
     }
 
     public LiveLoadDisplayListener(long low, long high, int digits) {
