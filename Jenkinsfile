@@ -51,7 +51,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk) {
       def loaderNodes = [:]
       for ( int i = 0; i < loaderInstancesNumber; i++ ) {
         loaderNodesFinished[i] = false
-        loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate,$jdk);
+        loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate,jdk);
       }
 
       parallel server: {
