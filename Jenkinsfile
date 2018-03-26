@@ -91,7 +91,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
         node( 'load-test-probe-node' ) {
           stage ('setup probe') {
           //echo "probe node"
-            git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+            //git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
             // nexus do not support this
             // so use mvn
             //sh 'rm -f jetty-base-loader-probe.jar && wget -O jetty-base-loader-probe.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-probe&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
