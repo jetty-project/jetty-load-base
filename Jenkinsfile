@@ -92,7 +92,14 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
           stage ('setup probe') {
           //echo "probe node"
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-            sh 'rm -f jetty-base-loader-probe.jar && wget -O jetty-base-loader-probe.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-probe&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+            // nexus do not support this
+            // so use mvn
+            //sh 'rm -f jetty-base-loader-probe.jar && wget -O jetty-base-loader-probe.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-probe&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+            sh "rm -rf .repository"
+            withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                       mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+              sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./"
+            }
             waitUntil {
               sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
               return true
@@ -103,7 +110,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
             try {
               timeout(time: 10, unit: 'MINUTES') {
                 withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
+                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-probe-1.0.0-SNAPSHOT-uber.jar -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
                 }
               }
               echo "end running probe"
@@ -126,7 +133,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
   return {
     node('load-test-loader-node') {
       stage ('setup loader') {
-        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+        //git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         /*
         // we do not need to build this it's build and deployed apart
         withMaven(
@@ -134,12 +141,19 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
             mavenLocalRepo: '.repository') {
             sh "mvn clean install -pl :jetty-load-base-loader -am"
         } */
-        sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+        // nexus 3 do not support this anymore
+        //sh 'rm -f jetty-base-loader.jar && wget -O jetty-base-loader.jar -q "https://oss.sonatype.org/service/local/artifact/maven/content?r=jetty-snapshots&g=org.mortbay.jetty.load&a=jetty-load-base-loader&v=1.0.0-SNAPSHOT&p=jar&c=uber"'
+        sh "rm -rf .repository"
+        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                   mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./"
+        }
         waitUntil {
           sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
           return true
         }
-        sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
+        sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+        sh "bash populate.sh $loadServerHostName"
       }
       stage ("run loader rate ${loaderRate}") {
         echo "loader $index started"
@@ -147,7 +161,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
         {
           timeout(time: 10, unit: 'MINUTES') {
             withEnv( ["JAVA_HOME=${tool "$jdk" }"] ) {
-              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-1.0.0-SNAPSHOT-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
             }
           }
           echo "loader $index finished on " + loaderNodesFinished.length
