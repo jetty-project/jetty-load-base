@@ -128,13 +128,13 @@ public class ProbeMain {
             String jenkinsBuildId = probeArgs.dynamicParams.get( "jenkins.buildId" );
             if (StringUtils.isEmpty( jenkinsBuildId )) {
                 loadResult.uuid( UUID.randomUUID().toString() );
+            } else {
+                loadResult.uuid( "jenkins-#" + jenkinsBuildId );
             }
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
             if (StringUtils.isNotEmpty(comment)) {
                 loadResult.setComment(comment);
-            } else if ( StringUtils.isNotEmpty( jenkinsBuildId ) ) {
-                loadResult.setComment( "jenkins-#" + jenkinsBuildId );
-            }
+            } 
 
             StringWriter stringWriter = new StringWriter();
             new ObjectMapper()

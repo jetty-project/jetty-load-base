@@ -4,7 +4,7 @@
 def jettyBaseFullVersionMap = ['9.4':'9.4.8.v20171121'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.9-SNAPSHOT']
 
 // default values to avoid pipeline error
-jenkinsBuildId=env.BUILD_ID
+jenkinsBuildId= env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "240"//"300"
