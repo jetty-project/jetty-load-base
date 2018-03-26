@@ -134,7 +134,7 @@ public class ProbeMain {
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
             if (StringUtils.isNotEmpty(comment)) {
                 loadResult.setComment(comment);
-            } 
+            }
 
             StringWriter stringWriter = new StringWriter();
             new ObjectMapper()

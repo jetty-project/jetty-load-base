@@ -13,6 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <loadGeneratorVersion>1.0.0-SNAPSHOT</loadGeneratorVersion>
     <jetty.version>9.4.8.v20171121</jetty.version>
+    <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
   </properties>
 
   <scm>
@@ -143,7 +144,7 @@
     <snapshotRepository>
       <id>oss.sonatype.org</id>
       <name>Jetty Snapshot Repository</name>
-      <url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</url>
+      <url>${snapshotDeploy.url}</url>
     </snapshotRepository>
   </distributionManagement>
 
