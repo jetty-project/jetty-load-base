@@ -127,10 +127,9 @@ public class ProbeMain {
             loadResult.addLoadConfig( loadConfig );
             String jenkinsBuildId = probeArgs.dynamicParams.get( "jenkins.buildId" );
             LOGGER.info( "jenkinsBuildId {}, dynamicParams {}", jenkinsBuildId, probeArgs.dynamicParams );
-            if (StringUtils.isEmpty( jenkinsBuildId )) {
-                loadResult.uuid( UUID.randomUUID().toString() );
-            } else {
-                loadResult.uuid( "jenkins-#" + jenkinsBuildId );
+            loadResult.uuid( UUID.randomUUID().toString() );
+            if (StringUtils.isNotEmpty( jenkinsBuildId )) {
+                loadResult.externalId( jenkinsBuildId );
             }
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
             if (StringUtils.isNotEmpty(comment)) {
