@@ -125,10 +125,15 @@ public class ProbeMain {
 
             LoadResult loadResult = listener.getLoadResult();
             loadResult.addLoadConfig( loadConfig );
-            loadResult.uuid( UUID.randomUUID().toString() );
+            String jenkinsBuildId = probeArgs.dynamicParams.get( "jenkins.buildId" );
+            if (StringUtils.isEmpty( jenkinsBuildId )) {
+                loadResult.uuid( UUID.randomUUID().toString() );
+            }
             String comment = probeArgs.dynamicParams.get("loadresult.comment");
             if (StringUtils.isNotEmpty(comment)) {
                 loadResult.setComment(comment);
+            } else if ( StringUtils.isNotEmpty( jenkinsBuildId ) ) {
+                loadResult.setComment( "jenkins-#" + jenkinsBuildId );
             }
 
             StringWriter stringWriter = new StringWriter();

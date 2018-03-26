@@ -4,6 +4,7 @@
 def jettyBaseFullVersionMap = ['9.4':'9.4.8.v20171121'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.9-SNAPSHOT']
 
 // default values to avoid pipeline error
+jenkinsBuildId=env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTime = "240"//"300"
@@ -37,11 +38,11 @@ parameters {
 
 //node() {
   jettyBaseFullVersionMap.each {
-    jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk)
+    jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId)
   }
 //}
 
-def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk) {
+def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId) {
   //node() {
   for ( loaderRate in loaderRates ) {
 
@@ -102,7 +103,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk) {
             try {
               timeout(time: 10, unit: 'MINUTES') {
                 withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
+                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-base-loader-probe.jar -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
                 }
               }
               echo "end running probe"
