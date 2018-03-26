@@ -98,7 +98,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
             sh "rm -rf .repository"
             withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                        mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-              sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -DoutputAbsoluteArtifactFilename=true"
+              sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
             }
             waitUntil {
               sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
@@ -110,7 +110,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
             try {
               timeout(time: 10, unit: 'MINUTES') {
                 withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-probe-1.0.0-SNAPSHOT-uber.jar -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
+                  sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-probe-uber.jar -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
                 }
               }
               echo "end running probe"
@@ -146,7 +146,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
         sh "rm -rf .repository"
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -DoutputAbsoluteArtifactFilename=true"
+          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         waitUntil {
           sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
@@ -161,7 +161,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
         {
           timeout(time: 10, unit: 'MINUTES') {
             withEnv( ["JAVA_HOME=${tool "$jdk" }"] ) {
-              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-1.0.0-SNAPSHOT-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
             }
           }
           echo "loader $index finished on " + loaderNodesFinished.length
