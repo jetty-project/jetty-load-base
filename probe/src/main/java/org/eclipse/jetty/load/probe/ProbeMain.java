@@ -126,6 +126,7 @@ public class ProbeMain {
             LoadResult loadResult = listener.getLoadResult();
             loadResult.addLoadConfig( loadConfig );
             String jenkinsBuildId = probeArgs.dynamicParams.get( "jenkins.buildId" );
+            LOGGER.info( "jenkinsBuildId {}, dynamicParams {}", jenkinsBuildId, probeArgs.dynamicParams );
             if (StringUtils.isEmpty( jenkinsBuildId )) {
                 loadResult.uuid( UUID.randomUUID().toString() );
             } else {
