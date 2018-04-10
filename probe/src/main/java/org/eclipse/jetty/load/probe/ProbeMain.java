@@ -74,6 +74,7 @@ public class ProbeMain {
                     .loadConfigType(LoadConfig.Type.PROBE);
             builder = builder.listener(listener).resourceListener(listener).requestListener(listener);
 
+
             // Print probe activity periodically.
             schedule(scheduler, new Runnable() {
                 @Override
