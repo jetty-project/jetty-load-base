@@ -1,7 +1,7 @@
 #!groovy
 
 
-def jettyBaseFullVersionMap = ['9.4':'9.4.9.v20180320','9.4':'9.4.10-SNAPSHOT'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.10-SNAPSHOT']
+def jettyBaseFullVersionMap = ['9.4.9.v20180320':'9.4','9.4.10-SNAPSHOT':'9.4'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.10-SNAPSHOT']
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
@@ -38,7 +38,7 @@ parameters {
 
 //node() {
   jettyBaseFullVersionMap.each {
-    jettyBaseVersion, jettyVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId)
+    jettyVersion,jettyBaseVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId)
   }
 //}
 
