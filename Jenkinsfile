@@ -42,6 +42,8 @@ parameters {
   }
 //}
 
+loadtestresult()
+
 def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId) {
   //node() {
   for ( loaderRate in loaderRates ) {
