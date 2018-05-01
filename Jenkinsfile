@@ -15,7 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "50000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = [2,3]
+loaderInstancesNumbers = [3]
 rateRampUp = 30
 jdk = "jdk8"
 
