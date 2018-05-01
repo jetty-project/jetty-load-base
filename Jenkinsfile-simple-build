@@ -1,0 +1,14 @@
+def settingsName = 'oss-settings.xml'
+node('linux') {
+    stage('Compile') {
+        timeout(time: 15, unit: 'MINUTES') {
+          withMaven(
+                  maven: 'maven3',
+                  jdk: "jdk8",
+                  globalMavenSettingsConfig: settingsName,
+                  mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}") {
+            sh "mvn -V -B clean deploy"
+          }
+      }
+    }
+}
