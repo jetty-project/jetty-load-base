@@ -1,6 +1,7 @@
 def settingsName = 'oss-settings.xml'
 node('linux') {
     stage('Compile') {
+        checkout scm
         timeout(time: 15, unit: 'MINUTES') {
           withMaven(
                   maven: 'maven3',
