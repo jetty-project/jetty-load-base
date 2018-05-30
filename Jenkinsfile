@@ -7,7 +7,7 @@ def jettyBaseFullVersionMap = ['9.4.11-NO-LOGGER-SNAPSHOT':'9.4','9.4.11-SNAPSHO
 jenkinsBuildId= env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
-loaderRunningTime = "600"//"300"
+loaderRunningTimes = ["600","900"]//"300"
 loaderRates = ["500"]
 probeResourceRate = "500"
 loaderThreads = "8"
@@ -37,7 +37,7 @@ parameters {
 }
 
 jettyBaseFullVersionMap.each {
-  jettyVersion,jettyBaseVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers)
+  jettyVersion,jettyBaseVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes)
 }
 
 
@@ -47,11 +47,12 @@ node("master") {
 
 
 
-def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers) {
+def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
   for(loaderInstancesNumber in loaderInstancesNumbers) {
-    loaderNodesFinished = new boolean[loaderInstancesNumber];
-    for ( loaderRate in loaderRates ) {
 
+    for(loaderRunningTime in loaderRunningTimes){
+      for (loaderRate in loaderRates){
+        loaderNodesFinished = new boolean[loaderInstancesNumber];
         echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
         // possible multiple loader node
@@ -59,7 +60,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
         for ( int i = 0; i < loaderInstancesNumber; i++ )
         {
           loaderNodesFinished[i] = false
-          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk );
+          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime);
         }
 
         parallel server: {
@@ -135,9 +136,10 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
         echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
       }
     }
+  }
 }
 
-def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk) {
+def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime) {
   return {
     node('load-test-loader-node') {
       stage ('setup loader') {
