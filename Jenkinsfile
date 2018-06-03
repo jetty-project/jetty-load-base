@@ -123,7 +123,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
               catch ( Exception e )
               {
                 echo "failure running probe"
-                //throw e
+                throw e
               }
               finally
               {
@@ -142,34 +142,37 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
 def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime) {
   return {
     node('load-test-loader-node') {
-      stage ('setup loader') {
-        sh "rm -rf .repository"
-        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+      try
+      {
+        stage( 'setup loader' ) {
+          sh "rm -rf .repository"
+          withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                     mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+            sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+          }
+          waitUntil {
+            sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+            return true
+          }
+          sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+          sh "bash populate.sh $loadServerHostName"
         }
-        waitUntil {
-          sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
-          return true
-        }
-        sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
-        sh "bash populate.sh $loadServerHostName"
-      }
-      stage ("run loader rate ${loaderRate}") {
-        echo "loader $index started"
-        try
-        {
-          timeout(time: 120, unit: 'MINUTES') {
-            withEnv( ["JAVA_HOME=${tool "$jdk" }"] ) {
+        stage( "run loader rate ${loaderRate}" ) {
+          echo "loader $index started"
+          timeout( time: 120, unit: 'MINUTES' ) {
+            withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
             }
           }
           echo "loader $index finished on " + loaderNodesFinished.length
-        } catch ( Exception e ) {
-          echo "failure running loader with rate $loaderRate"
-        } finally {
-          loaderNodesFinished[index] = true;
         }
+      }
+      catch ( Exception e )
+      {
+        echo "failure running loader with rate $loaderRate"
+        throw e
+      } finally {
+        loaderNodesFinished[index] = true;
       }
     }
   }
