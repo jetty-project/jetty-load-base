@@ -95,6 +95,10 @@ public class ProbeMain {
             long maxWaitSecond = 120;
             while(loadConfig == null){
                 loadConfig = retrieveLoaderConfig(probeArgs);
+                if (loadConfig != null)
+                {
+                    break;
+                }
                 Thread.sleep( 1000 );
                 if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) > maxWaitSecond)
                 {
@@ -198,6 +202,7 @@ public class ProbeMain {
                 .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false ).readValue( content, LoadConfig.class );
         }  catch ( Exception e ) {
             LOGGER.info( "fail to retrieve loaderConfig", e );
+            return null;
         } finally {
             if(httpClient != null) {
                 httpClient.stop();
