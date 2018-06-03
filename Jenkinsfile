@@ -15,12 +15,9 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "50000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = 3
+loaderInstancesNumbers = [3]
 rateRampUp = 30
 jdk = "jdk8"
-
-// used to shared status of loader nodes with the server instance to stop the server run
-def loaderNodesFinished = new boolean[2];
 
 // choices are newline separated
 parameters {
@@ -37,7 +34,7 @@ parameters {
 }
 
 jettyBaseFullVersionMap.each {
-  jettyVersion,jettyBaseVersion -> getLoadTestNode( loaderNodesFinished, jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes)
+  jettyVersion,jettyBaseVersion -> getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes)
 }
 
 
@@ -47,11 +44,12 @@ node("master") {
 
 
 
-def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
+def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
   for(loaderInstancesNumber in loaderInstancesNumbers) {
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
-        loaderNodesFinished = new boolean[loaderInstancesNumber];
+        def loaderNodesFinished = new boolean[loaderInstancesNumber];
+        def loaderNodesStarted = new boolean[loaderInstancesNumber];
         echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
         // possible multiple loader node
@@ -59,7 +57,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
         for ( int i = 0; i < loaderInstancesNumber; i++ )
         {
           loaderNodesFinished[i] = false
-          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime);
+          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime,loaderNodesStarted);
         }
 
         parallel loader: {
@@ -104,8 +102,19 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
                 sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
               }
               waitUntil {
-                sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
-                return true
+                allStarted = true;
+                for ( i = 0; i < loaderNodesStarted.length; i++ )
+                {
+                  allStarted = loaderNodesStarted[i]
+                  if ( !allStarted )
+                  {
+                    echo "not allStarted " + i
+                    allStarted = false
+                  }
+                }
+                return allStarted
+                //sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+                // return true
               }
             }
             stage( 'run probe' ) {
@@ -138,7 +147,7 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
   }
 }
 
-def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime) {
+def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loaderNodesStarted) {
   return {
     node('load-test-loader-node') {
       try
@@ -155,6 +164,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime) {
           }
           sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
           sh "bash populate.sh $loadServerHostName"
+          loaderNodesStarted[i]=true
         }
         stage( "run loader rate ${loaderRate}" ) {
           echo "loader $index started"
