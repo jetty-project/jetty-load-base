@@ -91,13 +91,14 @@ public class ProbeMain {
 
             LoadConfig loadConfig = retrieveLoaderConfig(probeArgs);
             long startRetrieve = System.currentTimeMillis();
+            // max wait 60 s
+            long maxWaitSecond = 120;
             while(loadConfig == null){
                 loadConfig = retrieveLoaderConfig(probeArgs);
                 Thread.sleep( 1000 );
-                // max wait 60 s
-                if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) > 60)
+                if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) > maxWaitSecond)
                 {
-                    LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config" );
+                    LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config {}", maxWaitSecond );
                     return;
                 }
             }
@@ -181,18 +182,22 @@ public class ProbeMain {
     private static LoadConfig retrieveLoaderConfig(ProbeArgs probeArgs) throws Exception {
         HttpClient httpClient = new HttpClient( );
         httpClient.start();
-        try {
+        try
+        {
             ContentResponse contentResponse = httpClient.newRequest( probeArgs.getHost(), probeArgs.getPort() ) //
+                .timeout( 10, TimeUnit.SECONDS ) //
                 .method( HttpMethod.GET ) //
                 .path( "/test/loadConfig" ) //
                 .send();
             String content = contentResponse.getContentAsString();
-            if (contentResponse.getStatus() == HttpStatus.NO_CONTENT_204 || StringUtils.isEmpty( content )) {
+            if ( contentResponse.getStatus() == HttpStatus.NO_CONTENT_204 || StringUtils.isEmpty( content ) )
+            {
                 return null;
             }
-            return new ObjectMapper( ) //
-                .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false )
-                .readValue( content, LoadConfig.class );
+            return new ObjectMapper() //
+                .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false ).readValue( content, LoadConfig.class );
+        }  catch ( Exception e ) {
+            LOGGER.info( "fail to retrieve loaderConfig", e );
         } finally {
             if(httpClient != null) {
                 httpClient.stop();

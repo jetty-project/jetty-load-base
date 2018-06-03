@@ -63,7 +63,9 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
           loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime);
         }
 
-        parallel server: {
+        parallel loader: {
+          parallel loaderNodes
+        },server: {
           node( 'load-test-server-node' ) {
             stage( 'build jetty app' ) {
               git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
@@ -94,8 +96,6 @@ def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkin
               }
             }
           }
-        }, loader: {
-          parallel loaderNodes
         }, probe: {
           node( 'load-test-probe-node' ) {
             stage( 'setup probe' ) {
