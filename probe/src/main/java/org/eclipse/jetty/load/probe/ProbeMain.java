@@ -103,6 +103,7 @@ public class ProbeMain {
                 if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) > maxWaitSecond)
                 {
                     LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config {}", maxWaitSecond );
+                    System.exit( 1 );
                     return;
                 }
             }

@@ -15,7 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "50000"
 loaderVmOptions = "-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = [3]
+loaderInstancesNumbers = 3
 rateRampUp = 30
 jdk = "jdk8"
 
@@ -49,7 +49,6 @@ node("master") {
 
 def getLoadTestNode(loaderNodesFinished,jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
   for(loaderInstancesNumber in loaderInstancesNumbers) {
-
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
         loaderNodesFinished = new boolean[loaderInstancesNumber];
