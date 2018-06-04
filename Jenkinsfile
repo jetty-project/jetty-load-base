@@ -144,25 +144,31 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   }
 }
 
-def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loaderNodesStarted) {
+def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStarted) {
   return {
     node('load-test-loader-node') {
       try
       {
         stage( 'setup loader' ) {
-          sh "rm -rf .repository/org/mortbay"
-          withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                     mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-            sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+          try
+          {
+            sh "rm -rf .repository/org/mortbay"
+            withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                       mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+              sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+            }
+            waitUntil {
+              sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+              return true
+            }
+            sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+            sh "bash populate.sh $loadServerHostName"
+            echo "set loaderNodesStarted " + index + " to true"
+            nodesStarted[index] = true
+          } catch ( Exception e ) {
+            e.printStackTrace()
+            throw e
           }
-          waitUntil {
-            sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=10 http://$loadServerHostName:$loadServerPort"
-            return true
-          }
-          sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
-          sh "bash populate.sh $loadServerHostName"
-          echo "set loaderNodesStarted " + index + " to true"
-          loaderNodesStarted[index]=true
         }
         stage( "run loader rate ${loaderRate}" ) {
           echo "loader $index started"
@@ -178,8 +184,8 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
         echo "failure running loader with rate $loaderRate, index $index, msg: " + e.getMessage()
         throw e
       } finally {
-        echo "loader $index finished on " + loaderNodesFinished.length
-        loaderNodesFinished[index] = true;
+        echo "loader $index finished on " + nodesFinished.length
+        nodesFinished[index] = true;
       }
     }
   }
