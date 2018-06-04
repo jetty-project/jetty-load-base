@@ -15,7 +15,9 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "70000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = [3]
+loaderInstancesNumbers = 3
+def loaderNodesFinished = new boolean[loaderInstancesNumbers]
+def loaderNodesStarted = new boolean[loaderInstancesNumbers]
 rateRampUp = 30
 idleTimeout = 30000
 jdk = "jdk8"
@@ -45,10 +47,9 @@ node("master") {
 
 
 
-def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
-  for(loaderInstancesNumber in loaderInstancesNumbers) {
-    def loaderNodesFinished = new boolean[loaderInstancesNumber];
-    def loaderNodesStarted = new boolean[loaderInstancesNumber];
+def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumber,loaderRunningTimes) {
+  //for(loaderInstancesNumber in loaderInstancesNumbers) {
+
     def loaderNodes = [:]
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
@@ -140,7 +141,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
         echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
       }
-    }
+    //}
   }
 }
 
@@ -166,7 +167,7 @@ def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStar
             echo "set loaderNodesStarted " + index + " to true"
             nodesStarted[index] = true
           } catch ( Exception e ) {
-            e.printStackTrace()
+            echo "error starting loader " + e.getMessage(  )
             throw e
           }
         }
