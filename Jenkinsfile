@@ -36,9 +36,10 @@ parameters {
 }
 
 jettyBaseFullVersionMap.each {
-  def loaderNodesFinished = new boolean[loaderInstancesNumber]
-  def loaderNodesStarted = new boolean[loaderInstancesNumber]
-  jettyVersion,jettyBaseVersion -> getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes,loaderNodesFinished,loaderNodesStarted)
+  jettyVersion,jettyBaseVersion ->
+    def loaderNodesFinished = new boolean[loaderInstancesNumber]
+    def loaderNodesStarted = new boolean[loaderInstancesNumber]
+    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes,loaderNodesFinished,loaderNodesStarted)
 }
 
 
