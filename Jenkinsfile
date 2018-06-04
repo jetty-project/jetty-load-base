@@ -13,7 +13,7 @@ probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
-loaderMaxRequestsInQueue = "70000"
+loaderMaxRequestsInQueue = "90000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumbers = [3]
 
