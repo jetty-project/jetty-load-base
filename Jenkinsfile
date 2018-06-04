@@ -15,7 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "70000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = 3
+loaderInstancesNumber = 3
 
 rateRampUp = 30
 idleTimeout = 30000
@@ -39,7 +39,7 @@ jettyBaseFullVersionMap.each {
   jettyVersion,jettyBaseVersion ->
     def loaderNodesFinished = new boolean[loaderInstancesNumber]
     def loaderNodesStarted = new boolean[loaderInstancesNumber]
-    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes,loaderNodesFinished,loaderNodesStarted)
+    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumber,loaderRunningTimes,loaderNodesFinished,loaderNodesStarted)
 }
 
 
