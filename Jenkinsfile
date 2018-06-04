@@ -84,7 +84,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                     nodeFinished = loaderNodesFinished[i]
                     if ( !nodeFinished )
                     {
-                      echo "not finished " + i
+                      echo "not finished loader-" + i
                       allFinished = false
                     }
                   }
@@ -108,7 +108,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                   allStarted = loaderNodesStarted[i]
                   if ( !allStarted )
                   {
-                    echo "not allStarted " + i
+                    echo "not started loader-" + i
                     allStarted = false
                   }
                 }
@@ -130,12 +130,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
               }
               catch ( Exception e )
               {
-                echo "failure running probe"
+                echo "failure running probe: " + e.getMessage()
                 throw e
-              }
-              finally
-              {
-                //loaderNodesFinished[index] = true;
               }
             }
           }
