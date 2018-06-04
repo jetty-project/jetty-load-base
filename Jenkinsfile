@@ -76,10 +76,11 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-home-$jettyVersion/start.jar"
                 if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
                 sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
+                echo "jetty server started version ${jettyVersion}"
                 // we wait the end of all loader run
                 waitUntil {
                   allFinished = true;
-                  for ( i = 0; i < loaderNodesFinished.length; i++ )
+                  for ( i = 0; i < loaderInstancesNumber; i++ )
                   {
                     nodeFinished = loaderNodesFinished[i]
                     if ( !nodeFinished )
@@ -103,7 +104,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
               }
               waitUntil {
                 allStarted = true;
-                for ( i = 0; i < loaderNodesStarted.length; i++ )
+                for ( i = 0; i < loaderInstancesNumber; i++ )
                 {
                   allStarted = loaderNodesStarted[i]
                   if ( !allStarted )
@@ -155,7 +156,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
             sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
           }
           waitUntil {
-            sh "wget -q --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+            sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=10 http://$loadServerHostName:$loadServerPort"
             return true
           }
           sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
