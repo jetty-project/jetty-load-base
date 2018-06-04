@@ -15,7 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "70000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumber = 1
+loaderInstancesNumber = 2
 
 rateRampUp = 30
 idleTimeout = 30000
