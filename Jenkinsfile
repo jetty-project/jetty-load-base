@@ -46,14 +46,13 @@ node("master") {
 
 def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
   for(loaderInstancesNumber in loaderInstancesNumbers) {
+    def loaderNodesFinished = new boolean[loaderInstancesNumber];
+    def loaderNodesStarted = new boolean[loaderInstancesNumber];
+    // possible multiple loader node
+    def loaderNodes = [:]
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
-        def loaderNodesFinished = new boolean[loaderInstancesNumber];
-        def loaderNodesStarted = new boolean[loaderInstancesNumber];
         echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
-
-        // possible multiple loader node
-        def loaderNodes = [:]
         for ( int i = 0; i < loaderInstancesNumber; i++ )
         {
           loaderNodesFinished[i] = false
