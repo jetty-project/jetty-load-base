@@ -15,7 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "70000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumber = 3
+loaderInstancesNumber = 1
 
 rateRampUp = 30
 idleTimeout = 30000
@@ -37,9 +37,7 @@ parameters {
 
 jettyBaseFullVersionMap.each {
   jettyVersion,jettyBaseVersion ->
-    def loaderNodesFinished = new boolean[loaderInstancesNumber]
-    def loaderNodesStarted = new boolean[loaderInstancesNumber]
-    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumber,loaderRunningTimes,loaderNodesFinished,loaderNodesStarted)
+    getLoadTestNode(jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumber,loaderRunningTimes)
 }
 
 
@@ -49,10 +47,10 @@ node("master") {
 
 
 
-def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumber,loaderRunningTimes,loaderNodesFinished,loaderNodesStarted) {
+def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumber,loaderRunningTimes) {
   //for(loaderInstancesNumber in loaderInstancesNumbers) {
-    //def loaderNodesFinished = new boolean[loaderInstancesNumber]
-    //def loaderNodesStarted = new boolean[loaderInstancesNumber]
+    def loaderNodesFinished = new boolean[loaderInstancesNumber]
+    def loaderNodesStarted = new boolean[loaderInstancesNumber]
     def loaderNodes = [:]
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
@@ -84,7 +82,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 // we wait the end of all loader run
                 waitUntil {
                   allFinished = true;
-                  for ( i = 0; i < loaderInstancesNumber; i++ )
+                  for ( i = 0; i < loaderNodesFinished.length; i++ )
                   {
                     nodeFinished = loaderNodesFinished[i]
                     if ( !nodeFinished )
@@ -108,7 +106,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
               }
               waitUntil {
                 allStarted = true;
-                for ( i = 0; i < loaderInstancesNumber; i++ )
+                for ( i = 0; i < loaderNodesStarted.length; i++ )
                 {
                   allStarted = loaderNodesStarted[i]
                   if ( !allStarted )
