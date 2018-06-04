@@ -170,7 +170,6 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout"
             }
           }
-          echo "loader $index finished on " + loaderNodesFinished.length
         }
       }
       catch ( Exception e )
@@ -178,6 +177,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
         echo "failure running loader with rate $loaderRate, index $index, msg: " + e.getMessage()
         throw e
       } finally {
+        echo "loader $index finished on " + loaderNodesFinished.length
         loaderNodesFinished[index] = true;
       }
     }
