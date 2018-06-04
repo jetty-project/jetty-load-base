@@ -96,10 +96,10 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         }, probe: {
           node( 'load-test-probe-node' ) {
             stage( 'setup probe' ) {
-              sh "rm -rf .repository"
+              sh "rm -rf .repository/org/mortbay"
               withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                          mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-                sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+                sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
               }
               waitUntil {
                 allStarted = true;
@@ -149,16 +149,16 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
       try
       {
         stage( 'setup loader' ) {
-          sh "rm -rf .repository"
+          sh "rm -rf .repository/org/mortbay"
           withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                      mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-            sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+            sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
           }
           waitUntil {
-            sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
+            sh "wget -q --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
             return true
           }
-          sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+          sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
           sh "bash populate.sh $loadServerHostName"
           echo "set loaderNodesStarted " + index + " to true"
           loaderNodesStarted[index]=true
