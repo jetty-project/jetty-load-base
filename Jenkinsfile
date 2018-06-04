@@ -54,7 +54,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
     def loaderNodes = [:]
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
-        echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
+        echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate and loaderInstancesNumber $loaderInstancesNumber"
         for ( int i = 0; i < loaderInstancesNumber; i++ )
         {
           loaderNodesFinished[i] = false
@@ -109,7 +109,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 for ( i = 0; i < loaderNodesStarted.length; i++ )
                 {
                   allStarted = loaderNodesStarted[i]
-                  if ( !allStarted )
+                  if (!allStarted )
                   {
                     echo "not started loader-" + i
                     allStarted = false
@@ -165,7 +165,7 @@ def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStar
             }
             sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
             sh "bash populate.sh $loadServerHostName"
-            echo "set loaderNodesStarted " + index + " to true"
+            echo "set loaderNodesStarted $index to true"
             nodesStarted[index] = true
           } catch ( Exception e ) {
             echo "error starting loader " + e.getMessage(  )
