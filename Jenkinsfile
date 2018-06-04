@@ -57,6 +57,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         for ( int i = 0; i < loaderInstancesNumber; i++ )
         {
           loaderNodesFinished[i] = false
+          loaderNodesStarted[i] = false
           loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime,loaderNodesStarted);
         }
 
