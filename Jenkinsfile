@@ -164,6 +164,7 @@ def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStar
               return true
             }
             sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+            echo "get populate.sh"
             sh "bash populate.sh $loadServerHostName"
             echo "set loaderNodesStarted $index to true"
             nodesStarted[index] = true
