@@ -179,7 +179,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
       }
       catch ( Exception e )
       {
-        echo "failure running loader with rate $loaderRate"
+        echo "failure running loader with rate $loaderRate, index $index, msg: " + e.getMessage()
         throw e
       } finally {
         loaderNodesFinished[index] = true;
