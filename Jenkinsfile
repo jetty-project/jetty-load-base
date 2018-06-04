@@ -15,7 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "70000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumber = 2
+loaderInstancesNumbers = [3]
 
 rateRampUp = 30
 idleTimeout = 30000
@@ -37,7 +37,7 @@ parameters {
 
 jettyBaseFullVersionMap.each {
   jettyVersion,jettyBaseVersion ->
-    getLoadTestNode(jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumber,loaderRunningTimes)
+    getLoadTestNode(jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes)
 }
 
 
@@ -47,8 +47,8 @@ node("master") {
 
 
 
-def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumber,loaderRunningTimes) {
-  //for(loaderInstancesNumber in loaderInstancesNumbers) {
+def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
+  for(loaderInstancesNumber in loaderInstancesNumbers) {
     def loaderNodesFinished = new boolean[loaderInstancesNumber]
     def loaderNodesStarted = new boolean[loaderInstancesNumber]
     def loaderNodes = [:]
@@ -87,7 +87,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                     nodeFinished = loaderNodesFinished[i]
                     if ( !nodeFinished )
                     {
-                      echo "not finished loader-" + i
+                      echo "not finished loader- $i"
                       allFinished = false
                     }
                   }
@@ -111,7 +111,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                   allStarted = loaderNodesStarted[i]
                   if (!allStarted )
                   {
-                    echo "not started loader-" + i
+                    echo "not started loader-$i"
                     allStarted = false
                   }
                 }
@@ -142,7 +142,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
         echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
       }
-    //}
+    }
   }
 }
 
