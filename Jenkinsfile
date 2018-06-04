@@ -17,6 +17,7 @@ loaderMaxRequestsInQueue = "70000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumbers = [3]
 rateRampUp = 30
+idleTimeout = 30000
 jdk = "jdk8"
 
 // choices are newline separated
@@ -48,7 +49,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   for(loaderInstancesNumber in loaderInstancesNumbers) {
     def loaderNodesFinished = new boolean[loaderInstancesNumber];
     def loaderNodesStarted = new boolean[loaderInstancesNumber];
-    // possible multiple loader node
     def loaderNodes = [:]
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
@@ -167,7 +167,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
           echo "loader $index started"
           timeout( time: 120, unit: 'MINUTES' ) {
             withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue"
+              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout"
             }
           }
           echo "loader $index finished on " + loaderNodesFinished.length
