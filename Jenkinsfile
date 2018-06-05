@@ -57,9 +57,9 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         def loaderNodes = [:]
 
         echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate and loaderInstancesNumber $loaderInstancesNumber"
-        
-        try
-        {
+
+        //try
+        //{
           for ( int i = 0; i < loaderInstancesNumber; i++ )
           {
             loaderNodesFinished[i] = false
@@ -157,9 +157,9 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
           echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
-        } catch ( Exception e ) {
-          echo "FAIL load test:" + e.getMessage()
-        }
+        //} catch ( Exception e ) {
+        //  echo "FAIL load test:" + e.getMessage()
+        //}
 
       }
     }
