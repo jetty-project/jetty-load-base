@@ -162,9 +162,9 @@ def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStar
               sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
             }
             waitUntil {
-              //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=10 http://$loadServerHostName:$loadServerPort"
-              //return true
-              return serverStarted[0];
+              sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
+              return true
+              //return serverStarted[0];
             }
             sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
             echo "get populate.sh"
