@@ -60,7 +60,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         {
           loaderNodesFinished[i] = false
           loaderNodesStarted[i] = false
-          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime,loaderNodesStarted,serverStarted);
+          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime,loaderNodesStarted);
         }
 
         parallel loader: {
@@ -80,7 +80,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
                 sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                 echo "jetty server started version ${jettyVersion}"
-                serverStarted[0]=true
                 // we wait the end of all loader run
                 waitUntil {
                   allFinished = true;
@@ -89,7 +88,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                     nodeFinished = loaderNodesFinished[i]
                     if ( !nodeFinished )
                     {
-                      echo "not finished loader- $i"
+                      echo "not finished loader-$i"
                       allFinished = false
                     }
                   }
@@ -148,7 +147,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   }
 }
 
-def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStarted,serverStarted) {
+def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStarted) {
   return {
     node('load-test-loader-node') {
       try
@@ -164,7 +163,6 @@ def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStar
             waitUntil {
               sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
               return true
-              //return serverStarted[0];
             }
             sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
             echo "get populate.sh"
