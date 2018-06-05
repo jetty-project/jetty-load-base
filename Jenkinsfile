@@ -60,7 +60,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         {
           loaderNodesFinished[i] = false
           loaderNodesStarted[i] = false
-          loaderNodes["loader-" + i] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime,loaderNodesStarted);
+          loaderNodes["loader-$i"] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk,loaderRunningTime,loaderNodesStarted);
         }
 
         parallel loader: {
@@ -147,7 +147,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   }
 }
 
-def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStarted) {
+def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,nodesStarted) {
   return {
     node('load-test-loader-node') {
       try
@@ -188,8 +188,8 @@ def getLoaderNode(index,nodesFinished,loaderRate,jdk,loaderRunningTime,nodesStar
         echo "failure running loader with rate $loaderRate, index $index, msg: " + e.getMessage()
         throw e
       } finally {
-        echo "loader $index finished on " + nodesFinished.length
-        nodesFinished[index] = true;
+        echo "loader $index finished on " + loaderNodesFinished.length
+        loaderNodesFinished[index] = true;
       }
     }
   }
