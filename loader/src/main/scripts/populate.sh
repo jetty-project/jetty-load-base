@@ -14,6 +14,5 @@ do
     curl -s -S -X POST \
       -H "Content-Type: application/json" \
       -d "{\"email\":\"$u@mail.example.com\",\"fullName\":\"$U\",\"phone\":\"$N\"}" \
-      http://$targetHost:8080/api/contact
-       ## > /dev/null
+      http://$targetHost:8080/api/contact > /dev/null
 done
