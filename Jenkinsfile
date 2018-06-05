@@ -16,6 +16,7 @@ loaderChannelsPerUser = "10"
 loaderMaxRequestsInQueue = "90000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumbers = [3]
+serverStarted = "false"
 
 rateRampUp = 30
 idleTimeout = 30000
@@ -79,6 +80,11 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
                 sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                 echo "jetty server started version ${jettyVersion}"
+                sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+                echo "get populate.sh"
+                sh "bash populate.sh $loadServerHostName"
+                echo "server data populated"
+                serverStarted = "true"
                 // we wait the end of all loader run
                 waitUntil {
                   allFinished = true;
@@ -146,7 +152,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   }
 }
 
-def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,nodesStarted) {
+def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loaderNodesStarted) {
   return {
     node('load-test-loader-node') {
       try
@@ -160,21 +166,17 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,nod
               sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
             }
             waitUntil {
-              sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
-              return true
+              //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
+              return serverStarted.equals("true")
             }
-            sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
-            echo "get populate.sh"
-            sh "bash populate.sh $loadServerHostName"
-            echo "set loaderNodesStarted $index to true"
-            nodesStarted[index] = true
           } catch ( Exception e ) {
             echo "error starting loader " + e.getMessage(  )
             throw e
           }
         }
         stage( "run loader rate ${loaderRate}" ) {
-          echo "loader $index started"
+          echo "set loaderNodesStarted $index to true"
+          loaderNodesStarted[index] = true
           timeout( time: 120, unit: 'MINUTES' ) {
             withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout"
