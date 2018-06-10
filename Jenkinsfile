@@ -117,20 +117,22 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                            mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
                   sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
                 }
+//                waitUntil {
+//                  allStarted = true;
+//                  for ( i = 0; i < loaderNodesStarted.length; i++ )
+//                  {
+//                    allStarted = loaderNodesStarted[i]
+//                    if ( !allStarted )
+//                    {
+//                      echo "not started loader-$i"
+//                      allStarted = false
+//                    }
+//                  }
+//                  return allStarted
+//
+//                }
                 waitUntil {
-                  allStarted = true;
-                  for ( i = 0; i < loaderNodesStarted.length; i++ )
-                  {
-                    allStarted = loaderNodesStarted[i]
-                    if ( !allStarted )
-                    {
-                      echo "not started loader-$i"
-                      allStarted = false
-                    }
-                  }
-                  return allStarted
-                  //sh "wget --retry-connrefused -O foo.html --tries=150 --waitretry=10 http://$loadServerHostName:$loadServerPort"
-                  // return true
+                  return serverStarted.equals("true")
                 }
               }
               stage( 'run probe' ) {
