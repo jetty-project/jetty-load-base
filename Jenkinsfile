@@ -17,7 +17,7 @@ loaderMaxRequestsInQueue = "90000"
 loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumbers = [3]
 serverStarted = "false"
-probeRunning = "false"
+probeFinished = "false"
 
 rateRampUp = 30
 idleTimeout = 30000
@@ -104,7 +104,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                         allFinished = false
                       }
                     }
-                    return allFinished && probeRunning == "false"
+                    return allFinished && probeFinished == "true"
                   }
                 }
               }
@@ -112,7 +112,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           }, probe: {
             node( 'load-test-probe-node' ) {
               stage( 'setup probe' ) {
-                probeRunning = "true"
                 sh "rm -rf .repository/org/mortbay"
                 withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                            mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
@@ -150,7 +149,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                   echo "failure running probe: " + e.getMessage()
                   throw e
                 } finally {
-                  probeRunning = "false"
+                  probeFinished = "true"
                 }
               }
             }
@@ -165,7 +164,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           throw e
         }finally {
           serverStarted = "false"
-          probeRunning = "false"
+          probeFinished = "false"
         }
 
       }
