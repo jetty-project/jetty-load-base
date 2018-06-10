@@ -58,8 +58,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
         echo "START load test for jettyVersion: $jettyVersion and loaderRate $loaderRate and loaderInstancesNumber $loaderInstancesNumber"
 
-        //try
-        //{
+        try {
           for ( int i = 0; i < loaderInstancesNumber; i++ )
           {
             loaderNodesFinished[i] = false
@@ -68,9 +67,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                     getLoaderNode( i, loaderNodesFinished, loaderRate, jdk, loaderRunningTime, loaderNodesStarted );
           }
 
-          parallel loader: {
-            parallel loaderNodes
-          }, server: {
+          parallel server: {
             node( 'load-test-server-node' ) {
               stage( 'build jetty app' ) {
                 git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
@@ -153,13 +150,18 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 }
               }
             }
+          }, loader: {
+            parallel loaderNodes
           }, failFast: true
 
           echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
-        //} catch ( Exception e ) {
-        //  echo "FAIL load test:" + e.getMessage()
-        //}
+        } catch ( Exception e ) {
+          echo "FAIL load test:" + e.getMessage()
+          throw e
+        }finally {
+          serverStarted = "false"
+        }
 
       }
     }
