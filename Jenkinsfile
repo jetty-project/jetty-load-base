@@ -74,7 +74,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                 git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
                 withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                            mavenLocalRepo: '.repository' ) {
-                  sh "mvn clean install -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+                  sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
                 }
               }
               stage( "starting jetty app ${jettyVersion}" ) {
