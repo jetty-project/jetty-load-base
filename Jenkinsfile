@@ -85,6 +85,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                     if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
                     sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                     echo "jetty server started version ${jettyVersion}"
+                    // sleep to wait server started
+                    sleep 60
                     waitUntil {
                       sh "wget --retry-connrefused -O foo.html --tries=2000 --waitretry=30 http://$loadServerHostName:$loadServerPort"
                       return true
