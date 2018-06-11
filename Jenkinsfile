@@ -84,12 +84,12 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                   sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                   echo "jetty server started version ${jettyVersion}"
                   waitUntil {
-                    sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
+                    sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://localhost:$loadServerPort"
                     return true
                   }
                   sh 'wget -q -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
                   echo "get populate.sh"
-                  sh "bash populate.sh $loadServerHostName"
+                  sh "bash populate.sh localhost"
                   echo "server data populated"
                   serverStarted = "true"
                   // we wait the end of all loader run
