@@ -132,6 +132,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 //
 //                }
                 waitUntil {
+                  echo "server not started probe is waiting"
                   return serverStarted.equals("true")
                 }
               }
@@ -189,6 +190,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
             }
             waitUntil {
               //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
+              echo "server not started loader $index is waiting"
               return serverStarted.equals("true")
             }
           } catch ( Exception e ) {
