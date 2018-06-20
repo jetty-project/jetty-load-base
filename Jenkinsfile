@@ -8,7 +8,7 @@ jenkinsBuildId= env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTimes = ["120","300"]//"300"
-loaderRates = ["300","500"]
+loaderRates = ["200","400"]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
@@ -37,11 +37,11 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-jettyBaseFullVersionMap.each {
-  jettyVersion,jettyBaseVersion ->
-    getLoadTestNode(jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers,loaderRunningTimes)
+for (i = 0; i <3; i++) {
+  jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
+    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
+  }
 }
-
 
 node("master") {
   loadtestresult()
