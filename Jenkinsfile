@@ -8,7 +8,7 @@ jenkinsBuildId= env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
 loaderRunningTimes = ["300"]//"300"
-loaderRates = ["400","500"]
+loaderRates = ["500"]//,"500"]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
@@ -37,11 +37,11 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-for (i = 0; i <5; i++) {
+//for (i = 0; i <1; i++) {
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
-}
+//}
 
 node("master") {
   loadtestresult()
@@ -50,6 +50,46 @@ node("master") {
 
 
 def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
+
+  node( 'load-test-server-node' ) {
+    stage( 'build jetty app' ) {
+      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                 mavenLocalRepo: '.repository' ) {
+        sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+      }
+    }
+  }
+
+  node('load-test-loader-node') {
+    stage( 'setup loader' ) {
+      try
+      {
+        sh "rm -rf .repository/org/mortbay"
+        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                   mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+          sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+        }
+        stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
+      }
+      catch ( Exception e )
+      {
+        echo "error starting loader " + e.getMessage()
+        throw e
+      }
+    }
+  }
+
+  node( 'load-test-probe-node' ) {
+    stage( 'setup probe' ) {
+      sh "rm -rf .repository/org/mortbay"
+      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                 mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+        sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+      }
+      stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
+    }
+  }
   for(loaderInstancesNumber in loaderInstancesNumbers) {
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
@@ -72,13 +112,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
             node( 'load-test-server-node' ) {
               try
               {
-                stage( 'build jetty app' ) {
-                  git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-                  withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                             mavenLocalRepo: '.repository' ) {
-                    sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
-                  }
-                }
                 stage( "starting jetty app ${jettyVersion}" ) {
                   withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
                     jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-home-$jettyVersion/start.jar"
@@ -120,32 +153,26 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           }, probe: {
             node( 'load-test-probe-node' ) {
               try {
-                stage( 'setup probe' ) {
-                  sh "rm -rf .repository/org/mortbay"
-                  withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                             mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-                    sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-                  }
-  //                waitUntil {
-  //                  allStarted = true;
-  //                  for ( i = 0; i < loaderNodesStarted.length; i++ )
-  //                  {
-  //                    allStarted = loaderNodesStarted[i]
-  //                    if ( !allStarted )
-  //                    {
-  //                      echo "not started loader-$i"
-  //                      allStarted = false
-  //                    }
-  //                  }
-  //                  return allStarted
-  //
-  //                }
+                stage( 'run probe' ) {
+                  //                waitUntil {
+                  //                  allStarted = true;
+                  //                  for ( i = 0; i < loaderNodesStarted.length; i++ )
+                  //                  {
+                  //                    allStarted = loaderNodesStarted[i]
+                  //                    if ( !allStarted )
+                  //                    {
+                  //                      echo "not started loader-$i"
+                  //                      allStarted = false
+                  //                    }
+                  //                  }
+                  //                  return allStarted
+                  //
+                  //                }
+                  unstash name: 'probe-jar'
                   waitUntil {
                     echo "server not started probe is waiting"
                     return serverStarted.equals("true")
                   }
-                }
-                stage( 'run probe' ) {
                   echo "start running probe"
                   timeout( time: 120, unit: 'MINUTES' ) {
                     withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
@@ -167,7 +194,15 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
             parallel loaderNodes
           }, failFast: true
 
-          echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
+          echo "END load test fo    node('load-test-loader-node') {\n" + "      try\n" + "      {\n" +
+                       "        stage( 'setup loader' ) {\n" + "          try\n" + "          {\n" +
+                       "            sh \"rm -rf .repository/org/mortbay\"\n" +
+                       "            withMaven( maven: 'maven3.5', jdk: \"$jdk\", publisherStrategy: 'EXPLICIT',\n" +
+                       "                       mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {\n" +
+                       "              sh \"mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true\"\n" +
+                       "            }\n" + "\n" + "          } catch ( Exception e ) {\n" +
+                       "            echo \"error starting loader \" + e.getMessage(  )\n" + "            throw e\n" +
+                       "          }\n" + "        }r jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
         } catch ( Exception e ) {
           echo "FAIL load test:" + e.getMessage()
@@ -184,28 +219,14 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
 def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loaderNodesStarted) {
   return {
-    node('load-test-loader-node') {
-      try
-      {
-        stage( 'setup loader' ) {
-          try
-          {
-            sh "rm -rf .repository/org/mortbay"
-            withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                       mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-              sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-            }
-            waitUntil {
-              //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
-              echo "server not started loader $index is waiting"
-              return serverStarted.equals("true")
-            }
-          } catch ( Exception e ) {
-            echo "error starting loader " + e.getMessage(  )
-            throw e
-          }
-        }
+      try{
         stage( "run loader rate ${loaderRate}" ) {
+          unstash name: 'loader-jar'
+          waitUntil {
+            //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
+            echo "server not started loader $index is waiting"
+            return serverStarted.equals("true")
+          }
           echo "set loaderNodesStarted $index to true"
           loaderNodesStarted[index] = true
           timeout( time: 120, unit: 'MINUTES' ) {
@@ -223,6 +244,5 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
         echo "loader $index finished on " + loaderNodesFinished.length
         loaderNodesFinished[index] = true;
       }
-    }
   }
 }
