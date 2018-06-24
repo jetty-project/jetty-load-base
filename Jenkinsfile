@@ -194,15 +194,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
             parallel loaderNodes
           }, failFast: true
 
-          echo "END load test fo    node('load-test-loader-node') {\n" + "      try\n" + "      {\n" +
-                       "        stage( 'setup loader' ) {\n" + "          try\n" + "          {\n" +
-                       "            sh \"rm -rf .repository/org/mortbay\"\n" +
-                       "            withMaven( maven: 'maven3.5', jdk: \"$jdk\", publisherStrategy: 'EXPLICIT',\n" +
-                       "                       mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {\n" +
-                       "              sh \"mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true\"\n" +
-                       "            }\n" + "\n" + "          } catch ( Exception e ) {\n" +
-                       "            echo \"error starting loader \" + e.getMessage(  )\n" + "            throw e\n" +
-                       "          }\n" + "        }r jettyVersion: $jettyVersion and loaderRate $loaderRate"
+          echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
         } catch ( Exception e ) {
           echo "FAIL load test:" + e.getMessage()
