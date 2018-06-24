@@ -1,7 +1,7 @@
 #!groovy
 
 
-def jettyBaseFullVersionMap = ['9.4.12-LOGGER-DEBUG-DISABLED-SNAPSHOT':'9.4','9.4.12-NO-LOGGER-SNAPSHOT':'9.4','9.4.12-SNAPSHOT':'9.4','9.4.11.v20180605':'9.4'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.10-SNAPSHOT']
+def jettyBaseFullVersionMap = ['9.4.12-LOGGER-DEBUG-DISABLED-SNAPSHOT':'9.4','9.4.12-NO-LOGGER-SNAPSHOT':'9.4','9.4.12-SNAPSHOT':'9.4']//,'9.4.11.v20180605':'9.4'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.10-SNAPSHOT']
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
@@ -21,7 +21,7 @@ probeFinished = "false"
 
 rateRampUp = 30
 idleTimeout = 30000
-jdk = "jdk8"
+jdk = "jdk8u112"
 
 // choices are newline separated
 parameters {
@@ -37,7 +37,7 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-for (i = 0; i <2; i++) {
+for (i = 0; i <4; i++) {
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
