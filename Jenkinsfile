@@ -219,13 +219,15 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
 def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loaderNodesStarted) {
   return {
-      try{
+    node('load-test-loader-node') {
+      try
+      {
         stage( "run loader rate ${loaderRate}" ) {
           unstash name: 'loader-jar'
           waitUntil {
             //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
             echo "server not started loader $index is waiting"
-            return serverStarted.equals("true")
+            return serverStarted.equals( "true" )
           }
           echo "set loaderNodesStarted $index to true"
           loaderNodesStarted[index] = true
@@ -240,9 +242,12 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
       {
         echo "failure running loader with rate $loaderRate, index $index, msg: " + e.getMessage()
         throw e
-      } finally {
+      }
+      finally
+      {
         echo "loader $index finished on " + loaderNodesFinished.length
         loaderNodesFinished[index] = true;
       }
+    }
   }
 }
