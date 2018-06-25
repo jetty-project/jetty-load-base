@@ -51,20 +51,19 @@ node("master") {
 
 def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
 
-  node( 'load-test-server-node' ) {
-    stage( 'build jetty app' ) {
-      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                 mavenLocalRepo: '.repository' ) {
-        sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+  parallel setup_server_node : {
+    node( 'load-test-server-node' ) {
+      stage( 'build jetty app' ) {
+        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                   mavenLocalRepo: '.repository' ) {
+          sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+        }
       }
     }
-  }
-
-  node('load-test-loader-node') {
-    stage( 'setup loader' ) {
-      try
-      {
+  }, setup_loader_node :{
+    node('load-test-loader-node') {
+      stage( 'setup loader' ) {
         sh "rm -rf .repository/org/mortbay"
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
@@ -72,24 +71,25 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         }
         stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
       }
-      catch ( Exception e )
-      {
-        echo "error starting loader " + e.getMessage()
-        throw e
+    }
+  }, setup_probe_node: {
+    node( 'load-test-probe-node' ) {
+      stage( 'setup probe' ) {
+        sh "rm -rf .repository/org/mortbay"
+        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                   mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
+          sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+        }
+        stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
       }
     }
-  }
+  }, failFast: true
 
-  node( 'load-test-probe-node' ) {
-    stage( 'setup probe' ) {
-      sh "rm -rf .repository/org/mortbay"
-      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                 mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml' ) {
-        sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-      }
-      stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
-    }
-  }
+
+
+
+
+
   for(loaderInstancesNumber in loaderInstancesNumbers) {
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
