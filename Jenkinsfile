@@ -58,7 +58,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         //sh "rm -rf .repository"
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml') {
-          sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
         }
       }
     }
@@ -68,8 +68,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
-          sh "mvn clean install -U -DskipTests"
-          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+          sh "mvn -q clean install -U -DskipTests"
+          sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
       }
@@ -80,7 +80,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
-          sh "mvn clean install -U -DskipTests"
+          sh "mvn -q clean install -U -DskipTests"
           sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
