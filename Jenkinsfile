@@ -67,7 +67,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
       stage( 'setup loader' ) {
         sh "rm -rf .repository"
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository' ) { // , globalMavenSettingsConfig: 'oss-settings.xml'
+                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'mirror-all' ) {
           sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
@@ -78,8 +78,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
       stage( 'setup probe' ) {
         sh "rm -rf .repository"
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository' ) { // , globalMavenSettingsConfig: 'oss-settings.xml'
-          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'mirror-all' ) { 
+          sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
       }
