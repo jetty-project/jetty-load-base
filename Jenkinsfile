@@ -55,7 +55,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
     node( 'load-test-server-node' ) {
       stage( 'build jetty app' ) {
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        sh "rm -rf .repository"
+        //sh "rm -rf .repository"
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository', globalMavenSettingsConfig: 'oss-settings.xml') {
           sh "mvn clean install -U -q -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
@@ -65,10 +65,11 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   }, setup_loader_node :{
     node('load-test-loader-node') {
       stage( 'setup loader' ) {
-        sh "rm -rf .repository"
+        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'df2e0aae-dbff-4ddc-bdd3-c8b305ce4eae' ) {
-          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
+          sh "mvn clean install -U -DskipTests"
+          sh "mvn org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
       }
@@ -76,9 +77,10 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
   }, setup_probe_node: {
     node( 'load-test-probe-node' ) {
       stage( 'setup probe' ) {
-        sh "rm -rf .repository"
+        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'df2e0aae-dbff-4ddc-bdd3-c8b305ce4eae' ) {
+                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
+          sh "mvn clean install -U -DskipTests"
           sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
         }
         stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
