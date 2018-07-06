@@ -37,7 +37,7 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-for (i = 0; i <4; i++) {
+for (i = 0; i <8; i++) {
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
