@@ -38,6 +38,7 @@ parameters {
 }
 
 for (i = 0; i <5; i++) {
+  echo "iteration numer $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
