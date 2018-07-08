@@ -12,9 +12,9 @@ loaderRates = ["300","500"]//,"500"]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
-loaderChannelsPerUser = "10"
-loaderMaxRequestsInQueue = "90000"
-loaderVmOptions = "-showversion -Xmx8G -Xms8G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
+loaderChannelsPerUser = "12"
+loaderMaxRequestsInQueue = "100000"
+loaderVmOptions = "-showversion -Xmx10G -Xms10G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
 loaderInstancesNumbers = [3]
 serverStarted = "false"
 probeFinished = "false"
@@ -37,7 +37,7 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-for (i = 0; i <4; i++) {
+for (i = 0; i <5; i++) {
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
