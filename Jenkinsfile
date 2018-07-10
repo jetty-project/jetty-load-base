@@ -1,14 +1,14 @@
 #!groovy
 
 
-def jettyBaseFullVersionMap = ['9.4.12-LOGGER-DEBUG-DISABLED-SNAPSHOT':'9.4','9.4.12-NO-LOGGER-SNAPSHOT':'9.4','9.4.12-SNAPSHOT':'9.4']//,'9.4.11.v20180605':'9.4'] // ['9.2':'9.2.22.v20170606', '9.3':'9.3.20.v20170531', '9.4':'9.4.8.v20171121', '9.4':'9.4.10-SNAPSHOT']
+def jettyBaseFullVersionMap = ['9.4.12-LOGGER-DEBUG-DISABLED-SNAPSHOT':'9.4','9.4.12-NO-LOGGER-SNAPSHOT':'9.4','9.4.12-SNAPSHOT':'9.4']
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
-loaderRunningTimes = ["300"]//"300"
-loaderRates = ["300","500"]//,"500"]
+loaderRunningTimes = ["300"]
+loaderRates = ["500"]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
@@ -37,12 +37,12 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
-for (i = 0; i <5; i++) {
-  echo "iteration number $i"
+//for (i = 0; i <5; i++) {
+  //echo "iteration number $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
-}
+//}
 
 node("master") {
   loadtestresult()
@@ -88,10 +88,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
       }
     }
   }, failFast: true
-
-
-
-
 
 
   for(loaderInstancesNumber in loaderInstancesNumbers) {
