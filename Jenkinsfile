@@ -15,6 +15,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "12"
 loaderMaxRequestsInQueue = "100000"
 loaderVmOptions = "-showversion -Xmx10G -Xms10G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
+serverVmOptions= "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=/home/jenkins/profiler.svg"
 loaderInstancesNumbers = [3]
 serverStarted = "false"
 probeFinished = "false"
@@ -114,8 +115,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
               {
                 stage( "starting jetty app ${jettyVersion}" ) {
                   withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-                    jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-home-$jettyVersion/start.jar"
-                    if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java -jar ../jetty-distribution-$jettyVersion/start.jar"
+                    jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
+                    if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
                     sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                     echo "jetty server started version ${jettyVersion}"
                     // sleep to wait server started
