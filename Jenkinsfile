@@ -15,7 +15,6 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "12"
 loaderMaxRequestsInQueue = "100000"
 loaderVmOptions = "-showversion -Xmx10G -Xms10G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-serverVmOptions= "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=/home/jenkins/profiler.svg"
 loaderInstancesNumbers = [3]
 serverStarted = "false"
 probeFinished = "false"
@@ -38,6 +37,32 @@ parameters {
   string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
 }
 
+parallel setup_loader_node :{
+  node('load-test-loader-node') {
+    stage( 'setup loader' ) {
+      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                 mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
+        sh "mvn -q clean install -U -DskipTests"
+        sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+      }
+      stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
+    }
+  }
+}, setup_probe_node: {
+  node( 'load-test-probe-node' ) {
+    stage( 'setup probe' ) {
+      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                 mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
+        sh "mvn -q clean install -U -DskipTests"
+        sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+      }
+      stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
+    }
+  }
+}, failFast: true
+
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
@@ -53,42 +78,17 @@ node("master") {
 
 def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
 
-  parallel setup_server_node : {
-    node( 'load-test-server-node' ) {
-      stage( 'build jetty app' ) {
-        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        //sh "rm -rf .repository"
-        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
-          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
-        }
+
+  node( 'load-test-server-node' ) {
+    stage( 'build jetty app for version $jettyVersion' ) {
+      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+      //sh "rm -rf .repository"
+      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                 mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
+        sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
       }
     }
-  }, setup_loader_node :{
-    node('load-test-loader-node') {
-      stage( 'setup loader' ) {
-        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
-          sh "mvn -q clean install -U -DskipTests"
-          sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-        }
-        stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
-      }
-    }
-  }, setup_probe_node: {
-    node( 'load-test-probe-node' ) {
-      stage( 'setup probe' ) {
-        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
-          sh "mvn -q clean install -U -DskipTests"
-          sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-        }
-        stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
-      }
-    }
-  }, failFast: true
+  }
 
 
   for(loaderInstancesNumber in loaderInstancesNumbers) {
@@ -115,6 +115,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
               {
                 stage( "starting jetty app ${jettyVersion}" ) {
                   withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
+                    serverVmOptions= "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=/home/jenkins/profiler_$jettyVersion.svg"
                     jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
                     if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
                     sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
