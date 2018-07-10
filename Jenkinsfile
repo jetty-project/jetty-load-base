@@ -18,6 +18,7 @@ loaderVmOptions = "-showversion -Xmx10G -Xms10G -XX:+PrintCommandLineFlags -XX:+
 loaderInstancesNumbers = [3]
 serverStarted = "false"
 probeFinished = "false"
+serverWd = "/home/jenkins/load_test_wd"
 
 rateRampUp = 30
 idleTimeout = 30000
@@ -81,11 +82,14 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
   node( 'load-test-server-node' ) {
     stage( 'build jetty app for version $jettyVersion' ) {
-      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      //sh "rm -rf .repository"
-      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                 mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
-        sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+      dir (serverWd) {
+        sh "rm -rf *"
+        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+        //sh "rm -rf .repository"
+        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                   mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
+          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+        }
       }
     }
   }
@@ -105,51 +109,55 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           {
             loaderNodesFinished[i] = false
             loaderNodesStarted[i] = false
-            loaderNodes["loader-$i"] =
-                    getLoaderNode( i, loaderNodesFinished, loaderRate, jdk, loaderRunningTime, loaderNodesStarted );
+            loaderNodes["loader-$i"] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk, loaderRunningTime, loaderNodesStarted );
           }
 
           parallel server: {
             node( 'load-test-server-node' ) {
-              try
-              {
-                stage( "starting jetty app ${jettyVersion}" ) {
-                  withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-                    serverVmOptions= "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=/home/jenkins/profiler_$jettyVersion"+".svg"
-                    jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
-                    if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
-                    sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
-                    echo "jetty server started version ${jettyVersion}"
-                    // sleep to wait server started
-                    sleep 60
-                    waitUntil {
-                      sh "wget --retry-connrefused -O foo.html --tries=2000 --waitretry=30 http://$loadServerHostName:$loadServerPort"
-                      return true
-                    }
-                    sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
-                    echo "get populate.sh"
-                    sh "bash populate.sh $loadServerHostName"
-                    echo "server data populated"
-                    serverStarted = "true"
-                    // we wait the end of all loader run
-                    waitUntil {
-                      allFinished = true;
-                      for ( i = 0; i < loaderNodesFinished.length; i++ )
-                      {
-                        nodeFinished = loaderNodesFinished[i]
-                        if ( !nodeFinished )
-                        {
-                          echo "not finished loader-$i"
-                          allFinished = false
-                        }
+              dir (serverWd) {
+                try {
+                  stage( "starting jetty app ${jettyVersion}" ) {
+                    withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
+                      serverVmOptions =
+                              "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=/home/jenkins/profiler_$jettyVersion" +
+                                      ".svg"
+                      jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
+                      if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
+                      sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
+                      echo "jetty server started version ${jettyVersion}"
+                      // sleep to wait server started
+                      sleep 60
+                      waitUntil {
+                        sh "wget --retry-connrefused -O foo.html --tries=2000 --waitretry=30 http://$loadServerHostName:$loadServerPort"
+                        return true
                       }
-                      return allFinished && probeFinished == "true"
+                      sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+                      echo "get populate.sh"
+                      sh "bash populate.sh $loadServerHostName"
+                      echo "server data populated"
+                      serverStarted = "true"
+                      // we wait the end of all loader run
+                      waitUntil {
+                        allFinished = true;
+                        for ( i = 0; i < loaderNodesFinished.length; i++ )
+                        {
+                          nodeFinished = loaderNodesFinished[i]
+                          if ( !nodeFinished )
+                          {
+                            echo "not finished loader-$i"
+                            allFinished = false
+                          }
+                        }
+                        return allFinished && probeFinished == "true"
+                      }
                     }
                   }
                 }
-              } catch (Exception e) {
-                echo "failure running server: " + e.getMessage()
-                throw e
+                catch ( Exception e )
+                {
+                  echo "failure running server: " + e.getMessage()
+                  throw e
+                }
               }
             }
           }, probe: {
