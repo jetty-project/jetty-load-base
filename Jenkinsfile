@@ -119,7 +119,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                   stage( "starting jetty app ${jettyVersion}" ) {
                     withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
                       serverVmOptions =
-                              "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=/home/jenkins/profiler_$jettyVersion" +
+                              "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion_$loaderRate_$loaderRunningTime_$loaderInstancesNumber" +
                                       ".svg"
                       jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
                       if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
@@ -150,6 +150,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                         }
                         return allFinished && probeFinished == "true"
                       }
+                      archiveArtifacts artifacts: '$serverWd/*.svg'
                     }
                   }
                 }
