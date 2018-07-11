@@ -81,7 +81,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
 
   node( 'load-test-server-node' ) {
-    stage( 'build jetty app for version $jettyVersion' ) {
+    stage( "build jetty app for version $jettyVersion" ) {
       dir (serverWd) {
         sh "rm -rf *"
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
