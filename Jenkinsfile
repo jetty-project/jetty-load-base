@@ -150,7 +150,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                         }
                         return allFinished && probeFinished == "true"
                       }
-                      archiveArtifacts artifacts: "$serverWd/*.svg"
+                      archiveArtifacts artifacts: "*.svg"
                     }
                   }
                 }
