@@ -150,7 +150,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                         }
                         return allFinished && probeFinished == "true"
                       }
-                      archiveArtifacts artifacts: "*.svg"
                     }
                   }
                 }
@@ -215,6 +214,11 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           probeFinished = "false"
         }
 
+      }
+      node( 'load-test-server-node' ) {
+        dir( serverWd ) {
+          archiveArtifacts artifacts: "*.svg"
+        }
       }
     }
   }
