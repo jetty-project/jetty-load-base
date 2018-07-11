@@ -206,6 +206,12 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
 
           echo "END load test for jettyVersion: $jettyVersion and loaderRate $loaderRate"
 
+          node( 'load-test-server-node' ) {
+            dir( serverWd ) {
+              archiveArtifacts artifacts: "*.svg"
+            }
+          }
+
         } catch ( Exception e ) {
           echo "FAIL load test:" + e.getMessage()
           //throw e
@@ -214,11 +220,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           probeFinished = "false"
         }
 
-      }
-      node( 'load-test-server-node' ) {
-        dir( serverWd ) {
-          archiveArtifacts artifacts: "*.svg"
-        }
       }
     }
   }
