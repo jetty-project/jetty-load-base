@@ -164,20 +164,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
             node( 'load-test-probe-node' ) {
               try {
                 stage( 'run probe' ) {
-                  //                waitUntil {
-                  //                  allStarted = true;
-                  //                  for ( i = 0; i < loaderNodesStarted.length; i++ )
-                  //                  {
-                  //                    allStarted = loaderNodesStarted[i]
-                  //                    if ( !allStarted )
-                  //                    {
-                  //                      echo "not started loader-$i"
-                  //                      allStarted = false
-                  //                    }
-                  //                  }
-                  //                  return allStarted
-                  //
-                  //                }
                   unstash name: 'probe-jar'
                   waitUntil {
                     echo "server not started probe is waiting"
