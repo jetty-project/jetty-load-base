@@ -30,6 +30,7 @@
     <module>9.2</module>
     <module>9.3</module>
     <module>9.4</module>
+    <module>9.4-http2</module>
     <module>loader</module>
     <module>probe</module>
   </modules>
@@ -39,7 +40,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.6.2</version>
+          <version>3.8.0</version>
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
