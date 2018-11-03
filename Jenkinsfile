@@ -89,7 +89,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
           // TODO make this configuration easier
-          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion-$transport,test-webapp -am -Djetty.version=$jettyVersion"
+          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
         }
       }
     }
@@ -125,7 +125,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                       jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
                       if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
                       // TODO make this configuration easier
-                      sh "cd $jettyBaseVersion-$transport/target/jetty-base && $jettyStart &"
+                      sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                       echo "jetty server started version ${jettyVersion}"
                       // sleep to wait server started
                       sleep 60
