@@ -9,8 +9,8 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>jetty-load-base-9.4-http2</artifactId>
-  <name>Jetty Load Test 9.4.x Http2</name>
+  <artifactId>jetty-load-base-9.4-h2c</artifactId>
+  <name>Jetty Load Test 9.4.x Http2(h2c)</name>
   <packaging>pom</packaging>
 
   <properties>

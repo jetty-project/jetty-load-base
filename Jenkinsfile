@@ -1,7 +1,7 @@
 #!groovy
 
 
-def jettyBaseFullVersionMap = ['9.4.12.v20180830':'9.4-http2']
+def jettyBaseFullVersionMap = ['9.4.12.v20180830':'9.4-h2c']
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
