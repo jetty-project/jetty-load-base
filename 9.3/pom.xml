@@ -78,7 +78,7 @@
                 <artifactItem>
                   <groupId>org.glassfish.jersey.examples</groupId>
                   <artifactId>bean-validation-webapp</artifactId>
-                  <version>2.25.1</version>
+                  <version>${beanValidationWebapp.version}</version>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <includes>**</includes>
