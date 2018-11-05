@@ -91,7 +91,7 @@ public class ProbeMain {
                     .path("/stats/start")
                     .send();
 
-            LoadConfig loadConfig = retrieveLoaderConfig(probeArgs, httpClient).transport( probeArgs.getTransport().name() );
+            LoadConfig loadConfig = retrieveLoaderConfig(probeArgs, httpClient);
             long startRetrieve = System.currentTimeMillis();
             // max wait 60 s
             long maxWaitSecond = 120;
@@ -110,7 +110,7 @@ public class ProbeMain {
                 }
             }
 
-            loadConfig.setInstanceNumber( probeArgs.loaderNumber );
+            loadConfig.instanceNumber( probeArgs.loaderNumber ).transport( probeArgs.getTransport().name() );
 
             // we calculate the resource number
             try(Reader reader  = Files.newBufferedReader( Paths.get( probeArgs.loaderResourcesPath )))
