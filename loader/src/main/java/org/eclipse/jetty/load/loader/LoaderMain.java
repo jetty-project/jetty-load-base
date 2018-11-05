@@ -47,13 +47,15 @@ public class LoaderMain {
         builder.scheduler(scheduler);
         mbeanContainer.beanAdded(null, scheduler);
 
+        HttpClient httpClient = new HttpClient( loaderArgs.getHttpClientTransportBuilder().build(), null );
+        httpClient.setScheduler( scheduler );
+        httpClient.start();
         try {
             ServerInfo serverInfo = ServerInfo
                 .retrieveServerInfo(new ServerInfo.Request( loaderArgs.getScheme(),
                                                             loaderArgs.getHost(),
                                                             "/test/info/",
-                                                            loaderArgs.getHttpClientTransportBuilder(),
-                                                            loaderArgs.getPort() ));
+                                                            loaderArgs.getPort() ), httpClient);
 
             LOGGER.info("run load test on server: {}", serverInfo);
             LOGGER.info("loader version: {}", Version.getInstance());
@@ -73,8 +75,10 @@ public class LoaderMain {
             LoadGenerator loadGenerator = builder.build();
             loadGenerator.addBean(mbeanContainer);
 
-            LoadConfig loadConfig = new LoadConfig( loadGenerator.getConfig() ).type( LoadConfig.Type.LOADER );
-            storeLoadConfig( loadConfig, loaderArgs.getHttpClientTransportBuilder() );
+            LoadConfig loadConfig = new LoadConfig( loadGenerator.getConfig() )
+                .type( LoadConfig.Type.LOADER )
+                .transport( loaderArgs.getTransport().name() );
+            storeLoadConfig( loadConfig, httpClient);
 
             LOGGER.info("start load generator run");
             long start = System.nanoTime();
@@ -89,24 +93,16 @@ public class LoaderMain {
             if (executor != null) {
                 executor.stop();
             }
+            httpClient.stop();
         }
     }
 
-    private static void storeLoadConfig( LoadConfig loadConfig, HTTPClientTransportBuilder httpClientTransportBuilder ) throws Exception {
-        HttpClient httpClient = new HttpClient( httpClientTransportBuilder.build(), null );
-        httpClient.start();
-        try {
-            httpClient.newRequest( loadConfig.getHost(), loadConfig.getPort() ) //
-                .method( HttpMethod.POST ) //
-                .path( "/test/loadConfig" ) //
-                .content( new StringContentProvider( new ObjectMapper(  ).writeValueAsString( loadConfig ) ) ) //
-                .send();
-        } finally {
-            if(httpClient != null) {
-                httpClient.stop();
-            }
-        }
-
+    private static void storeLoadConfig( LoadConfig loadConfig, HttpClient httpClient ) throws Exception {
+        httpClient.newRequest( loadConfig.getHost(), loadConfig.getPort() ) //
+            .method( HttpMethod.POST ) //
+            .path( "/test/loadConfig" ) //
+            .content( new StringContentProvider( new ObjectMapper(  ).writeValueAsString( loadConfig ) ) ) //
+            .send();
     }
 
     private static void schedule(Scheduler scheduler, Runnable task) {

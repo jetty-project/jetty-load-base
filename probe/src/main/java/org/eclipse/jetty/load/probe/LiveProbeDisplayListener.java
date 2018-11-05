@@ -27,6 +27,7 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
     private ServerInfo serverInfo;
     private LoadResult loadResult;
     private LoadConfig.Type loadConfigType;
+    private String transport;
 
     public LiveProbeDisplayListener() {
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
@@ -45,6 +46,11 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
 
     public LiveProbeDisplayListener loadConfigType(LoadConfig.Type loadConfigType) {
         this.loadConfigType = loadConfigType;
+        return this;
+    }
+
+    public LiveProbeDisplayListener transport(String transport) {
+        this.transport = transport;
         return this;
     }
 
@@ -90,7 +96,7 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
 
         CollectorInformations collectorInformations = new CollectorInformations(histogram);
         loadResult = new LoadResult(serverInfo, collectorInformations,
-                new LoadConfig(loadGenerator.getConfig()).type(loadConfigType));
+                new LoadConfig(loadGenerator.getConfig()).type(loadConfigType).transport( transport ));
     }
 
     public LoadResult getLoadResult() {
