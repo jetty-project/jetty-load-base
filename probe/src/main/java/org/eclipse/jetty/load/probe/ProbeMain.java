@@ -59,7 +59,7 @@ public class ProbeMain {
         scheduler.start();
         builder.scheduler(scheduler);
 
-        HttpClient httpClient = new HttpClient();
+        HttpClient httpClient = new HttpClient(probeArgs.getHttpClientTransportBuilder().build(), null);
         httpClient.setScheduler( scheduler );
         httpClient.start();
 
