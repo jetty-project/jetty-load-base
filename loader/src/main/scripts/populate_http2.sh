@@ -6,7 +6,7 @@ if [ $# -eq 0 ]
     targetHost=localhost
 fi
 
-for ((i=0;i<2;i++));
+for ((i=0;i<1000;i++));
 do
     u=$(printf "user%04d.surname" $i)
     U=$(printf "User%04d Surname" $i)
