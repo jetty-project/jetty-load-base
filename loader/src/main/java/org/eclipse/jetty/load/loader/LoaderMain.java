@@ -17,6 +17,7 @@ import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
+import org.mortbay.jetty.load.generator.HTTPClientTransportBuilder;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
@@ -47,10 +48,12 @@ public class LoaderMain {
         mbeanContainer.beanAdded(null, scheduler);
 
         try {
-            ServerInfo serverInfo = ServerInfo.retrieveServerInfo(loaderArgs.getScheme(),
-                    loaderArgs.getHost(),
-                    loaderArgs.getPort(),
-                    "/test/info/");
+            ServerInfo serverInfo = ServerInfo
+                .retrieveServerInfo(new ServerInfo.Request( loaderArgs.getScheme(),
+                                                            loaderArgs.getHost(),
+                                                            "/test/info/",
+                                                            loaderArgs.getHttpClientTransportBuilder(),
+                                                            loaderArgs.getPort() ));
 
             LOGGER.info("run load test on server: {}", serverInfo);
             LOGGER.info("loader version: {}", Version.getInstance());
@@ -71,7 +74,7 @@ public class LoaderMain {
             loadGenerator.addBean(mbeanContainer);
 
             LoadConfig loadConfig = new LoadConfig( loadGenerator.getConfig() ).type( LoadConfig.Type.LOADER );
-            storeLoadConfig( loadConfig );
+            storeLoadConfig( loadConfig, loaderArgs.getHttpClientTransportBuilder() );
 
             LOGGER.info("start load generator run");
             long start = System.nanoTime();
@@ -89,8 +92,8 @@ public class LoaderMain {
         }
     }
 
-    private static void storeLoadConfig(LoadConfig loadConfig) throws Exception {
-        HttpClient httpClient = new HttpClient( );
+    private static void storeLoadConfig( LoadConfig loadConfig, HTTPClientTransportBuilder httpClientTransportBuilder ) throws Exception {
+        HttpClient httpClient = new HttpClient( httpClientTransportBuilder.build(), null );
         httpClient.start();
         try {
             httpClient.newRequest( loadConfig.getHost(), loadConfig.getPort() ) //

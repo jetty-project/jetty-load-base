@@ -12,7 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <loadGeneratorVersion>1.0.0-SNAPSHOT</loadGeneratorVersion>
-    <jetty.version>9.4.8.v20171121</jetty.version>
+    <jetty.version>9.4.12.v20180830</jetty.version>
     <snapshotDeploy.id>oss.sonatype.org</snapshotDeploy.id>
     <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
     <beanValidationWebapp.version>2.27</beanValidationWebapp.version>
@@ -64,7 +64,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.2.0</version>
         </plugin>
       </plugins>
     </pluginManagement>

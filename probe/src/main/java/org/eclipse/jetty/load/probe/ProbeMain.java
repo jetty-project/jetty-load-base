@@ -30,6 +30,7 @@ import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
+import org.mortbay.jetty.load.generator.HTTPClientTransportBuilder;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.LoadConfig;
@@ -62,10 +63,11 @@ public class ProbeMain {
         httpClient.start();
 
         try {
-            ServerInfo serverInfo = ServerInfo.retrieveServerInfo(probeArgs.getScheme(),
-                    probeArgs.getHost(),
-                    probeArgs.getPort(),
-                    "/test/info/");
+            ServerInfo serverInfo = ServerInfo.retrieveServerInfo( new ServerInfo.Request( probeArgs.getScheme(),
+                                                                                           probeArgs.getHost(),
+                                                                                           "/test/info/",
+                                                                                           probeArgs.getHttpClientTransportBuilder(),
+                                                                                           probeArgs.getPort() ));
 
             LOGGER.info("run load test on server:{}", serverInfo);
             LOGGER.info("Probe version: {}", Version.getInstance());
@@ -89,12 +91,12 @@ public class ProbeMain {
                     .path("/stats/start")
                     .send();
 
-            LoadConfig loadConfig = retrieveLoaderConfig(probeArgs);
+            LoadConfig loadConfig = retrieveLoaderConfig(probeArgs, probeArgs.getHttpClientTransportBuilder());
             long startRetrieve = System.currentTimeMillis();
             // max wait 60 s
             long maxWaitSecond = 120;
             while(loadConfig == null){
-                loadConfig = retrieveLoaderConfig(probeArgs);
+                loadConfig = retrieveLoaderConfig(probeArgs, probeArgs.getHttpClientTransportBuilder());
                 if (loadConfig != null)
                 {
                     break;
@@ -184,8 +186,8 @@ public class ProbeMain {
         //return;
     }
 
-    private static LoadConfig retrieveLoaderConfig(ProbeArgs probeArgs) throws Exception {
-        HttpClient httpClient = new HttpClient( );
+    private static LoadConfig retrieveLoaderConfig( ProbeArgs probeArgs, HTTPClientTransportBuilder httpClientTransportBuilder ) throws Exception {
+        HttpClient httpClient = new HttpClient(httpClientTransportBuilder.build(), null);
         httpClient.start();
         try
         {
