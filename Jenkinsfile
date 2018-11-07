@@ -130,7 +130,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                       // sleep to wait server started
                       sleep 60
                       waitUntil {
-                        if ($transport == "h2c")
+                        if ("$transport" == "h2c")
                           sh "curl -vv --http2-prior-knowledge --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
                         else
                           sh "curl -vv --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
