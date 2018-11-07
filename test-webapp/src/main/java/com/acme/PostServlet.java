@@ -39,6 +39,5 @@ public class PostServlet extends HttpServlet
             // no op we simply read the content and not storing it
             totalRead += bytesRead;
         }
-        System.out.println( "totalRead " + totalRead );
     }
 }
