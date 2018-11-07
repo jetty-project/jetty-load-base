@@ -131,13 +131,13 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                       sleep 60
                       waitUntil {
                         if ("$transport" == "h2c")
-                          sh "curl -vv --http2-prior-knowledge --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
+                          sh "curl -vv --http2-prior-knowledge --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort"
                         else
-                          sh "curl -vv --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
+                          sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort"
                         return true
                       }
                       // TODO configurable depending on protocol
-                      sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate_http2.sh"'
+                      sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
                       echo "get populate.sh"
                       sh "bash populate.sh $loadServerHostName"
                       echo "server data populated"
