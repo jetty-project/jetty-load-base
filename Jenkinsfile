@@ -1,7 +1,7 @@
 #!groovy
 
 
-def jettyBaseFullVersionMap = ['9.4.11.v20180605':'9.4-h2c'] // '9.4.12.v20180830'
+def jettyBaseFullVersionMap = ['9.4.12.v20180830':'9.4'] // '9.4.12.v20180830' '9.4.11.v20180605'
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
@@ -130,9 +130,10 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                       // sleep to wait server started
                       sleep 60
                       waitUntil {
-                        //sh "wget --retry-connrefused -O foo.html --tries=2000 --waitretry=30 http://$loadServerHostName:$loadServerPort"
-                        // TODO configurable depending on protocol
-                        sh "curl -vv --http2-prior-knowledge --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
+                        if ($transport == "h2c")
+                          sh "curl -vv --http2-prior-knowledge --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
+                        else
+                          sh "curl -vv --retry 100 --retry-connrefused --retry-delay 5 http://$loadServerHostName:$loadServerPort"
                         return true
                       }
                       // TODO configurable depending on protocol

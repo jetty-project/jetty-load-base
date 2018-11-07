@@ -91,27 +91,37 @@ public class ProbeMain {
                     .path("/stats/start")
                     .send();
 
+
             LoadConfig loadConfig = retrieveLoaderConfig(probeArgs, httpClient);
-            long startRetrieve = System.currentTimeMillis();
-            // max wait 60 s
-            long maxWaitSecond = 120;
-            while(loadConfig == null){
-                loadConfig = retrieveLoaderConfig(probeArgs, httpClient);
-                if (loadConfig != null)
+            if(!probeArgs.skipRetrieveLoaderConfig)
+            {
+                long startRetrieve = System.currentTimeMillis();
+                // max wait 60 s
+                long maxWaitSecond = 120;
+                while ( loadConfig == null )
                 {
-                    break;
+                    loadConfig = retrieveLoaderConfig( probeArgs, httpClient );
+                    if ( loadConfig != null )
+                    {
+                        break;
+                    }
+                    Thread.sleep( 1000 );
+                    if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS )
+                        > maxWaitSecond )
+                    {
+                        LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config {}",
+                                     maxWaitSecond );
+                        System.exit( 1 );
+                        return;
+                    }
                 }
-                Thread.sleep( 1000 );
-                if ( TimeUnit.SECONDS.convert( System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) > maxWaitSecond)
-                {
-                    LOGGER.info( "stop probe as loader as not been not started, we cannot retrieve loader config {}", maxWaitSecond );
-                    System.exit( 1 );
-                    return;
-                }
+
+                loadConfig.instanceNumber( probeArgs.loaderNumber ).transport( probeArgs.getTransport().name() );
             }
-
-            loadConfig.instanceNumber( probeArgs.loaderNumber ).transport( probeArgs.getTransport().name() );
-
+            if(probeArgs.skipRetrieveLoaderConfig && loadConfig == null)
+            {
+                loadConfig = new LoadConfig();
+            }
             // we calculate the resource number
             try(Reader reader  = Files.newBufferedReader( Paths.get( probeArgs.loaderResourcesPath )))
             {
@@ -241,6 +251,9 @@ public class ProbeMain {
 
         @Parameter(names = {"--loader-number", "-ln"}, description = "Loader number")
         private int loaderNumber;
+
+        @Parameter(names = {"--skip-loader-config", "-slc"}, description = "Skip retrieving loader config")
+        private boolean skipRetrieveLoaderConfig;
 
     }
 }

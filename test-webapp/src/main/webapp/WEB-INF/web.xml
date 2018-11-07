@@ -103,6 +103,17 @@
     <url-pattern>/loadConfig/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>PostServlet</servlet-name>
+    <servlet-class>com.acme.PostServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>PostServlet</servlet-name>
+    <url-pattern>/postServlet/*</url-pattern>
+  </servlet-mapping>
+
   <error-page>
     <error-code>404</error-code>
     <location>/error404.html</location>

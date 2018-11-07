@@ -22,15 +22,15 @@
     <Arg>
       <New class="org.eclipse.jetty.server.ServerConnector" id="httpConnector">
         <Arg name="server"><Ref refid="Server" /></Arg>
-        <Arg name="acceptors" type="int"><Property name="solr.jetty.http.acceptors" default="-1"/></Arg>
-        <Arg name="selectors" type="int"><Property name="solr.jetty.http.selectors" default="-1"/></Arg>
+        <Arg name="acceptors" type="int"><Property name="jetty.httpConfig.acceptors" default="-1"/></Arg>
+        <Arg name="selectors" type="int"><Property name="jetty.httpConfig.selectors" default="-1"/></Arg>
         <Arg name="factories">
           <Array type="org.eclipse.jetty.server.ConnectionFactory">
-            <!--Item>
+            <Item>
               <New class="org.eclipse.jetty.server.HttpConnectionFactory">
                 <Arg name="config"><Ref refid="httpConfig" /></Arg>
               </New>
-            </Item-->
+            </Item>
             <Item>
               <New class="org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory">
                 <Arg name="config"><Ref refid="httpConfig" /></Arg>
@@ -40,10 +40,10 @@
         </Arg>
         <Set name="host"><Property name="jetty.host" /></Set>
         <Set name="port"><Property name="jetty.port" default="8080" /></Set>
-        <Set name="idleTimeout"><Property name="solr.jetty.http.idleTimeout" default="120000"/></Set>
-        <Set name="soLingerTime"><Property name="solr.jetty.http.soLingerTime" default="-1"/></Set>
-        <Set name="acceptorPriorityDelta"><Property name="solr.jetty.http.acceptorPriorityDelta" default="0"/></Set>
-        <Set name="acceptQueueSize"><Property name="solr.jetty.http.acceptQueueSize" default="0"/></Set>
+        <Set name="idleTimeout"><Property name="jetty.httpConfig.idleTimeout" default="120000"/></Set>
+        <Set name="soLingerTime"><Property name="jetty.httpConfig.soLingerTime" default="-1"/></Set>
+        <Set name="acceptorPriorityDelta"><Property name="jetty.httpConfig.acceptorPriorityDelta" default="0"/></Set>
+        <Set name="acceptQueueSize"><Property name="jetty.httpConfig.acceptQueueSize" default="0"/></Set>
       </New>
     </Arg>
   </Call>

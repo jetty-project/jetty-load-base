@@ -7,6 +7,7 @@ return new Resource("/",
   new Resource("/lib/bootstrap.min.js"),
   new Resource("/lib/angular.min.js"),
   new Resource("/app.js"),
+  new Resource( "/test/postServlet/foo").method( "POST" ).requestLength(20000),
   new Resource(
     new Resource("/api/contact/search/name?q=12",
       new Resource("/api/contact/12"),
