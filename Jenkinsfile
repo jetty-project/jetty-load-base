@@ -5,12 +5,16 @@ def jettyVersionParam = params.JETTY_VERSION ?: "9.4.12.v20180830"
 //def jettyBaseFullVersionMap = ['9.4.11.v20180605':'9.4'] // '9.4.12.v20180830' '9.4.11.v20180605'
 def jettyBaseFullVersionMap = [jettyVersionParam:jettyVersionParam.substring( 0, 3 )] // '9.4.12.v20180830' '9.4.11.v20180605'
 
+def runningTime = params.RUNNING_TIME ?: "300"
+def loaderRate = params.LOADER_RATE ?: "300"
+def transport = params.TRANSPORT ?: "http"
+
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
 loadServerHostName = env.LOAD_TEST_SERVER_HOST
 loadServerPort = env.LOAD_TEST_SERVER_PORT
-loaderRunningTimes = ["300"]
-loaderRates = ["300"]
+loaderRunningTimes = [runningTime]
+loaderRates = [loaderRate]
 probeResourceRate = "500"
 loaderThreads = "8"
 loaderUsersPerThread = "4"
@@ -21,7 +25,6 @@ loaderInstancesNumbers = [3]
 serverStarted = "false"
 probeFinished = "false"
 serverWd = "/home/jenkins/load_test_wd"
-transport= "http"
 rateRampUp = 30
 idleTimeout = 30000
 jdk = "jdk8u112"
