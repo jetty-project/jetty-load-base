@@ -7,9 +7,9 @@ def jettyVersionParam = params.JETTY_VERSION ?: "9.4.12.v20180830"
 def jettyBaseFullVersionMap = [:]
 jettyBaseFullVersionMap.put( jettyVersionParam, jettyVersionParam.substring( 0, 3 ))
 
-def runningTime = params.RUNNING_TIME ?: "300"
-def loaderRate = params.LOADER_RATE ?: "300"
-def transport = params.TRANSPORT ?: "http"
+runningTime = params.RUNNING_TIME ?: "300"
+loaderRate = params.LOADER_RATE ?: "300"
+transport = params.TRANSPORT ?: "http"
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
