@@ -55,6 +55,7 @@ parallel setup_loader_node :{
         sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
       }
       stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
+      stash name: 'populate-script', includes: 'loader/src/main/scripts/populate.sh'
     }
   }
 }, setup_probe_node: {
@@ -143,10 +144,10 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                           sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort"
                         return true
                       }
-                      // TODO configurable depending on protocol
-                      sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
+                      //sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
                       echo "get populate.sh"
-                      sh "bash populate.sh $loadServerHostName"
+                      unstash name: 'populate-script'
+                      sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
                       echo "server data populated"
                       serverStarted = "true"
                       // we wait the end of all loader run
