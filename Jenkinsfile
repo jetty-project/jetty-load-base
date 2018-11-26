@@ -31,19 +31,6 @@ rateRampUp = 30
 idleTimeout = 30000
 jdk = "jdk8u112"
 
-// choices are newline separated
-parameters {
-  //choice(name: 'jettyVersion', choices: '9.2.22.v20170606\n9.3.20.v20170531\n9.4.8.v20171121\n9.4.9-SNAPSHOT', description: 'Which Jetty Version?')
-  //choice(name: 'jettyBaseVersion', choices: '9.2\n9.3\n9.4', description: 'Which Jetty Version?')
-  string(name: 'loaderInstancesNumber', defaultValue: '1', description: 'Number of loader instances')
-  string(name: 'loaderRunningTime', defaultValue: '120', description: 'Time to run loader in seconds')
-  string(name: 'loaderRate', defaultValue: '100', description: 'Loader Rate')
-  string(name: 'loaderThreads', defaultValue: '4', description: 'Loader Threads number')
-  string(name: 'loaderUsersPerThread', defaultValue: '4', description: 'Loader Users number')
-  string(name: 'loaderChannelsPerUser', defaultValue: '8', description: 'Loader Channel per user')
-  string(name: 'loaderMaxRequestsInQueue', defaultValue: '10000', description: 'Loader max requests in queue')
-  string(name: 'loaderVmOptions', defaultValue: '-showversion -Xmx4G -Xms4G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC', description: 'Loader VM Options')
-}
 
 parallel setup_loader_node :{
   node('load-test-loader-node') {
@@ -144,7 +131,6 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                           sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort"
                         return true
                       }
-                      //sh 'wget -O populate.sh "https://raw.githubusercontent.com/jetty-project/jetty-load-base/master/loader/src/main/scripts/populate.sh"'
                       echo "get populate.sh"
                       unstash name: 'populate-script'
                       sh "bash loader/src/main/scripts/populate.sh $loadServerHostName"
@@ -230,10 +216,9 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
     node('load-test-loader-node') {
       try
       {
-        stage( "run loader rate ${loaderRate}" ) {
+        stage( "run loader rate ${loaderRate} for ${loaderRunningTime}s" ) {
           unstash name: 'loader-jar'
           waitUntil {
-            //sh "wget -q --retry-connrefused -O foo.html --tries=200 --waitretry=20 http://$loadServerHostName:$loadServerPort"
             echo "server not started loader $index is waiting"
             return serverStarted.equals( "true" )
           }
