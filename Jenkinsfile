@@ -29,7 +29,7 @@ probeFinished = "false"
 serverWd = "/home/jenkins/load_test_wd"
 rateRampUp = 30
 idleTimeout = 30000
-jdk = "jdk8u112"
+jdk = "jdk11" // "jdk8u112"
 
 
 parallel setup_loader_node :{
