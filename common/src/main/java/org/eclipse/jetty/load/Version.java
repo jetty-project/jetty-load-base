@@ -18,7 +18,7 @@ public class Version {
     private String versionNumber;
     private String buildNumber;
     private String buildTimestamp;
-    private String javaVersion;
+    private String javaVersion = System.getProperty( "java.version" );
 
     private Version() {
         try {
@@ -45,9 +45,10 @@ public class Version {
 
     @Override
     public String toString() {
-        return String.format("Version{versionNumber=%s, buildNumber=%s, buildTimestamp=%s}",
+        return String.format("Version{versionNumber=%s, buildNumber=%s, buildTimestamp=%s, javaVersion=%s}",
                 versionNumber,
                 buildNumber,
-                buildTimestamp);
+                buildTimestamp,
+                javaVersion);
     }
 }

@@ -10,7 +10,8 @@ jettyBaseFullVersionMap.put( jettyVersionParam, jettyVersionParam.startsWith( "1
 runningTime = params.RUNNING_TIME ?: "300"
 loaderRate = params.LOADER_RATE ?: "300"
 transport = params.TRANSPORT ?: "http"
-jdk = params.JDK ?:"jdk11" // "jdk8u112"
+jdk = params.JDK ?:"jdk8u112" // "jdk11"
+jdkLoad = params.JDKLOAD ?:"jdk8u112" // "jdk11"
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
@@ -63,7 +64,7 @@ parallel setup_loader_node :{
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
-    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
+    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
   }
 //}
 
@@ -73,7 +74,7 @@ node("master") {
 
 
 
-def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
+def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,loaderInstancesNumbers,loaderRunningTimes) {
 
 
   node( 'load-test-server-node' ) {
@@ -82,7 +83,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
         sh "rm -rf *"
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         //sh "rm -rf .repository"
-        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+        withMaven( maven: 'maven3.5', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
           // TODO make this configuration easier
           sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
@@ -106,7 +107,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
           {
             loaderNodesFinished[i] = false
             loaderNodesStarted[i] = false
-            loaderNodes["loader-$i"] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdk, loaderRunningTime, loaderNodesStarted );
+            loaderNodes["loader-$i"] = getLoaderNode( i, loaderNodesFinished, loaderRate, jdkLoad, loaderRunningTime, loaderNodesStarted );
           }
 
           parallel server: {
@@ -172,7 +173,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk,jenkinsBuildId,loaderInsta
                   }
                   echo "start running probe"
                   timeout( time: 120, unit: 'MINUTES' ) {
-                    withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
+                    withEnv( ["JAVA_HOME=${tool "$jdkLoad"}"] ) {
                       sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-probe-uber.jar -tr $transport -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true -Delastic.host=10.0.0.10 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate --threads $loaderThreads --users-per-thread 1 --channels-per-user 6 --host $loadServerHostName --port $loadServerPort --loader-resources-path loader/src/main/resources/loader.groovy --loader-rate $loaderRate --loader-number $loaderInstancesNumber"
                     }
                   }
