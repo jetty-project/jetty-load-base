@@ -10,6 +10,7 @@ jettyBaseFullVersionMap.put( jettyVersionParam, jettyVersionParam.startsWith( "1
 runningTime = params.RUNNING_TIME ?: "300"
 loaderRate = params.LOADER_RATE ?: "300"
 transport = params.TRANSPORT ?: "http"
+jdk = params.JDK ?:"jdk11" // "jdk8u112"
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
@@ -29,7 +30,7 @@ probeFinished = "false"
 serverWd = "/home/jenkins/load_test_wd"
 rateRampUp = 30
 idleTimeout = 30000
-jdk = "jdk11" // "jdk8u112"
+
 
 
 parallel setup_loader_node :{
