@@ -38,7 +38,7 @@ parallel setup_loader_node :{
   node('load-test-loader-node') {
     stage( 'setup loader' ) {
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+      withMaven( maven: 'maven3.5', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                  mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
         sh "mvn -q clean install -U -DskipTests"
         sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
@@ -51,7 +51,7 @@ parallel setup_loader_node :{
   node( 'load-test-probe-node' ) {
     stage( 'setup probe' ) {
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+      withMaven( maven: 'maven3.5', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                  mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
         sh "mvn -q clean install -U -DskipTests"
         sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
@@ -122,6 +122,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                       jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
                       if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
                       // TODO make this configuration easier
+                      echo "start line: $jettyStart"
                       sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
                       echo "jetty server started version ${jettyVersion}"
                       // sleep to wait server started
