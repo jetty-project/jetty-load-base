@@ -83,7 +83,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
         sh "rm -rf *"
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         //sh "rm -rf .repository"
-        withMaven( maven: 'maven3.5', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
+        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
           // TODO make this configuration easier
           sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
