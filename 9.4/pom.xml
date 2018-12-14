@@ -87,7 +87,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeArtifactIds>jaxb-api,javax.activation-api</includeArtifactIds>
+              <includeArtifactIds>jaxb-api,javax.activation-api,org.eclipse.persistence.core</includeArtifactIds>
               <outputDirectory>${project.build.directory}/jetty-base/webapps/bean-validation/WEB-INF/lib</outputDirectory>
             </configuration>
           </execution>
@@ -118,6 +118,30 @@
                   <outputDirectory>${project.build.directory}/jetty-base/webapps/test</outputDirectory>
                 </artifactItem>
               </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>clean-old-persistence</id>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <directory>${project.build.directory}/jetty-base/webapps/bean-validation/WEB-INF/foo</directory>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/jetty-base/webapps/bean-validation/WEB-INF/lib</directory>
+                  <includes>
+                    <include>**org.eclipse.persistence.core**2.6.4**</include>
+                  </includes>
+                </fileset>
+              </filesets>
             </configuration>
           </execution>
         </executions>
@@ -162,6 +186,10 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>javax.activation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.core</artifactId>
     </dependency>
   </dependencies>
 
