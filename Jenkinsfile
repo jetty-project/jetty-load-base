@@ -38,7 +38,7 @@ parallel setup_loader_node :{
   node('load-test-loader-node') {
     stage( 'setup loader' ) {
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3.5', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
+      withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                  mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
         sh "mvn -q clean install -U -DskipTests"
         sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
@@ -51,7 +51,7 @@ parallel setup_loader_node :{
   node( 'load-test-probe-node' ) {
     stage( 'setup probe' ) {
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3.5', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
+      withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                  mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
         sh "mvn -q clean install -U -DskipTests"
         sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
@@ -83,7 +83,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
         sh "rm -rf *"
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         //sh "rm -rf .repository"
-        withMaven( maven: 'maven3.5', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+        withMaven( maven: 'maven3', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
           // TODO make this configuration easier
           sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
