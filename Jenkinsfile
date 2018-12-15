@@ -86,7 +86,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
         withMaven( maven: 'maven3', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                    mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
           // TODO make this configuration easier
-          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,test-webapp -am -Djetty.version=$jettyVersion"
+          sh "mvn clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
         }
       }
     }
