@@ -94,7 +94,7 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
                 "\u00B5s", TimeUnit.NANOSECONDS::toMicros);
         System.err.println(snapshot);
 
-        CollectorInformations collectorInformations = new CollectorInformations(histogram);
+        CollectorInformations collectorInformations = new CollectorInformations(histogram.copy());
         loadResult = new LoadResult(serverInfo, collectorInformations,
                 new LoadConfig(loadGenerator.getConfig()).type(loadConfigType).transport( transport ));
     }
