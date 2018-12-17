@@ -5,7 +5,7 @@ def jettyVersionParam = params.JETTY_VERSION ?: "9.4.14.v20181114"
 //def jettyBaseFullVersionMap = ['9.4.11.v20180605':'9.4'] // '9.4.12.v20180830' '9.4.11.v20180605'
 //def jettyBaseFullVersionMap = ["$jettyVersionParam":jettyVersionParam.substring( 0, 3 )] // '9.4.12.v20180830' '9.4.11.v20180605'
 def jettyBaseFullVersionMap = [:]
-jettyBaseFullVersionMap.put( jettyVersionParam, jettyVersionParam.startsWith( "10." ) ? "10.0.0" : jettyVersionParam.substring( 0, 3 ))
+jettyBaseFullVersionMap.put( jettyVersionParam, jettyVersionParam.startsWith( "10." ) ? "10.0" : jettyVersionParam.substring( 0, 3 ))
 
 runningTime = params.RUNNING_TIME ?: "300"
 loaderRate = params.LOADER_RATE ?: "300"
