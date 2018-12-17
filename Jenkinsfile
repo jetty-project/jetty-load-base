@@ -37,6 +37,7 @@ idleTimeout = 30000
 parallel setup_loader_node :{
   node('load-test-loader-node') {
     stage( 'setup loader' ) {
+      sh "rm -rf *"
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
       withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                  mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
@@ -50,6 +51,7 @@ parallel setup_loader_node :{
 }, setup_probe_node: {
   node( 'load-test-probe-node' ) {
     stage( 'setup probe' ) {
+      sh "rm -rf *"
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
       withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
                  mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
