@@ -26,7 +26,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "12"
 loaderMaxRequestsInQueue = "100000"
 loaderVmOptions = "-showversion -Xmx10G -Xms10G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = loaderNumber
+loaderInstancesNumbers = loaderNumber //[loaderNumber] could be an array
 serverStarted = "false"
 probeFinished = "false"
 serverWd = "/home/jenkins/load_test_wd"
@@ -96,7 +96,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
   }
 
 
-
+  //for(loaderInstancesNumber in loaderInstancesNumbers) {
     for(loaderRunningTime in loaderRunningTimes){
       for (loaderRate in loaderRates){
         def loaderNodesFinished = new boolean[loaderInstancesNumber]
@@ -214,7 +214,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
 
       }
     }
-
+  //}
 }
 
 def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loaderNodesStarted) {
