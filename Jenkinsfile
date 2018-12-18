@@ -12,7 +12,7 @@ loaderRate = params.LOADER_RATE ?: "300"
 transport = params.TRANSPORT ?: "http"
 jdk = params.JDK ?:"jdk11.0.1" // "jdk11" jdk8u112
 jdkLoad = params.JDKLOAD ?:"jdk11.0.1" // "jdk11" jdk8u112
-loaderNumber = params.LOADER_NUMBER ?: 3
+loaderNumber = params.LOADER_NUMBER ?: 4
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
@@ -26,7 +26,7 @@ loaderUsersPerThread = "4"
 loaderChannelsPerUser = "12"
 loaderMaxRequestsInQueue = "100000"
 loaderVmOptions = "-showversion -Xmx10G -Xms10G -XX:+PrintCommandLineFlags -XX:+UseParallelOldGC"
-loaderInstancesNumbers = loaderNumber //[loaderNumber] could be an array
+//loaderInstancesNumbers = loaderNumber //[loaderNumber] could be an array
 serverStarted = "false"
 probeFinished = "false"
 serverWd = "/home/jenkins/load_test_wd"
@@ -67,7 +67,7 @@ parallel setup_loader_node :{
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
-    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderInstancesNumbers, loaderRunningTimes )
+    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderNumber, loaderRunningTimes )
   }
 //}
 
