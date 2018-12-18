@@ -156,6 +156,9 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                         }
                         return allFinished && probeFinished == "true"
                       }
+                      // stopping server
+                      echo "Stopping server"
+                      sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort/test/stopServer?STOP=true"
                     }
                   }
                 }
