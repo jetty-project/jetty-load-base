@@ -52,6 +52,9 @@ public class StopServer
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if(Boolean.parseBoolean(request.getParameter( "STOP" ))){
+            ServletOutputStream out = response.getOutputStream();
+            out.println( "Server stopped" );
+            out.flush();
             System.exit( 0 );
         }
     }
