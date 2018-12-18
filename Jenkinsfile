@@ -12,6 +12,8 @@ loaderRate = params.LOADER_RATE ?: "300"
 transport = params.TRANSPORT ?: "http"
 jdk = params.JDK ?:"jdk11.0.1" // "jdk11" jdk8u112
 jdkLoad = params.JDKLOAD ?:"jdk11.0.1" // "jdk11" jdk8u112
+// we have a limited number of server 3 loader + 1 probe
+// so max number here is 3
 loaderNumber = params.LOADER_NUMBER ?: 3
 
 // default values to avoid pipeline error
