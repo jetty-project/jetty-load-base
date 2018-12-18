@@ -12,7 +12,7 @@ loaderRate = params.LOADER_RATE ?: "300"
 transport = params.TRANSPORT ?: "http"
 jdk = params.JDK ?:"jdk11.0.1" // "jdk11" jdk8u112
 jdkLoad = params.JDKLOAD ?:"jdk11.0.1" // "jdk11" jdk8u112
-loaderNumber = params.LOADER_NUMBER ?: 4
+loaderNumber = params.LOADER_NUMBER ?: 3
 
 // default values to avoid pipeline error
 jenkinsBuildId= env.BUILD_ID
