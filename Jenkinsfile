@@ -243,7 +243,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
           loaderNodesStarted[index] = true
           timeout( time: 6, unit: 'HOURS' ) {
             withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar -tr $transport --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout"
+              sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar -tr $transport --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate --threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser --host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout -lgmt 400"
             }
           }
         }

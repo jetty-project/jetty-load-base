@@ -33,6 +33,12 @@ public class LoaderMain {
         LoaderArgs loaderArgs = LoadGeneratorStarter.parse(args, LoaderArgs::new);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(loaderArgs);
 
+        if(loaderArgs.loadGeneratorMaxThreads>0){
+            QueuedThreadPool threadPool = new QueuedThreadPool(loaderArgs.loadGeneratorMaxThreads);
+            threadPool.setName(LoaderMain.class.getSimpleName() + "@" + Integer.toHexString(loaderArgs.hashCode()));
+            builder.executor( threadPool );
+        }
+
         QueuedThreadPool executor = null;
         if (loaderArgs.sharedThreads > 0) {
             executor = new MonitoredQueuedThreadPool(loaderArgs.sharedThreads);
@@ -123,5 +129,9 @@ public class LoaderMain {
     private static class LoaderArgs extends LoadGeneratorStarterArgs {
         @Parameter(names = {"--shared-threads", "-st"}, description = "Max threads of the shared thread pool")
         private int sharedThreads;
+
+        @Parameter(names = {"--lg-max-threads", "-lgmt"}, description = "Load Generator Max threads")
+        private int loadGeneratorMaxThreads=0;
+
     }
 }
