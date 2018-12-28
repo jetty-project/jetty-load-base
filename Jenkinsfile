@@ -156,7 +156,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                             allFinished = false
                           }
                         }
-                        return allFinished && probeFinished == "true"
+                        return probeFinished == "true" // allFinished && probeFinished == "true"
                       }
                       try
                       {
