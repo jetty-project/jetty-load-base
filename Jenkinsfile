@@ -156,7 +156,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                             allFinished = false
                           }
                         }
-                        return probeFinished == "true" // allFinished && probeFinished == "true"
+                        return allFinished && probeFinished == "true"
                       }
                       try
                       {
@@ -249,7 +249,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar -tr $transport --rate-ramp-up $rateRampUp " +
                 "--running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate " +
                 "--threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser " +
-                "--host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout -lgmt 400"
+                "--host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout" // -lgmt 400"
             }
           }
         }
