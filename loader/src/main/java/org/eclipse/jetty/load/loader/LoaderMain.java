@@ -33,8 +33,9 @@ public class LoaderMain {
         LoaderArgs loaderArgs = LoadGeneratorStarter.parse(args, LoaderArgs::new);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(loaderArgs);
 
+        QueuedThreadPool threadPool = null;
         if(loaderArgs.loadGeneratorMaxThreads>0){
-            QueuedThreadPool threadPool = new QueuedThreadPool(loaderArgs.loadGeneratorMaxThreads);
+            threadPool = new QueuedThreadPool(loaderArgs.loadGeneratorMaxThreads);
             threadPool.setName(LoaderMain.class.getSimpleName() + "@" + Integer.toHexString(loaderArgs.hashCode()));
             builder.executor( threadPool );
         }
@@ -98,6 +99,9 @@ public class LoaderMain {
             scheduler.stop();
             if (executor != null) {
                 executor.stop();
+            }
+            if(threadPool != null){
+                threadPool.stop();
             }
             httpClient.stop();
         }
