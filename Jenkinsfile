@@ -1,7 +1,7 @@
 #!groovy
 
 
-def jettyVersionParam = params.JETTY_VERSION ?: "9.4.14.v20181114;10.0.0-SNAPSHOT"
+def jettyVersionParam = params.JETTY_VERSION ?: "9.4.14.v20181114" //;10.0.0-SNAPSHOT"
 //def jettyBaseFullVersionMap = ['9.4.11.v20180605':'9.4'] // '9.4.12.v20180830' '9.4.11.v20180605'
 //def jettyBaseFullVersionMap = ["$jettyVersionParam":jettyVersionParam.substring( 0, 3 )] // '9.4.12.v20180830' '9.4.11.v20180605'
 
