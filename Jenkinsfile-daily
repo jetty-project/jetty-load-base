@@ -1,7 +1,7 @@
 #!groovy
 
 pipeline {
-  agent any
+  agent { node { label 'linux' } }
   options { durabilityHint( 'PERFORMANCE_OPTIMIZED' ) }
   stages {
     stage("Jetty-9.4.14.v20181114") {
