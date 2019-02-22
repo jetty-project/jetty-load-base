@@ -11,7 +11,7 @@ resources
 logging
 
 [lib]
-lib/servlet-api-4.0.jar
+lib/jetty-servlet-api-4.0.*.jar
 lib/jetty-schemas-4.0.jar
 lib/jetty-http-${jetty.version}.jar
 lib/jetty-server-${jetty.version}.jar
