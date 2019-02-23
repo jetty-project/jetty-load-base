@@ -4,38 +4,38 @@ pipeline {
   agent { node { label 'linux' } }
   options { durabilityHint( 'PERFORMANCE_OPTIMIZED' ) }
   stages {
-    stage("Jetty-9.4.14.v20181114-100") {
+    stage("Jetty-9.4.15.v20190215-100") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.14.v20181114'),
+                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
                   string(name: 'LOADER_RATE', value: '100')
           ]
         }
       }
     }
-    stage("Jetty-9.4.14.v20181114-300") {
+    stage("Jetty-9.4.15.v20190215-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.14.v20181114'),
+                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-9.4.14.v20181114-500") {
+    stage("Jetty-9.4.15.v20190215-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.14.v20181114'),
+                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
       }
     }
 
-    stage("Jetty-9.4.15-SNAPSHOT-100") {
+    stage("Jetty-9.4.16-SNAPSHOT-100") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
@@ -45,7 +45,7 @@ pipeline {
         }
       }
     }
-    stage("Jetty-9.4.15-SNAPSHOT-300") {
+    stage("Jetty-9.4.16-SNAPSHOT-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
@@ -55,7 +55,7 @@ pipeline {
         }
       }
     }
-    stage("Jetty-9.4.15-SNAPSHOT-500") {
+    stage("Jetty-9.4.16-SNAPSHOT-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
