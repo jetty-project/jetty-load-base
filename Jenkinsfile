@@ -57,6 +57,7 @@ parallel setup_loader_node :{
       }
       stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
       stash name: 'populate-script', includes: 'loader/src/main/scripts/populate.sh'
+      stash name: 'loader-groovy', includes: 'loader/src/main/resources/loader.groovy'
     }
   }
 }, setup_probe_node: {
@@ -246,6 +247,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
       {
         stage( "run loader rate ${loaderRate} for ${loaderRunningTime}s" ) {
           unstash name: 'loader-jar'
+          unstash name: 'loader-groovy'
           waitUntil {
             echo "server not started loader $index is waiting"
             return serverStarted.equals( "true" )
