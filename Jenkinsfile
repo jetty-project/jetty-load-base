@@ -71,6 +71,7 @@ parallel setup_loader_node :{
         sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
       }
       stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
+      stash name: 'probe-groovy', includes: 'probe/src/main/resources/info.groovy'
     }
   }
 }, failFast: true
@@ -191,6 +192,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
               try {
                 stage( 'run probe' ) {
                   unstash name: 'probe-jar'
+                  unstash name: 'probe-groovy'
                   waitUntil {
                     echo "server not started probe is waiting"
                     return serverStarted.equals("true")
