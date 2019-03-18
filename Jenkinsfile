@@ -78,24 +78,7 @@ parallel setup_loader_node :{
       echo "END SETUP PROBE"
     }
   }
-}, failFast: true
-
-//for (i = 0; i <5; i++) {
-  //echo "iteration number $i"
-  jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
-    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderNumber, loaderRunningTimes )
-  }
-//}
-
-node("master") {
-  loadtestresult()
-}
-
-
-
-def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,loaderInstancesNumber,loaderRunningTimes) {
-
-
+}, setup_load_server: {
   node( 'load-test-server-node' ) {
     stage( "build jetty app for version $jettyVersion" ) {
       dir (serverWd) {
@@ -112,7 +95,22 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
       }
     }
   }
+} , failFast: true
 
+//for (i = 0; i <5; i++) {
+  //echo "iteration number $i"
+  jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
+    getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderNumber, loaderRunningTimes )
+  }
+//}
+
+node("master") {
+  loadtestresult()
+}
+
+
+
+def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,loaderInstancesNumber,loaderRunningTimes) {
 
   //for(loaderInstancesNumber in loaderInstancesNumbers) {
     for(loaderRunningTime in loaderRunningTimes){
