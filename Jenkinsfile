@@ -48,6 +48,7 @@ idleTimeout = 30000
 parallel setup_loader_node :{
   node('load-test-loader-node') {
     stage( 'setup loader' ) {
+      echo "START SETUP LOADER"
       sh "rm -rf *"
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
       withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
@@ -58,11 +59,13 @@ parallel setup_loader_node :{
       stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
       stash name: 'populate-script', includes: 'loader/src/main/scripts/populate.sh'
       stash name: 'loader-groovy', includes: 'loader/src/main/resources/loader.groovy'
+      echo "END SETUP LOADER"
     }
   }
 }, setup_probe_node: {
   node( 'load-test-probe-node' ) {
     stage( 'setup probe' ) {
+      echo "START SETUP PROBE"
       sh "rm -rf *"
       git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
       withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
@@ -72,6 +75,7 @@ parallel setup_loader_node :{
       }
       stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
       stash name: 'probe-groovy', includes: 'probe/src/main/resources/info.groovy'
+      echo "END SETUP PROBE"
     }
   }
 }, failFast: true
@@ -95,6 +99,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
   node( 'load-test-server-node' ) {
     stage( "build jetty app for version $jettyVersion" ) {
       dir (serverWd) {
+        echo "START SETUP SERVER"
         sh "rm -rf *"
         git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
         //sh "rm -rf .repository"
@@ -103,6 +108,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
           // TODO make this configuration easier
           sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
         }
+        echo "END SETUP SERVER"
       }
     }
   }
