@@ -45,61 +45,65 @@ idleTimeout = 30000
 
 
 
-parallel setup_loader_node :{
-  node('load-test-loader-node') {
-    stage( 'setup loader' ) {
-      echo "START SETUP LOADER"
-      sh "rm -rf *"
-      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
-                 mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
-        sh "mvn -q clean install -U -DskipTests -pl :jetty-load-base-loader -am"
-        sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-      }
-      stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
-      stash name: 'populate-script', includes: 'loader/src/main/scripts/populate.sh'
-      stash name: 'loader-groovy', includes: 'loader/src/main/resources/loader.groovy'
-      echo "END SETUP LOADER"
-    }
-  }
-}, setup_probe_node: {
-  node( 'load-test-probe-node' ) {
-    stage( 'setup probe' ) {
-      echo "START SETUP PROBE"
-      sh "rm -rf *"
-      git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-      withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
-                 mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
-        sh "mvn -q clean install -U -DskipTests -pl :jetty-load-base-probe -am"
-        sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
-      }
-      stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
-      stash name: 'probe-groovy', includes: 'probe/src/main/resources/info.groovy'
-      echo "END SETUP PROBE"
-    }
-  }
-}, setup_load_server: {
-  node( 'load-test-server-node' ) {
-    stage( "build jetty app for version $jettyVersion" ) {
-      dir (serverWd) {
-        echo "START SETUP SERVER"
-        sh "rm -rf *"
-        git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-        //sh "rm -rf .repository"
-        withMaven( maven: 'maven3', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
-                   mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
-          // TODO make this configuration easier
-          sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
-        }
-        echo "END SETUP SERVER"
-      }
-    }
-  }
-} , failFast: true
-
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
+
+
+
+    parallel setup_loader_node :{
+      node('load-test-loader-node') {
+        stage( 'setup loader' ) {
+          echo "START SETUP LOADER"
+          sh "rm -rf *"
+          git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+          withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
+                     mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
+            sh "mvn -q clean install -U -DskipTests -pl :jetty-load-base-loader -am"
+            sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -Dartifact=org.mortbay.jetty.load:jetty-load-base-loader:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+          }
+          stash name: 'loader-jar', includes: 'jetty-load-base-loader-uber.jar'
+          stash name: 'populate-script', includes: 'loader/src/main/scripts/populate.sh'
+          stash name: 'loader-groovy', includes: 'loader/src/main/resources/loader.groovy'
+          echo "END SETUP LOADER"
+        }
+      }
+    }, setup_probe_node: {
+      node( 'load-test-probe-node' ) {
+        stage( 'setup probe' ) {
+          echo "START SETUP PROBE"
+          sh "rm -rf *"
+          git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+          withMaven( maven: 'maven3', jdk: "$jdkLoad", publisherStrategy: 'EXPLICIT',
+                     mavenLocalRepo: '.repository' , globalMavenSettingsConfig: 'oss-settings.xml') {
+            sh "mvn -q clean install -U -DskipTests -pl :jetty-load-base-probe -am"
+            sh "mvn -q org.apache.maven.plugins:maven-dependency-plugin:3.0.1:copy -U -Dartifact=org.mortbay.jetty.load:jetty-load-base-probe:1.0.0-SNAPSHOT:jar:uber -DoutputDirectory=./ -Dmdep.stripVersion=true"
+          }
+          stash name: 'probe-jar', includes: 'jetty-load-base-probe-uber.jar'
+          stash name: 'probe-groovy', includes: 'probe/src/main/resources/info.groovy'
+          echo "END SETUP PROBE"
+        }
+      }
+    }, setup_load_server: {
+      node( 'load-test-server-node' ) {
+        stage( "build jetty app for version $jettyVersion" ) {
+          dir (serverWd) {
+            echo "START SETUP SERVER"
+            sh "rm -rf *"
+            git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
+            //sh "rm -rf .repository"
+            withMaven( maven: 'maven3', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
+                       mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
+              // TODO make this configuration easier
+              sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
+            }
+            echo "END SETUP SERVER"
+          }
+        }
+      }
+    } , failFast: true
+
+
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderNumber, loaderRunningTimes )
   }
 //}
