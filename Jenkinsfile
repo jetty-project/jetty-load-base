@@ -50,7 +50,7 @@ idleTimeout = 30000
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
 
     parallel setup_loader_node :{
-      node('load-test-loader-node') {
+      node('linux') {
         stage( 'setup loader' ) {
           echo "START SETUP LOADER"
           sh "rm -rf *"
@@ -67,7 +67,7 @@ idleTimeout = 30000
         }
       }
     }, setup_probe_node: {
-      node( 'load-test-probe-node' ) {
+      node( 'linux' ) {
         stage( 'setup probe' ) {
           echo "START SETUP PROBE"
           sh "rm -rf *"
@@ -83,9 +83,9 @@ idleTimeout = 30000
         }
       }
     }, setup_load_server: {
-      node( 'load-test-server-node' ) {
+      node( 'linux' ) {
         stage( "build jetty app for version $jettyVersion" ) {
-          dir (serverWd) {
+          //dir (serverWd) {
             echo "START SETUP SERVER"
             sh "rm -rf *"
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
@@ -95,8 +95,9 @@ idleTimeout = 30000
               // TODO make this configuration easier
               sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
             }
+            stash name: 'server-distro', includes: '$jettyBaseVersion/target'
             echo "END SETUP SERVER"
-          }
+          //}
         }
       }
     } , failFast: true
@@ -133,10 +134,11 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
 
           parallel server: {
             node( 'load-test-server-node' ) {
-              dir (serverWd) {
+              //dir (serverWd) {
                 try {
                   stage( "starting jetty app ${jettyVersion}" ) {
                     withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
+                      unstash name: 'server-distro'
                       serverVmOptions =
                               "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
                                       ".svg"
@@ -191,7 +193,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                   echo "failure running server: " + e.getMessage()
                   throw e
                 }
-              }
+              //}
             }
           }, probe: {
             node( 'load-test-probe-node' ) {
