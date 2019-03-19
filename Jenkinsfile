@@ -48,7 +48,7 @@ idleTimeout = 30000
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
-    
+
     parallel setup_loader_node :{
       node('load-test-loader-node') {
         stage( 'setup loader' ) {

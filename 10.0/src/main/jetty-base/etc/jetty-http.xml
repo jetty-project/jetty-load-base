@@ -41,7 +41,6 @@
         <Set name="host"><Property name="jetty.host" /></Set>
         <Set name="port"><Property name="jetty.port" default="8080" /></Set>
         <Set name="idleTimeout"><Property name="jetty.httpConfig.idleTimeout" default="120000"/></Set>
-        <Set name="soLingerTime"><Property name="jetty.httpConfig.soLingerTime" default="-1"/></Set>
         <Set name="acceptorPriorityDelta"><Property name="jetty.httpConfig.acceptorPriorityDelta" default="0"/></Set>
         <Set name="acceptQueueSize"><Property name="jetty.httpConfig.acceptQueueSize" default="0"/></Set>
       </New>
