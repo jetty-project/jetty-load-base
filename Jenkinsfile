@@ -95,7 +95,7 @@ idleTimeout = 30000
               // TODO make this configuration easier
               sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
             }
-            stash name: 'server-distro', includes: '$jettyBaseVersion/target'
+            stash name: 'server-distro', includes: "$jettyBaseVersion/target/**"
             echo "END SETUP SERVER"
           //}
         }
