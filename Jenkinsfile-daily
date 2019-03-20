@@ -39,7 +39,7 @@ pipeline {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.15-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.16-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '100')
           ]
         }
@@ -49,7 +49,7 @@ pipeline {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.15-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.16-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
@@ -59,7 +59,7 @@ pipeline {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.15-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.16-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
