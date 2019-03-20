@@ -138,8 +138,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                 try {
                   stage( "starting jetty app ${jettyVersion}" ) {
                     withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
+                      sh rm "-rf *"
                       unstash name: 'server-distro'
-                      sh rm "profiler*.svg"
                       serverVmOptions =
                               "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
                                       ".svg"
