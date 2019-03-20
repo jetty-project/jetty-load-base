@@ -89,7 +89,6 @@ idleTimeout = 30000
             echo "START SETUP SERVER"
             sh "rm -rf *"
             git url: "https://github.com/jetty-project/jetty-load-base.git", branch: 'master'
-            //sh "rm -rf .repository"
             withMaven( maven: 'maven3', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                        mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
               // TODO make this configuration easier
@@ -138,7 +137,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                 try {
                   stage( "starting jetty app ${jettyVersion}" ) {
                     withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
-                      sh rm "-rf *"
+                      sh "rm -rf *"
                       unstash name: 'server-distro'
                       serverVmOptions =
                               "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
