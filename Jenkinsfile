@@ -134,11 +134,12 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
 
           parallel server: {
             node( 'load-test-server-node' ) {
-              //dir (serverWd) {
+              dir (serverWd) {
                 try {
                   stage( "starting jetty app ${jettyVersion}" ) {
                     withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
                       unstash name: 'server-distro'
+                      sh rm "profiler*.svg"
                       serverVmOptions =
                               "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
                                       ".svg"
@@ -193,7 +194,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                   echo "failure running server: " + e.getMessage()
                   throw e
                 }
-              //}
+              }
             }
           }, probe: {
             node( 'load-test-probe-node' ) {
