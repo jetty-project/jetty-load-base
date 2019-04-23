@@ -143,7 +143,11 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                               "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
                                       ".svg"
                       jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar"
-                      if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" ) jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
+                      if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" )
+                      {
+                        jettyStart =
+                                "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-distribution-$jettyVersion/start.jar"
+                      }
                       // TODO make this configuration easier
                       echo "start line: $jettyStart"
                       sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart &"
@@ -151,10 +155,14 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                       // sleep to wait server started
                       sleep 60
                       waitUntil {
-                        if ("$transport" == "h2c")
+                        if ( "$transport" == "h2c" )
+                        {
                           sh "curl -vv --http2-prior-knowledge --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort"
+                        }
                         else
+                        {
                           sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort"
+                        }
                         return true
                       }
                       echo "get populate.sh"
@@ -267,7 +275,8 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
           timeout( time: 6, unit: 'HOURS' ) {
             withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar -tr $transport --rate-ramp-up $rateRampUp " +
-                "--running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy --resource-rate $loaderRate " +
+                "--running-time $loaderRunningTime --resource-groovy-path /home/jenkins/jenkins_home/workspace/load_testing/load-test-pipeline/loader/src/main/resources/loader.groovy" +
+                "--resource-rate $loaderRate " +
                 "--threads $loaderThreads --users-per-thread $loaderUsersPerThread --channels-per-user $loaderChannelsPerUser " +
                 "--host $loadServerHostName --port $loadServerPort --max-requests-queued $loaderMaxRequestsInQueue -it $idleTimeout" // -lgmt 400"
             }
