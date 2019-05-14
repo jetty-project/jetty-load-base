@@ -92,7 +92,7 @@ idleTimeout = 30000
             withMaven( maven: 'maven3', jdk: "$jdk", publisherStrategy: 'EXPLICIT',
                        mavenLocalRepo: '.repository') { // , globalMavenSettingsConfig: 'oss-settings.xml'
               // TODO make this configuration easier
-              sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.version=$jettyVersion"
+              sh "mvn -q clean install -U -pl :jetty-load-base-$jettyBaseVersion,:test-webapp -am -Djetty.server.version=$jettyVersion"
             }
             stash name: 'server-distro', includes: "$jettyBaseVersion/target/**"
             echo "END SETUP SERVER"
