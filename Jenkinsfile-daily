@@ -97,6 +97,69 @@ pipeline {
       }
     }
 
+    // temporary to get data
+    stage("Jetty-9.4.7.v20170914-100") {
+      steps {
+        script {
+          build job: 'load-test-pipeline', parameters: [
+                  string(name: 'JETTY_VERSION', value:'9.4.7.v20170914'),
+                  string(name: 'LOADER_RATE', value: '100')
+          ]
+        }
+      }
+    }
+    stage("Jetty-9.4.7.v20170914-300") {
+      steps {
+        script {
+          build job: 'load-test-pipeline', parameters: [
+                  string(name: 'JETTY_VERSION', value:'9.4.7.v20170914'),
+                  string(name: 'LOADER_RATE', value: '300')
+          ]
+        }
+      }
+    }
+    stage("Jetty-9.4.7.v20170914-500") {
+      steps {
+        script {
+          build job: 'load-test-pipeline', parameters: [
+                  string(name: 'JETTY_VERSION', value:'9.4.7.v20170914'),
+                  string(name: 'LOADER_RATE', value: '500')
+          ]
+        }
+      }
+    }
+
+    stage("Jetty-9.4.8.v20171121-100") {
+      steps {
+        script {
+          build job: 'load-test-pipeline', parameters: [
+                  string(name: 'JETTY_VERSION', value:'9.4.8.v20171121'),
+                  string(name: 'LOADER_RATE', value: '100')
+          ]
+        }
+      }
+    }
+    stage("Jetty-9.4.8.v20171121-300") {
+      steps {
+        script {
+          build job: 'load-test-pipeline', parameters: [
+                  string(name: 'JETTY_VERSION', value:'9.4.8.v20171121'),
+                  string(name: 'LOADER_RATE', value: '300')
+          ]
+        }
+      }
+    }
+    stage("Jetty-9.4.8.v20171121-500") {
+      steps {
+        script {
+          build job: 'load-test-pipeline', parameters: [
+                  string(name: 'JETTY_VERSION', value:'9.4.8.v20171121'),
+                  string(name: 'LOADER_RATE', value: '500')
+          ]
+        }
+      }
+    }
+
   }
 }
 
