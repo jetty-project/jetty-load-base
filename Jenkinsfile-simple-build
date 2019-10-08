@@ -14,8 +14,7 @@ pipeline {
                       maven: 'maven3',
                       jdk: "jdk11.0.1",
                       publisherStrategy: 'EXPLICIT',
-                      options: [mavenLinkerPublisher(disabled: false),pipelineGraphPublisher(disabled: false)],
-                      mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}") {
+                      options: [mavenLinkerPublisher(disabled: false),pipelineGraphPublisher(disabled: false)]) {
                         sh "mvn -V -B clean deploy"
                 }
             }
