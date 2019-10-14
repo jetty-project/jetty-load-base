@@ -88,7 +88,10 @@ public class ProbeMain
                     probeArgs.getHost(),
                     "/test/info/",
                     probeArgs.getPort()), httpClient);
-
+            if(serverInfo.getJettyVersion()==null)
+            {
+                serverInfo.setJettyVersion(probeArgs.jettyVersion);
+            }
             LOGGER.info("run load test on server:{}", serverInfo);
             LOGGER.info("Probe version: {}", Version.getInstance());
 
