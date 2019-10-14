@@ -41,31 +41,29 @@ public class LoaderConfigServlet
 
     /* ------------------------------------------------------------ */
     @Override
-    public void init( ServletConfig config )
+    public void init(ServletConfig config)
         throws ServletException
     {
-        super.init( config );
+        super.init(config);
     }
 
     /* ------------------------------------------------------------ */
     @Override
-    public void doPost( HttpServletRequest request, HttpServletResponse response )
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
         this.loadConfig = new ObjectMapper() //
-            .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false ) //
-            .readValue( request.getInputStream(), LoadConfig.class );
-
-
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) //
+            .readValue(request.getInputStream(), LoadConfig.class);
     }
 
     /* ------------------------------------------------------------ */
     @Override
-    public void doGet( HttpServletRequest request, HttpServletResponse response )
+    public void doGet(HttpServletRequest request, HttpServletResponse response )
         throws ServletException, IOException
     {
         new ObjectMapper() //
-            .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false ) //
-            .writeValue( response.getWriter(), this.loadConfig );
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) //
+            .writeValue(response.getWriter(), this.loadConfig);
     }
 }

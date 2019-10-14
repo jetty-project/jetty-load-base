@@ -32,18 +32,17 @@ public class ServerInfoServlet
 {
 
     @Override
-    protected void doGet( HttpServletRequest req, HttpServletResponse resp )
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
-        new ObjectMapper().writeValue( resp.getOutputStream(), new ServerInfo() );
+        new ObjectMapper().writeValue(resp.getOutputStream(), new ServerInfo());
     }
 
 
     public static class ServerInfo
     {
         @JsonProperty
-        private String jettyVersion = System.getProperty( "jetty.version" );
-        //System.setProperty("jetty.tag.version",tag)
+        private String jettyVersion = System.getProperty("jetty.version");
 
         @JsonProperty
         private int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -52,10 +51,10 @@ public class ServerInfoServlet
         private long totalMemory = Runtime.getRuntime().totalMemory();
 
         @JsonProperty
-        private String gitHash = System.getProperty( "jetty.git.hash" );
+        private String gitHash = System.getProperty("jetty.git.hash");
 
         @JsonProperty
-        private String javaVersion = System.getProperty( "java.version" );
+        private String javaVersion = System.getProperty("java.version");
 
     }
 }

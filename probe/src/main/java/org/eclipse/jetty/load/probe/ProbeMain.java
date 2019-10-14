@@ -108,11 +108,16 @@ public class ProbeMain
                 }
             });
 
-            httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
-                    .scheme(probeArgs.getScheme())
-                    .path("/stats/start")
-                    .send();
-
+            ContentResponse contentResponse =
+                    httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
+                        .scheme(probeArgs.getScheme())
+                        .path("/stats/start")
+                        .send();
+            if (contentResponse.getStatus() != 200)
+            {
+                LOGGER.info("Fail to start stats " + contentResponse.getStatus()
+                        +", content:"+contentResponse.getContentAsString());
+            }
 
             LoadConfig loadConfig = retrieveLoaderConfig(probeArgs, httpClient);
             if (!probeArgs.skipRetrieveLoaderConfig)
@@ -128,8 +133,8 @@ public class ProbeMain
                         break;
                     }
                     Thread.sleep(1000);
-                    if (TimeUnit.SECONDS.convert(System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS)
-                            > maxWaitSecond)
+                    if (TimeUnit.SECONDS.convert(System.currentTimeMillis() - startRetrieve, TimeUnit.MILLISECONDS) >
+                            maxWaitSecond)
                     {
                         LOGGER.info("stop probe as loader as not been not started, we cannot retrieve loader config {}",
                                 maxWaitSecond);
@@ -159,10 +164,16 @@ public class ProbeMain
             long end = System.nanoTime();
             LOGGER.info("end probe load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(end - start));
 
-            httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
+            contentResponse = httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
                     .scheme(probeArgs.getScheme())
                     .path("/stats/stop")
                     .send();
+
+            if (contentResponse.getStatus() != 200)
+            {
+                LOGGER.info("Fail to stop stats " + contentResponse.getStatus()
+                        +", content:"+contentResponse.getContentAsString());
+            }
 
             LoadResult loadResult = listener.getLoadResult().transport(probeArgs.getTransport().name());
             loadResult.addLoadConfig(loadConfig);
@@ -242,6 +253,12 @@ public class ProbeMain
             {
                 return null;
             }
+            if (contentResponse.getStatus() != HttpStatus.OK_200)
+            {
+                LOGGER.info("get load config return " + contentResponse.getStatus() +
+                        ", content:" +contentResponse.getContentAsString());
+                return null;
+            }
             return new ObjectMapper() //
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(content, LoadConfig.class);
         }
@@ -291,6 +308,9 @@ public class ProbeMain
 
         @Parameter(names = {"--skip-loader-config", "-slc"}, description = "Skip retrieving loader config")
         private boolean skipRetrieveLoaderConfig;
+
+        @Parameter(names = {"--jetty-version", "-jv"}, description = "Jetty Version")
+        private String jettyVersion;
 
     }
 }
