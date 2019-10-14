@@ -30,7 +30,8 @@ import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 
-public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable, LoadGenerator.EndListener, Resource.NodeListener {
+public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable, LoadGenerator.EndListener, Resource.NodeListener
+{
     private static final Logger LOGGER = Log.getLogger(LiveLoadDisplayListener.class);
     private final LongAdder requestQueue = new LongAdder();
     private Monitor.Start monitor = Monitor.start();
@@ -38,37 +39,47 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
     private final Histogram histogram;
     private Histogram interval;
 
-    public LiveLoadDisplayListener() {
+    public LiveLoadDisplayListener()
+    {
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(300), 3);
     }
 
-    public LiveLoadDisplayListener(long low, long high, int digits) {
+    public LiveLoadDisplayListener(long low, long high, int digits)
+    {
         histogram = new Histogram(low, high, digits);
         recorder = new Recorder(low, high, digits);
     }
 
     @Override
-    public void onQueued(Request request) {
+    public void onQueued(Request request)
+    {
         requestQueue.increment();
     }
 
     @Override
-    public void onBegin(Request request) {
+    public void onBegin(Request request)
+    {
         requestQueue.decrement();
     }
 
     @Override
-    public void onResourceNode(Resource.Info info) {
+    public void onResourceNode(Resource.Info info)
+    {
         long responseTime = info.getResponseTime() - info.getRequestTime();
-        try {
-            recorder.recordValue( responseTime );
-        }catch ( IndexOutOfBoundsException e ) {
-           LOGGER.info( "ignore error storing response time {}", responseTime );
+        try
+        {
+            recorder.recordValue(responseTime);
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+           LOGGER.info("ignore error storing response time {}", responseTime);
         }
     }
 
-    public void run() {
-        try {
+    public void run()
+    {
+        try
+        {
             Monitor.Stop stop = monitor.stop();
 
             interval = recorder.getIntervalHistogram(interval);
@@ -87,13 +98,16 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
                     TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue())));
 
             monitor = Monitor.start();
-        } catch (Exception x) {
+        }
+        catch (Exception x)
+        {
             LOGGER.warn(x);
         }
     }
 
     @Override
-    public void onEnd(LoadGenerator loadGenerator) {
+    public void onEnd(LoadGenerator loadGenerator)
+    {
         long requests = histogram.getTotalCount();
         long time = TimeUnit.MILLISECONDS.toSeconds(histogram.getEndTimeStamp() - histogram.getStartTimeStamp());
         long rate = time > 0 ? requests / time : -1;

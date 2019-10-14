@@ -42,24 +42,28 @@ import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarter;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarterArgs;
 
-public class LoaderMain {
+public class LoaderMain
+{
     private static final Logger LOGGER = Log.getLogger(LoaderMain.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception
+    {
         MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
 
         LoaderArgs loaderArgs = LoadGeneratorStarter.parse(args, LoaderArgs::new);
         LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(loaderArgs);
 
         QueuedThreadPool threadPool = null;
-        if(loaderArgs.loadGeneratorMaxThreads>0){
+        if (loaderArgs.loadGeneratorMaxThreads>0)
+        {
             threadPool = new QueuedThreadPool(loaderArgs.loadGeneratorMaxThreads);
             threadPool.setName(LoaderMain.class.getSimpleName() + "@" + Integer.toHexString(loaderArgs.hashCode()));
-            builder.executor( threadPool );
+            builder.executor(threadPool);
         }
 
         QueuedThreadPool executor = null;
-        if (loaderArgs.sharedThreads > 0) {
+        if (loaderArgs.sharedThreads > 0)
+        {
             executor = new MonitoredQueuedThreadPool(loaderArgs.sharedThreads);
             executor.setName("loader");
             executor.start();
@@ -72,15 +76,16 @@ public class LoaderMain {
         builder.scheduler(scheduler);
         mbeanContainer.beanAdded(null, scheduler);
 
-        HttpClient httpClient = new HttpClient( loaderArgs.getHttpClientTransportBuilder().build(), null );
-        httpClient.setScheduler( scheduler );
+        HttpClient httpClient = new HttpClient(loaderArgs.getHttpClientTransportBuilder().build(), null);
+        httpClient.setScheduler(scheduler);
         httpClient.start();
-        try {
+        try
+        {
             ServerInfo serverInfo = ServerInfo
-                .retrieveServerInfo(new ServerInfo.Request( loaderArgs.getScheme(),
+                .retrieveServerInfo(new ServerInfo.Request(loaderArgs.getScheme(),
                                                             loaderArgs.getHost(),
                                                             "/test/info/",
-                                                            loaderArgs.getPort() ), httpClient);
+                                                            loaderArgs.getPort()),httpClient);
 
             LOGGER.info("run load test on server: {}", serverInfo);
             LOGGER.info("loader version: {}", Version.getInstance());
@@ -89,9 +94,11 @@ public class LoaderMain {
             builder = builder.listener(listener).resourceListener(listener).requestListener(listener);
 
             // Print loader activity periodically.
-            schedule(scheduler, new Runnable() {
+            schedule(scheduler, new Runnable()
+            {
                 @Override
-                public void run() {
+                public void run()
+                {
                     listener.run();
                     schedule(scheduler, this);
                 }
@@ -100,44 +107,52 @@ public class LoaderMain {
             LoadGenerator loadGenerator = builder.build();
             loadGenerator.addBean(mbeanContainer);
 
-            LoadConfig loadConfig = new LoadConfig( loadGenerator.getConfig() )
-                .type( LoadConfig.Type.LOADER )
-                .transport( loaderArgs.getTransport().name() );
-            storeLoadConfig( loadConfig, httpClient);
+            LoadConfig loadConfig = new LoadConfig(loadGenerator.getConfig())
+                .type(LoadConfig.Type.LOADER)
+                .transport(loaderArgs.getTransport().name());
+            storeLoadConfig(loadConfig, httpClient);
 
             LOGGER.info("start load generator run");
             long start = System.nanoTime();
             LoadGeneratorStarter.run(loadGenerator);
             long elapsed = System.nanoTime() - start;
             LOGGER.info("end load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(elapsed));
-        } finally {
-            if (executor instanceof MonitoredQueuedThreadPool) {
+        }
+        finally
+        {
+            if (executor instanceof MonitoredQueuedThreadPool)
+            {
                 printThreadPoolStats((MonitoredQueuedThreadPool)executor);
             }
             scheduler.stop();
-            if (executor != null) {
+            if (executor != null)
+            {
                 executor.stop();
             }
-            if(threadPool != null){
+            if (threadPool != null)
+            {
                 threadPool.stop();
             }
             httpClient.stop();
         }
     }
 
-    private static void storeLoadConfig( LoadConfig loadConfig, HttpClient httpClient ) throws Exception {
-        httpClient.newRequest( loadConfig.getHost(), loadConfig.getPort() ) //
-            .method( HttpMethod.POST ) //
-            .path( "/test/loadConfig" ) //
-            .content( new StringContentProvider( new ObjectMapper(  ).writeValueAsString( loadConfig ) ) ) //
+    private static void storeLoadConfig(LoadConfig loadConfig,HttpClient httpClient) throws Exception
+    {
+        httpClient.newRequest(loadConfig.getHost(), loadConfig.getPort()) //
+            .method(HttpMethod.POST) //
+            .path("/test/loadConfig") //
+            .content(new StringContentProvider(new ObjectMapper().writeValueAsString(loadConfig)))//
             .send();
     }
 
-    private static void schedule(Scheduler scheduler, Runnable task) {
+    private static void schedule(Scheduler scheduler, Runnable task)
+    {
         scheduler.schedule(task, 2, TimeUnit.SECONDS);
     }
 
-    private static void printThreadPoolStats(MonitoredQueuedThreadPool threadPool) {
+    private static void printThreadPoolStats(MonitoredQueuedThreadPool threadPool)
+    {
         LOGGER.info("thread pool - tasks = {} | concurrent threads max = {} | queue size max = {} | queue latency avg/max = {}/{} ms | task time avg/max = {}/{} ms",
                 threadPool.getTasks(),
                 threadPool.getMaxActiveThreads(),
@@ -148,7 +163,8 @@ public class LoaderMain {
                 TimeUnit.NANOSECONDS.toMillis(threadPool.getMaxTaskLatency()));
     }
 
-    private static class LoaderArgs extends LoadGeneratorStarterArgs {
+    private static class LoaderArgs extends LoadGeneratorStarterArgs
+    {
         @Parameter(names = {"--shared-threads", "-st"}, description = "Max threads of the shared thread pool")
         private int sharedThreads;
 

@@ -23,12 +23,15 @@ import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.time.ZonedDateTime;
 
-public class Monitor {
-    public static Start start() {
+public class Monitor
+{
+    public static Start start()
+    {
         return new Start();
     }
 
-    private static class Base {
+    private static class Base
+    {
         public final int cores = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
         public final long time = System.nanoTime();
         public final ZonedDateTime date = ZonedDateTime.now();
@@ -40,23 +43,28 @@ public class Monitor {
         public final MemoryUsage heap = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
     }
 
-    public static class Start extends Base {
-        private Start() {
+    public static class Start extends Base
+    {
+        private Start()
+        {
         }
 
-        public Stop stop() {
+        public Stop stop()
+        {
             return new Stop(this);
         }
     }
 
-    public static class Stop extends Base {
+    public static class Stop extends Base
+    {
         public final Start start;
         public final long deltaTime;
         public final long deltaJITTime;
         public final long deltaCPUTime;
         public final double cpuPercent;
 
-        private Stop(Start start) {
+        private Stop(Start start)
+        {
             this.start = start;
             this.deltaTime = time - start.time;
             this.deltaJITTime = jitTime - start.jitTime;

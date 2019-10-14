@@ -26,10 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-public class Version {
+public class Version
+{
     private static Version INSTANCE = new Version();
 
-    public static Version getInstance() {
+    public static Version getInstance()
+    {
         return INSTANCE;
     }
 
@@ -38,31 +40,41 @@ public class Version {
     private String buildTimestamp;
     private String javaVersion = System.getProperty( "java.version" );
 
-    private Version() {
-        try {
+    private Version()
+    {
+        try
+        {
             try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    "org/eclipse/jetty/load/build.properties")) {
+                    "org/eclipse/jetty/load/build.properties"))
+            {
                 Properties buildProperties = new Properties();
                 buildProperties.load(inputStream);
                 this.versionNumber = buildProperties.getProperty("version");
                 this.buildNumber = buildProperties.getProperty("buildNumber");
                 this.buildTimestamp = formatTimestamp(buildProperties.getProperty("timestamp"));
             }
-        } catch (IOException x) {
+        }
+        catch (IOException x)
+        {
             throw new UncheckedIOException(x);
         }
     }
 
-    private static String formatTimestamp(String timestamp) {
-        try {
+    private static String formatTimestamp(String timestamp)
+    {
+        try
+        {
             return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date(Long.valueOf(timestamp)));
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             return "unknown";
         }
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return String.format("Version{versionNumber=%s, buildNumber=%s, buildTimestamp=%s, javaVersion=%s}",
                 versionNumber,
                 buildNumber,
