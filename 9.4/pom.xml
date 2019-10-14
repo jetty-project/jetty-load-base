@@ -193,4 +193,54 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>9.4.7.v20170914</id>
+      <activation>
+        <property>
+          <name>jetty.server.version</name>
+          <value>9.4.7.v20170914</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-resources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/jetty-base</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${basedir}/src/main/jetty-base</directory>
+                      <filtering>false</filtering>
+                      <includes>
+                        <include>**</include>
+                      </includes>
+                      <excludes>
+                        <exclude>**/jetty.xml</exclude>
+                      </excludes>
+                    </resource>
+                    <resource>
+                      <directory>${basedir}/src/main/jetty-9.4.7</directory>
+                      <filtering>false</filtering>
+                      <includes>
+                        <include>**</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
