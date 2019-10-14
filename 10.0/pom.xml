@@ -167,7 +167,8 @@
             <argument>-jar</argument>
             <argument>../jetty-home-${jetty.server.version}/start.jar</argument>
             <argument>--create-startd</argument>
-            <argument>--add-to-start=resources,server,http,http2c,webapp,deploy,jsp,jmx,jmx-remote</argument>
+            <argument>--approve-all-licenses</argument>
+            <argument>--add-to-start=resources,server,http,http2c,webapp,deploy,jsp,jmx,jmx-remote,logging-log4j2</argument>
           </arguments>
         </configuration>
       </plugin>

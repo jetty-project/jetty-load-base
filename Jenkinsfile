@@ -201,6 +201,9 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                   echo "failure running server: " + e.getMessage()
                   e.initCause(new Exception("Cannot run server"))
                   throw e
+                } finally {
+                  // saving logs
+                  archiveArtifacts artifacts: "$jettyBaseVersion/target/jetty-base/logs/*.*"
                 }
               }
             }
