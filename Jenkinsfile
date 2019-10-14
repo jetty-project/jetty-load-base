@@ -248,7 +248,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
 
         } catch ( Exception e ) {
           echo "FAIL load test:" + e.getMessage()
-          //throw e
+          throw e
         }finally {
           serverStarted = "false"
           probeFinished = "false"
