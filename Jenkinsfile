@@ -199,6 +199,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                 catch ( Exception e )
                 {
                   echo "failure running server: " + e.getMessage()
+                  e.initCause(new Exception("Cannot run server"))
                   throw e
                 }
               }
@@ -248,7 +249,10 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
 
         } catch ( Exception e ) {
           echo "FAIL load test:" + e.getMessage()
-          throw e
+          if(e.getCause()!=null&&e.getCause().getMessage()!=null&&e.getCause().getMessage().contains("server")){
+              throw e
+          }
+          //throw e
         }finally {
           serverStarted = "false"
           probeFinished = "false"
