@@ -14,7 +14,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <jetty.server.version>9.4.12.v20180830</jetty.server.version>
+    <jetty.server.version>9.4.18.v20190429</jetty.server.version>
+    <asm.version>7.1</asm.version>
   </properties>
 
   <build>
@@ -203,6 +204,9 @@
           <value>9.4.7.v20170914</value>
         </property>
       </activation>
+      <properties>
+        <asm.version>7.1</asm.version>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -239,8 +243,61 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>clean-asm</id>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+                <configuration>
+                  <directory>${project.build.directory}/jetty-home-${jetty.server.version}/lib/foo/</directory>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.directory}/jetty-home-${jetty.server.version}/lib/annotations/</directory>
+                      <includes>
+                        <include>**/asm*.jar</include>
+                      </includes>
+                    </fileset>
+                  </filesets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jetty-home-extra-asm</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <includeArtifactIds>asm,asm-commons</includeArtifactIds>
+                  <outputDirectory>${project.build.directory}/jetty-home-${jetty.server.version}/lib/annotations/</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+          <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-commons</artifactId>
+          <version>${asm.version}</version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
