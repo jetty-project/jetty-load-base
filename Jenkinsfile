@@ -15,7 +15,7 @@ jettyVersions.each {
 
 //jettyBaseFullVersionMap.put( jettyVersionParam, jettyVersionParam.startsWith( "10." ) ? "10.0" : jettyVersionParam.substring( 0, 3 ))
 
-runningTime = params.RUNNING_TIME ?: "300"
+runningTime = params.RUNNING_TIME ?: "600"
 loaderRate = params.LOADER_RATE ?: "300"
 transport = params.TRANSPORT ?: "http"
 jdk = params.JDK ?:"jdk11.0.1" // "jdk11" jdk8u112
