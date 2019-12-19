@@ -35,31 +35,31 @@ pipeline {
       }
     }
 
-    stage("Jetty-9.4.24-SNAPSHOT-100") {
+    stage("Jetty-9.4.25-SNAPSHOT-100") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.24-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.25-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '100')
           ]
         }
       }
     }
-    stage("Jetty-9.4.24-SNAPSHOT-300") {
+    stage("Jetty-9.4.25-SNAPSHOT-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.24-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.25-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-9.4.24-SNAPSHOT-500") {
+    stage("Jetty-9.4.25-SNAPSHOT-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.24-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.25-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
