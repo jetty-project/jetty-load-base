@@ -12,7 +12,7 @@ pipeline {
             steps {
                 withMaven(
                       maven: 'maven3',
-                      jdk: "jdk11.0.1",
+                      jdk: "jdk11",
                       publisherStrategy: 'EXPLICIT',
                       options: [mavenLinkerPublisher(disabled: false),pipelineGraphPublisher(disabled: false)]) {
                         sh "mvn -V -B clean deploy"
