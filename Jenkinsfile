@@ -17,7 +17,7 @@ jettyVersions.each {
 
 runningTime = params.RUNNING_TIME ?: "600"
 loaderRate = params.LOADER_RATE ?: "300"
-transport = params.TRANSPORT ?: "http"
+transports = params.TRANSPORT ?[params.TRANSPORT]: ["http","h2c"]
 jdk = params.JDK ?:"jdk11.0.1" // "jdk11" jdk8u112
 jdkLoad = params.JDKLOAD ?:"jdk11.0.1" // "jdk11" jdk8u112
 // we have a limited number of server 3 loader + 1 probe
@@ -47,8 +47,9 @@ idleTimeout = 30000
 
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
+transports.each {
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
-
+    transport = "$it"
     parallel setup_loader_node :{
       node('linux') {
         stage( 'setup loader' ) {
@@ -104,7 +105,7 @@ idleTimeout = 30000
 
     getLoadTestNode( jettyBaseVersion, jettyVersion, jdk, jdkLoad, jenkinsBuildId, loaderNumber, loaderRunningTimes )
   }
-//}
+}
 
 node("master") {
   loadtestresult()
