@@ -50,6 +50,7 @@ idleTimeout = 30000
 transports.each {
   jettyBaseFullVersionMap.each { jettyVersion, jettyBaseVersion ->
     transport = "$it"
+    echo "load test transport " + transport
     parallel setup_loader_node :{
       node('linux') {
         stage( 'setup loader' ) {
