@@ -43,7 +43,7 @@ serverWd = "/home/jenkins/load_test_wd"
 rateRampUp = 30
 idleTimeout = 30000
 
-
+echo "load test transports " + transports
 
 //for (i = 0; i <5; i++) {
   //echo "iteration number $i"
