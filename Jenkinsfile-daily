@@ -4,98 +4,144 @@ pipeline {
   agent { node { label 'linux' } }
   options { durabilityHint( 'PERFORMANCE_OPTIMIZED' ) }
   stages {
-    stage("Jetty-9.4.15.v20190215-100") {
+
+    stage("Jetty-9.4.29.v20200521-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
-                  string(name: 'LOADER_RATE', value: '100')
-          ]
-        }
-      }
-    }
-    stage("Jetty-9.4.15.v20190215-300") {
-      steps {
-        script {
-          build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
+                  string(name: 'JETTY_VERSION', value:'9.4.29.v20200521'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-9.4.15.v20190215-500") {
+
+    stage("Jetty-9.4.29.v20200521-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
+                  string(name: 'JETTY_VERSION', value:'9.4.29.v20200521'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
       }
     }
 
-    stage("Jetty-9.4.29-SNAPSHOT-100") {
+    stage("Jetty-9.4.28.v20200408-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.29-SNAPSHOT'),
-                  string(name: 'LOADER_RATE', value: '100')
-          ]
-        }
-      }
-    }
-    stage("Jetty-9.4.29-SNAPSHOT-300") {
-      steps {
-        script {
-          build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.29-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.28.v20200408'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-9.4.29-SNAPSHOT-500") {
+
+    stage("Jetty-9.4.28.v20200408-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.29-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.28.v20200408'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
       }
     }
 
-    stage("Jetty-10.0.0-SNAPSHOT-100") {
-      steps {
-        script {
-          build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
-                  string(name: 'LOADER_RATE', value: '100')
-          ]
-        }
-      }
-    }
-    stage("Jetty-10.0.0-SNAPSHOT-300") {
-      steps {
-        script {
-          build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
-                  string(name: 'LOADER_RATE', value: '300')
-          ]
-        }
-      }
-    }
-    stage("Jetty-10.0.0-SNAPSHOT-500") {
-      steps {
-        script {
-          build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
-                  string(name: 'LOADER_RATE', value: '500')
-          ]
-        }
-      }
-    }
+
+//    stage("Jetty-9.4.15.v20190215-100") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
+//                  string(name: 'LOADER_RATE', value: '100')
+//          ]
+//        }
+//      }
+//    }
+//    stage("Jetty-9.4.15.v20190215-300") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
+//                  string(name: 'LOADER_RATE', value: '300')
+//          ]
+//        }
+//      }
+//    }
+//    stage("Jetty-9.4.15.v20190215-500") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'9.4.15.v20190215'),
+//                  string(name: 'LOADER_RATE', value: '500')
+//          ]
+//        }
+//      }
+//    }
+//
+//    stage("Jetty-9.4.29-SNAPSHOT-100") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'9.4.29-SNAPSHOT'),
+//                  string(name: 'LOADER_RATE', value: '100')
+//          ]
+//        }
+//      }
+//    }
+//    stage("Jetty-9.4.29-SNAPSHOT-300") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'9.4.29-SNAPSHOT'),
+//                  string(name: 'LOADER_RATE', value: '300')
+//          ]
+//        }
+//      }
+//    }
+//    stage("Jetty-9.4.29-SNAPSHOT-500") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'9.4.29-SNAPSHOT'),
+//                  string(name: 'LOADER_RATE', value: '500')
+//          ]
+//        }
+//      }
+//    }
+//
+//    stage("Jetty-10.0.0-SNAPSHOT-100") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
+//                  string(name: 'LOADER_RATE', value: '100')
+//          ]
+//        }
+//      }
+//    }
+//    stage("Jetty-10.0.0-SNAPSHOT-300") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
+//                  string(name: 'LOADER_RATE', value: '300')
+//          ]
+//        }
+//      }
+//    }
+//    stage("Jetty-10.0.0-SNAPSHOT-500") {
+//      steps {
+//        script {
+//          build job: 'load-test-pipeline', parameters: [
+//                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
+//                  string(name: 'LOADER_RATE', value: '500')
+//          ]
+//        }
+//      }
+//    }
 
     // temporary to get data
 // cannot work with 9.4.7 as we use API introduced with 9.4.8
