@@ -66,31 +66,31 @@ pipeline {
       }
     }
 
-    stage("Jetty-10.0.0-SNAPSHOT-100") {
+    stage("Jetty-10.0.1-SNAPSHOT-100") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'10.0.1-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '100')
           ]
         }
       }
     }
-    stage("Jetty-10.0.0-SNAPSHOT-300") {
+    stage("Jetty-10.0.1-SNAPSHOT-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'10.0.1-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-10.0.0-SNAPSHOT-500") {
+    stage("Jetty-10.0.1-SNAPSHOT-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.0-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'10.0.1-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
