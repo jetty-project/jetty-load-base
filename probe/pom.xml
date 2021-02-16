@@ -114,8 +114,12 @@
       <artifactId>jetty-load-generator-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty.loadgenerator</groupId>
-      <artifactId>jetty-load-generator-store</artifactId>
+      <groupId>org.mortbay.jetty.load</groupId>
+      <artifactId>load-generator-listeners</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty.load</groupId>
+      <artifactId>load-generator-store</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -131,6 +135,10 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-http</artifactId>
       <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

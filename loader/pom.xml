@@ -110,6 +110,10 @@
       <artifactId>jetty-load-base-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.mortbay.jetty.load</groupId>
+      <artifactId>load-generator-listeners</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.mortbay.jetty.loadgenerator</groupId>
       <artifactId>jetty-load-generator-client</artifactId>
     </dependency>

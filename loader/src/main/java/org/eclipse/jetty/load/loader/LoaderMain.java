@@ -51,7 +51,7 @@ public class LoaderMain
         MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
 
         LoaderArgs loaderArgs = LoadGeneratorStarter.parse(args, LoaderArgs::new);
-        LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(loaderArgs);
+        LoadGenerator.Builder builder = LoadGeneratorStarter.configure(loaderArgs);
 
         QueuedThreadPool threadPool = null;
         if (loaderArgs.loadGeneratorMaxThreads>0)
@@ -109,7 +109,7 @@ public class LoaderMain
 
             LoadConfig loadConfig = new LoadConfig(loadGenerator.getConfig())
                 .type(LoadConfig.Type.LOADER)
-                .transport(loaderArgs.getTransport().name());
+                .transport(loaderArgs.getTransport());
             storeLoadConfig(loadConfig, httpClient);
 
             LOGGER.info("start load generator run");

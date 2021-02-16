@@ -14,8 +14,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.mortbay.jetty.loadgenerator</groupId>
-      <artifactId>jetty-load-generator-listeners</artifactId>
+      <groupId>org.mortbay.jetty.load</groupId>
+      <artifactId>load-generator-listeners</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.jetty</groupId>

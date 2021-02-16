@@ -63,7 +63,7 @@ public class ProbeMain
     public static void main(String[] args) throws Exception
     {
         ProbeArgs probeArgs = LoadGeneratorStarter.parse(args, ProbeArgs::new);
-        LoadGenerator.Builder builder = LoadGeneratorStarter.prepare(probeArgs);
+        LoadGenerator.Builder builder = LoadGeneratorStarter.configure(probeArgs);
 
         QueuedThreadPool executor = null;
         if (probeArgs.sharedThreads > 0)
@@ -146,24 +146,21 @@ public class ProbeMain
                     }
                 }
 
-                loadConfig.instanceNumber(probeArgs.loaderNumber).transport(probeArgs.getTransport().name());
+                loadConfig.instanceNumber(probeArgs.loaderNumber).transport(probeArgs.getTransport());
             }
             if (probeArgs.skipRetrieveLoaderConfig && loadConfig == null)
             {
                 loadConfig = new LoadConfig();
             }
             // we calculate the resource number
-            try (Reader reader = Files.newBufferedReader(Paths.get(probeArgs.loaderResourcesPath)))
-            {
-                Resource resource = LoadGeneratorStarterArgs.evaluateGroovy(reader, Collections.emptyMap());
-                loadConfig.setResourceNumber(resource.descendantCount());
-            }
+            Resource resource = builder.getResource();
+            loadConfig.setResourceNumber(resource.descendantCount());
 
             LOGGER.info("Loader config: {}", loadConfig);
 
             LOGGER.info("start probe load generator run");
             long start = System.nanoTime();
-            LoadGeneratorStarter.run(builder);
+            LoadGeneratorStarter.run(builder.build());
             long end = System.nanoTime();
             LOGGER.info("end probe load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(end - start));
 
@@ -178,7 +175,7 @@ public class ProbeMain
                         +", content:"+contentResponse.getContentAsString());
             }
 
-            LoadResult loadResult = listener.getLoadResult().transport(probeArgs.getTransport().name());
+            LoadResult loadResult = listener.getLoadResult().transport(probeArgs.getTransport());
             loadResult.addLoadConfig(loadConfig);
 
             String jenkinsBuildId = probeArgs.dynamicParams.get("jenkins.buildId");

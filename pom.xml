@@ -11,7 +11,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <loadGeneratorVersion>1.0.0-SNAPSHOT</loadGeneratorVersion>
+    <loadGeneratorVersion>1.0.3-SNAPSHOT</loadGeneratorVersion>
     <jetty.version>9.4.35.v20201120</jetty.version>
     <snapshotDeploy.id>oss.sonatype.org</snapshotDeploy.id>
     <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
@@ -27,10 +27,12 @@
 
   <modules>
     <module>common</module>
+    <module>load-generator-listeners</module>
+    <module>load-generator-store</module>
     <module>test-webapp</module>
     <module>server</module>
-    <module>9.2</module>
-    <module>9.3</module>
+<!--    <module>9.2</module>-->
+<!--    <module>9.3</module>-->
     <module>9.4</module>
     <module>10.0</module>
     <module>loader</module>
@@ -59,7 +61,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>1.6.0</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -83,16 +85,6 @@
         <version>${loadGeneratorVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.mortbay.jetty.loadgenerator</groupId>
-        <artifactId>jetty-load-generator-listeners</artifactId>
-        <version>${loadGeneratorVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty.loadgenerator</groupId>
-        <artifactId>jetty-load-generator-store</artifactId>
-        <version>${loadGeneratorVersion}</version>
-      </dependency>
-      <dependency>
         <groupId>org.hdrhistogram</groupId>
         <artifactId>HdrHistogram</artifactId>
         <version>2.1.10</version>
@@ -100,6 +92,16 @@
       <dependency>
         <groupId>org.mortbay.jetty.load</groupId>
         <artifactId>jetty-load-base-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty.load</groupId>
+        <artifactId>load-generator-listeners</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty.load</groupId>
+        <artifactId>load-generator-store</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -141,6 +143,37 @@
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.core</artifactId>
         <version>2.7.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-client</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.toolchain</groupId>
+        <artifactId>jetty-perf-helper</artifactId>
+        <version>1.0.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.11</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.1</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
