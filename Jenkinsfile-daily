@@ -2,7 +2,10 @@
 
 pipeline {
   agent { node { label 'linux' } }
-  options { durabilityHint( 'PERFORMANCE_OPTIMIZED' ) }
+  options {
+    durabilityHint( 'PERFORMANCE_OPTIMIZED' )
+    timeout(time: 3, unit: 'HOURS')
+  }
   stages {
     stage("Jetty-9.4.15.v20190215-100") {
       steps {
