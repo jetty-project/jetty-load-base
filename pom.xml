@@ -11,7 +11,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <loadGeneratorVersion>1.0.3-SNAPSHOT</loadGeneratorVersion>
+    <loadGeneratorVersion>1.1.0-SNAPSHOT</loadGeneratorVersion>
     <jetty.version>9.4.35.v20201120</jetty.version>
     <snapshotDeploy.id>oss.sonatype.org</snapshotDeploy.id>
     <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
