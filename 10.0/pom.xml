@@ -139,7 +139,7 @@
                 <fileset>
                   <directory>${project.build.directory}/jetty-base/webapps/bean-validation/WEB-INF/lib</directory>
                   <includes>
-                    <include>**org.eclipse.persistence.core**2.6.4**</include>
+                    <include>**org.eclipse.persistence.core**${eclipse.persistence.version}**</include>
                   </includes>
                 </fileset>
               </filesets>
