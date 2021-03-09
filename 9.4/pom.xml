@@ -128,7 +128,7 @@
         <version>3.1.0</version>
         <executions>
           <execution>
-            <id>clean-old-persistence</id>
+            <id>clean-old-persistence-jar</id>
             <goals>
               <goal>clean</goal>
             </goals>
