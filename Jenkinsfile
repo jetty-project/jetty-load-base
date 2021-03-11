@@ -221,7 +221,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                     return serverStarted.equals("true")
                   }
                   echo "start running probe"
-                  timeout( time: 6, unit: 'HOURS' ) {
+                  timeout( time: 30, unit: 'MINUTES' ) {
                     withEnv( ["JAVA_HOME=${tool "$jdkLoad"}"] ) {
                       sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-probe-uber.jar -tr $transport -Djenkins.buildId=$jenkinsBuildId -Dorg.mortbay.jetty.load.generator.store.ElasticResultStore=true " +
                       "-Delastic.host=10.0.0.15 --rate-ramp-up $rateRampUp --running-time $loaderRunningTime --resource-groovy-path probe/src/main/resources/info.groovy --resource-rate $probeResourceRate " +
