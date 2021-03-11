@@ -282,7 +282,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
           }
           echo "set loaderNodesStarted $index to true"
           loaderNodesStarted[index] = true
-          timeout( time: 6, unit: 'HOURS' ) {
+          timeout( time: 30, unit: 'MINUTES' ) {
             withEnv( ["JAVA_HOME=${tool "$jdk"}"] ) {
               sh "${env.JAVA_HOME}/bin/java $loaderVmOptions -jar jetty-load-base-loader-uber.jar -tr $transport --rate-ramp-up $rateRampUp " +
                 "--running-time $loaderRunningTime --resource-groovy-path loader/src/main/resources/loader.groovy " +
