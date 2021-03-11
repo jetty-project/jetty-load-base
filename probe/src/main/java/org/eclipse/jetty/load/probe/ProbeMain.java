@@ -69,12 +69,12 @@ public class ProbeMain
         if (probeArgs.sharedThreads > 0)
         {
             executor = new MonitoredQueuedThreadPool(probeArgs.sharedThreads);
-            executor.setName("loader");
+            executor.setName("probe");
             executor.start();
             builder.executor(executor);
         }
 
-        Scheduler scheduler = new ScheduledExecutorScheduler();
+        Scheduler scheduler = new ScheduledExecutorScheduler("probe-scheduler", false);
         scheduler.start();
         builder.scheduler(scheduler);
 
