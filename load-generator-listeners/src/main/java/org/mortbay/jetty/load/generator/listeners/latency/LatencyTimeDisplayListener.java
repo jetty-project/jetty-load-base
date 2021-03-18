@@ -28,12 +28,12 @@ import java.util.concurrent.TimeUnit;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
 import org.mortbay.jetty.load.generator.listeners.HistogramConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +43,7 @@ public class LatencyTimeDisplayListener
     implements Resource.NodeListener, LoadGenerator.EndListener
 {
 
-    private static final Logger LOGGER = Log.getLogger( LatencyTimeDisplayListener.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(LatencyTimeDisplayListener.class);
 
     private ScheduledExecutorService scheduledExecutorService;
 

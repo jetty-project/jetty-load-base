@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +36,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CsvResultStore
     extends AbstractResultStore
@@ -46,7 +46,7 @@ public class CsvResultStore
 
     public static final String STORE_FILE_KEY = "csvStoreFile";
 
-    private final static Logger LOGGER = Logger.getLogger( CsvResultStore.class.getName() );
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvResultStore.class.getName() );
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -88,7 +88,7 @@ public class CsvResultStore
             catch ( IOException e )
             {
                 String msg = "Cannot create file:" + this.csvFile;
-                LOGGER.log( Level.SEVERE, msg, e );
+                LOGGER.error(msg, e );
                 throw new RuntimeException( e.getMessage(), e );
             }
         }
@@ -111,7 +111,7 @@ public class CsvResultStore
         catch ( IOException e )
         {
             String msg = "Cannot write entry:" + loadResult;
-            LOGGER.log( Level.SEVERE, msg, e );
+            LOGGER.error(msg, e );
             throw new RuntimeException( e.getMessage(), e );
         }
         finally
@@ -244,7 +244,7 @@ public class CsvResultStore
         }
         catch ( IOException e )
         {
-            LOGGER.log( Level.SEVERE, e.getMessage(), e );
+            LOGGER.error(e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
         finally

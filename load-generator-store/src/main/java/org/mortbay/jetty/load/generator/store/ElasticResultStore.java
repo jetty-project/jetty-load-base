@@ -36,10 +36,10 @@ import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -57,7 +57,7 @@ public class ElasticResultStore
     implements ResultStore
 {
 
-    private final static Logger LOGGER = Log.getLogger( ElasticResultStore.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticResultStore.class );
 
     public static final String ID = "elastic";
 
@@ -133,7 +133,7 @@ public class ElasticResultStore
         }
         catch ( Exception e )
         {
-            LOGGER.warn( e );
+            LOGGER.warn( e.getMessage(), e);
             throw new RuntimeException( "Cannot start http client: " + e.getMessage(), e );
         }
     }

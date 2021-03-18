@@ -25,17 +25,17 @@ import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.load.Monitor;
 import org.eclipse.jetty.toolchain.perf.HistogramSnapshot;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
 import org.mortbay.jetty.load.generator.listeners.LoadConfig;
 import org.mortbay.jetty.load.generator.listeners.LoadResult;
 import org.mortbay.jetty.load.generator.listeners.ServerInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LiveProbeDisplayListener extends Request.Listener.Adapter implements Resource.NodeListener, LoadGenerator.BeginListener, LoadGenerator.EndListener, Runnable {
-    private static final Logger LOGGER = Log.getLogger(LiveProbeDisplayListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LiveProbeDisplayListener.class);
 
     private final Recorder recorder;
     private final Histogram histogram;

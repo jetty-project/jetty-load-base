@@ -18,13 +18,11 @@
 
 package org.eclipse.jetty.load.probe;
 
-import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +40,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.load.MonitoredQueuedThreadPool;
 import org.eclipse.jetty.load.Version;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
@@ -55,10 +51,12 @@ import org.mortbay.jetty.load.generator.listeners.ServerInfo;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarter;
 import org.mortbay.jetty.load.generator.starter.LoadGeneratorStarterArgs;
 import org.mortbay.jetty.load.generator.store.ResultStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProbeMain
 {
-    private static final Logger LOGGER = Log.getLogger(ProbeMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProbeMain.class);
 
     public static void main(String[] args) throws Exception
     {
@@ -158,7 +156,7 @@ public class ProbeMain
 
             LOGGER.info("Loader config: {}", loadConfig);
 
-            LOGGER.info("start probe load generator run");
+            LOGGER.info("start probe load generator run: {}", builder.toString());
             long start = System.nanoTime();
             LoadGeneratorStarter.run(builder.build());
             long end = System.nanoTime();

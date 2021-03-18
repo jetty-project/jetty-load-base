@@ -26,9 +26,10 @@ import java.util.concurrent.atomic.LongAdder;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.HistogramConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This will collect a global histogram for all response and latency times
@@ -38,7 +39,7 @@ public class GlobalSummaryListener
     implements Resource.NodeListener
 {
 
-    private static final Logger LOGGER = Log.getLogger( GlobalSummaryListener.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( GlobalSummaryListener.class );
 
     private Recorder responseHistogram, latencyHistogram;
 

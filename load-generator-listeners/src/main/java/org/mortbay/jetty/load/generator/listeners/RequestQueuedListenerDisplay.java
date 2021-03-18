@@ -25,8 +25,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,7 +37,7 @@ public class RequestQueuedListenerDisplay
     implements LoadGenerator.EndListener
 {
 
-    private static final Logger LOGGER = Log.getLogger( RequestQueuedListenerDisplay.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RequestQueuedListenerDisplay.class );
 
     private AtomicLong requestsQueued = new AtomicLong( 0 );
 

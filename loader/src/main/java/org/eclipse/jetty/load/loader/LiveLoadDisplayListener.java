@@ -25,14 +25,14 @@ import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.load.Monitor;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LiveLoadDisplayListener extends Request.Listener.Adapter implements Runnable, LoadGenerator.EndListener, Resource.NodeListener
 {
-    private static final Logger LOGGER = Log.getLogger(LiveLoadDisplayListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LiveLoadDisplayListener.class);
     private final LongAdder requestQueue = new LongAdder();
     private Monitor.Start monitor = Monitor.start();
     private final Recorder recorder;
@@ -101,7 +101,7 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
         }
         catch (Exception x)
         {
-            LOGGER.warn(x);
+            LOGGER.warn("exception running Listener", x);
         }
     }
 

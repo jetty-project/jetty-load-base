@@ -29,8 +29,9 @@ import org.HdrHistogram.Histogram;
 import org.HdrHistogram.Recorder;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This listener will record time between start of send and onCommit event
@@ -41,7 +42,7 @@ public class QpsListenerDisplay
     implements Request.Listener, LoadGenerator.EndListener
 {
 
-    private static final Logger LOGGER = Log.getLogger( QpsListenerDisplay.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( QpsListenerDisplay.class );
 
     private ScheduledExecutorService scheduledExecutorService;
 

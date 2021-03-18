@@ -25,11 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.HdrHistogram.AtomicHistogram;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.mortbay.jetty.load.generator.LoadGenerator;
 import org.mortbay.jetty.load.generator.Resource;
 import org.mortbay.jetty.load.generator.listeners.CollectorInformations;
 import org.mortbay.jetty.load.generator.listeners.HistogramConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Use {@link AtomicHistogram} to tracker response/latency time per path</p>
@@ -42,7 +43,7 @@ public class TimePerPathListener
     implements Resource.NodeListener, LoadGenerator.EndListener, LoadGenerator.BeginListener, Serializable
 {
 
-    private static final Logger LOGGER = Log.getLogger( TimePerPathListener.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( TimePerPathListener.class );
 
     private Map<String, AtomicHistogram> responseTimePerPath = new ConcurrentHashMap<>();
 

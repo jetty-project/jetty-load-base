@@ -40,10 +40,10 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.StringUtil;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.mortbay.jetty.load.generator.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,7 +52,7 @@ public class CollectorServer
     implements Resource.NodeListener
 {
 
-    private static final Logger LOGGER = Log.getLogger( CollectorServer.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( CollectorServer.class );
 
     private int port;
 
@@ -60,7 +60,7 @@ public class CollectorServer
 
     private ServerConnector connector;
 
-    private final Map<String, Recorder> recorderPerPath = new ConcurrentHashMap<>(  );
+    private final Map<String, Recorder> recorderPerPath = new ConcurrentHashMap<>();
 
     public CollectorServer( int port )
     {
@@ -120,7 +120,7 @@ public class CollectorServer
         extends HttpServlet
     {
 
-        private static final Logger LOGGER = Log.getLogger( CollectorServlet.class );
+        private static final Logger LOGGER = LoggerFactory.getLogger(CollectorServlet.class );
 
         private Map<String, Recorder> recorderPerPath;
 
