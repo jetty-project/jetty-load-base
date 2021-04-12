@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /** 
  * Dump Servlet Request.
@@ -51,11 +52,20 @@ public class StopServer
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        if(Boolean.parseBoolean(request.getParameter( "STOP" ))){
+        if (Boolean.parseBoolean(request.getParameter("STOP")))
+        {
             ServletOutputStream out = response.getOutputStream();
-            out.println( "Server stopped" );
+            out.println("Server stopped");
             out.flush();
-            System.exit( 0 );
+            try
+            {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(10));
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            System.exit(0);
         }
     }
 }
