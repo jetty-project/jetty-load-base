@@ -165,7 +165,7 @@ public class ProbeMain
             contentResponse = httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
                     .scheme(probeArgs.getScheme())
                     .path("/stats/stop")
-                    .timeout(30, TimeUnit.SECONDS)
+                    .timeout(2, TimeUnit.MINUTES)
                     .send();
 
             if (contentResponse.getStatus() != 200)
