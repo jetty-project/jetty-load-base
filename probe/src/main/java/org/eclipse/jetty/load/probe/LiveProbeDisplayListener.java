@@ -46,6 +46,7 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
     private LoadResult loadResult;
     private LoadConfig.Type loadConfigType;
     private String transport;
+    private long created = System.currentTimeMillis();
 
     public LiveProbeDisplayListener() {
         this(TimeUnit.MICROSECONDS.toNanos(1), TimeUnit.SECONDS.toNanos(60), 3);
@@ -86,13 +87,14 @@ public class LiveProbeDisplayListener extends Request.Listener.Adapter implement
         long elapsed = interval.getEndTimeStamp() - interval.getStartTimeStamp();
         long responseRate = elapsed > 0 ? interval.getTotalCount() * 1000 / elapsed : -1;
 
-        LOGGER.info(String.format("response rate=%s, cpu=%.2f%%, jit=%d ms, time min/mdn/max=%d/%d/%d \u00B5s",
+        LOGGER.info(String.format("response rate=%s, cpu=%.2f%%, jit=%d ms, time min/mdn/max=%d/%d/%d \u00B5s, started= %d s",
                 responseRate,
                 stop.cpuPercent,
                 stop.deltaJITTime,
                 TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
                 TimeUnit.NANOSECONDS.toMicros(interval.getValueAtPercentile(50)),
-                TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue())));
+                TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue()),
+                TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()-created)));
 
         this.start = Monitor.start();
     }

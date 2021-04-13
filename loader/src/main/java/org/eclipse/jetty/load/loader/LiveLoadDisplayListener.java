@@ -38,6 +38,7 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
     private final Recorder recorder;
     private final Histogram histogram;
     private Histogram interval;
+    private long created = System.currentTimeMillis();
 
     public LiveLoadDisplayListener()
     {
@@ -88,14 +89,15 @@ public class LiveLoadDisplayListener extends Request.Listener.Adapter implements
             long elapsed = interval.getEndTimeStamp() - interval.getStartTimeStamp();
             long rate = elapsed > 0 ? interval.getTotalCount() * 1000 / elapsed : -1;
 
-            LOGGER.info(String.format("request queue: %d, rate=%d, cpu=%.2f%%, jit=%d ms, response min/mdn/max=%d/%d/%d \u00B5s",
+            LOGGER.info(String.format("request queue: %d, rate=%d, cpu=%.2f%%, jit=%d ms, response min/mdn/max=%d/%d/%d \u00B5s, started= %d s",
                     requestQueue.longValue(),
                     rate,
                     stop.cpuPercent,
                     stop.deltaJITTime,
                     TimeUnit.NANOSECONDS.toMicros(interval.getMinValue()),
                     TimeUnit.NANOSECONDS.toMicros(interval.getValueAtPercentile(50)),
-                    TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue())));
+                    TimeUnit.NANOSECONDS.toMicros(interval.getMaxValue()),
+                    TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()-created)));
 
             monitor = Monitor.start();
         }
