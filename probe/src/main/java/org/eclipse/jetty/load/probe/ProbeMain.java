@@ -173,6 +173,8 @@ public class ProbeMain
                         +", content:"+contentResponse.getContentAsString());
             }
 
+            LOGGER.info("stop stats");
+
             LoadResult loadResult = listener.getLoadResult().transport(probeArgs.getTransport());
             loadResult.addLoadConfig(loadConfig);
 
@@ -221,6 +223,7 @@ public class ProbeMain
         }
         finally
         {
+            LOGGER.info("Finally block in Probe");
             if (executor instanceof MonitoredQueuedThreadPool)
             {
                 printThreadPoolStats((MonitoredQueuedThreadPool) executor);

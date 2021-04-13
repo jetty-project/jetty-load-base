@@ -279,7 +279,7 @@ def getLoaderNode(index,loaderNodesFinished,loaderRate,jdk,loaderRunningTime,loa
           unstash name: 'loader-groovy'
           waitUntil {
             echo "server not started loader $index is waiting"
-            return serverStarted.equals( "true" )
+            return serverStarted.equals("true")
           }
           echo "set loaderNodesStarted $index to true"
           loaderNodesStarted[index] = true
