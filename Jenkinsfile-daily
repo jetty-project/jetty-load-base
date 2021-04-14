@@ -38,62 +38,62 @@ pipeline {
       }
     }
 
-    stage("Jetty-9.4.39-SNAPSHOT-100") {
+    stage("Jetty-9.4.40-SNAPSHOT-100") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.39-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.40-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '100')
           ]
         }
       }
     }
-    stage("Jetty-9.4.39-SNAPSHOT-300") {
+    stage("Jetty-9.4.40-SNAPSHOT-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.39-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.40-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-9.4.39-SNAPSHOT-500") {
+    stage("Jetty-9.4.40-SNAPSHOT-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'9.4.39-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'9.4.40-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
       }
     }
 
-    stage("Jetty-10.0.2-SNAPSHOT-100") {
+    stage("Jetty-10.0.3-SNAPSHOT-100") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.2-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'10.0.3-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '100')
           ]
         }
       }
     }
-    stage("Jetty-10.0.2-SNAPSHOT-300") {
+    stage("Jetty-10.0.3-SNAPSHOT-300") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.2-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'10.0.3-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '300')
           ]
         }
       }
     }
-    stage("Jetty-10.0.2-SNAPSHOT-500") {
+    stage("Jetty-10.0.3-SNAPSHOT-500") {
       steps {
         script {
           build job: 'load-test-pipeline', parameters: [
-                  string(name: 'JETTY_VERSION', value:'10.0.2-SNAPSHOT'),
+                  string(name: 'JETTY_VERSION', value:'10.0.3-SNAPSHOT'),
                   string(name: 'LOADER_RATE', value: '500')
           ]
         }
