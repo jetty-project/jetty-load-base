@@ -27,7 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
@@ -162,19 +164,26 @@ public class ProbeMain
             long end = System.nanoTime();
             LOGGER.info("end probe load generator run {} seconds", TimeUnit.NANOSECONDS.toSeconds(end - start));
 
-            contentResponse = httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
-                    .scheme(probeArgs.getScheme())
-                    .path("/stats/stop")
-                    .timeout(2, TimeUnit.MINUTES)
-                    .send();
-
-            if (contentResponse.getStatus() != 200)
+            try
             {
-                LOGGER.info("Fail to stop stats " + contentResponse.getStatus()
-                        +", content:"+contentResponse.getContentAsString());
-            }
+                contentResponse = httpClient.newRequest(probeArgs.getHost(), probeArgs.getPort())
+                        .scheme(probeArgs.getScheme())
+                        .path("/stats/stop")
+                        .timeout(2, TimeUnit.MINUTES)
+                        .send();
 
-            LOGGER.info("stop stats");
+                if (contentResponse.getStatus() != 200)
+                {
+                    LOGGER.info("Fail to stop stats " + contentResponse.getStatus()
+                            +", content:"+contentResponse.getContentAsString());
+                }
+
+                LOGGER.info("stop stats");
+            }
+            catch (InterruptedException | TimeoutException | ExecutionException x)
+            {
+                LOGGER.warn("cannot stop stats: " + x.getMessage(), x);
+            }
 
             LoadResult loadResult = listener.getLoadResult().transport(probeArgs.getTransport());
             loadResult.addLoadConfig(loadConfig);

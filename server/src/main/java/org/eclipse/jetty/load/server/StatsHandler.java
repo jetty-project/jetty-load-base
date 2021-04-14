@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.load.server;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,7 +42,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
-public class StatsHandler extends AbstractHandler.ErrorDispatchHandler {
+public class StatsHandler extends AbstractHandler {
     private static final Logger LOGGER = Log.getLogger(StatsHandler.class.getName());
 
     private final AtomicInteger stats = new AtomicInteger();
@@ -53,13 +55,22 @@ public class StatsHandler extends AbstractHandler.ErrorDispatchHandler {
         Arrays.stream(getServer().getConnectors()).forEach(c -> c.addBean(statsListener));
     }
 
+//    @Override
+//    protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) {
+//        jettyRequest.setHandled(true);
+//        service(jettyRequest);
+//    }
+
     @Override
-    protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) {
-        jettyRequest.setHandled(true);
-        service(jettyRequest);
+    public void handle( String s, Request request, HttpServletRequest httpServletRequest,
+                        HttpServletResponse httpServletResponse )
+        throws IOException, ServletException
+    {
+        service(request);
+        request.setHandled(true);
     }
 
-    private void service(Request request) {
+    private void service( Request request) {
         ThreadPool threadPool = getServer().getThreadPool();
         String uri = request.getRequestURI();
         if (uri.endsWith("/start")) {
