@@ -144,7 +144,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                       serverVmOptions =
                               "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
                                       ".svg"
-                      jettyStart = "${env.JAVA_HOME}/bin/java $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar -Djetty.version=${jettyVersion}"
+                      jettyStart = "${env.JAVA_HOME}/bin/java -DSTOP.PORT=8079 -DSTOP.KEY=secret $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar -Djetty.version=${jettyVersion}"
                       if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" )
                       {
                         jettyStart =
@@ -190,7 +190,8 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                       {
                         // stopping server
                         echo "Stopping server"
-                        sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort/test/stopServer?STOP=true"
+                        //sh "curl -vv --retry 100 --retry-connrefused --retry-delay 2 http://$loadServerHostName:$loadServerPort/test/stopServer?STOP=true"
+                        sh "cd $jettyBaseVersion/target/jetty-base && $jettyStart --stop"
                       } catch(Exception e){
                         //ignore error stopping the server
                         echo "ignore warning stopping the server: " + e.getMessage()
