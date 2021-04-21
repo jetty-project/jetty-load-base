@@ -142,7 +142,7 @@ def getLoadTestNode(jettyBaseVersion,jettyVersion,jdk, jdkLoad,jenkinsBuildId,lo
                       sh "rm -rf *"
                       unstash name: 'server-distro'
                       serverVmOptions =
-                              "-agentpath:/home/jenkins/async-profiler-1.4/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
+                              "-agentpath:/home/jenkins/async-profiler-2.0/build/libasyncProfiler.so=start,svg,file=$serverWd/profiler_$jettyVersion"+"_$loaderRate"+"_$loaderRunningTime"+"_$loaderInstancesNumber" +
                                       ".svg"
                       jettyStart = "${env.JAVA_HOME}/bin/java -DSTOP.PORT=8079 -DSTOP.KEY=secret $serverVmOptions -jar ../jetty-home-$jettyVersion/start.jar -Djetty.version=${jettyVersion}"
                       if ( jettyBaseVersion == "9.2" || jettyBaseVersion == "9.3" )
