@@ -13,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <loadGeneratorVersion>1.0.5</loadGeneratorVersion>
 <!--    <loadGeneratorVersion>1.0.2</loadGeneratorVersion>-->
-    <jetty.version>9.4.35.v20201120</jetty.version>
+    <jetty.version>9.4.43.v20210629</jetty.version>
     <snapshotDeploy.id>oss.sonatype.org</snapshotDeploy.id>
     <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
     <beanValidationWebapp.version>2.27</beanValidationWebapp.version>
