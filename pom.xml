@@ -13,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <loadGeneratorVersion>1.0.5</loadGeneratorVersion>
 <!--    <loadGeneratorVersion>1.0.2</loadGeneratorVersion>-->
-    <jetty.version>9.4.44.v20210927</jetty.version>
+    <jetty.version>9.4.45.v20220203</jetty.version>
     <snapshotDeploy.id>oss.sonatype.org</snapshotDeploy.id>
     <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
     <beanValidationWebapp.version>2.27</beanValidationWebapp.version>
@@ -46,7 +46,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.10.0</version>
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
