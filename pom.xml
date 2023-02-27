@@ -18,7 +18,7 @@
     <snapshotDeploy.url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</snapshotDeploy.url>
     <beanValidationWebapp.version>2.27</beanValidationWebapp.version>
     <jaxb.version>2.3.1</jaxb.version>
-    <eclipse.persistence.version>2.7.3</eclipse.persistence.version>
+    <eclipse.persistence.version>4.0.1</eclipse.persistence.version>
   </properties>
 
   <scm>
